@@ -1,0 +1,25 @@
+dist: trusty
+sudo: false
+
+language: scala
+scala:
+  - 2.12.6
+  - 2.11.12
+
+jdk:
+  - oraclejdk8
+
+services:
+  - docker
+
+script:
+   - sbt ++$TRAVIS_SCALA_VERSION ciFullBuild
+
+cache:
+  directories:
+  - "$HOME/.ivy2/cache"
+  - "$HOME/.sbt/boot/"
+
+before_cache:
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
+  - find $HOME/.ivy2/cache -name "*SNAPSHOT*" | xargs rm -rf
