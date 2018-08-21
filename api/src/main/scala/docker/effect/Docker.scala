@@ -1,7 +1,7 @@
 package docker.effect
 
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types.{ |, Container, ErrorMessage, Image }
+import docker.effect.types.{Container, ErrorMessage, Image, |}
 
 trait Docker[F[_, _]] {
 
@@ -26,4 +26,17 @@ trait Docker[F[_, _]] {
   def removeContainerAndVolumes: Container.Id | Container.Name => F[ErrorMessage, Unit]
 
   def removeImage: Image.Id | Image.Name => F[ErrorMessage, Unit]
+}
+
+object Endpoint {
+
+  import typedapi.dsl._
+
+  val createContainerEp =
+    := :> "containers" :> "create" :> Query[Container.Name]("name") :>
+      ReqBody[Json, Container.Create] :> Post[Json, Container.Created]
+
+  val startContainerEp =
+    := :> "containers" :> "create" :> Query[Container.Name]("name") :>
+      ReqBody[Json, Container.Create] :> Post[Json, Container.Created]
 }
