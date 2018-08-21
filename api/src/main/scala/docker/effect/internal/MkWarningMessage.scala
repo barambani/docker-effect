@@ -1,5 +1,3 @@
 package docker.effect.internal
 
-object MkWarningMessage extends newtype[String] {
-
-}
+object MkWarningMessage extends newtype[String] {}

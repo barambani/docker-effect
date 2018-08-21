@@ -2,7 +2,7 @@ package docker.effect.util
 
 import cats.Show
 import cats.syntax.either._
-import io.circe.{Decoder, Encoder}
+import io.circe.{ Decoder, Encoder }
 
 object CirceCodecs {
 
@@ -58,7 +58,9 @@ object CirceCodecs {
     * @return A decoder for `A` that maps the result to `B` in case of successful decoding
     */
   def mappedDecoderFor[A, B]: (String => A) => (A => B) => Decoder[B] =
-    ff => f => Decoder.decodeString emap {
-      str => Either.catchNonFatal[A](ff(str)) leftMap (_ => s"Cannot parse $str to Long") map f
+    ff =>
+      f =>
+        Decoder.decodeString emap { str =>
+          Either.catchNonFatal[A](ff(str)) leftMap (_ => s"Cannot parse $str to Long") map f
     }
 }

@@ -54,7 +54,7 @@ lazy val versionOf = new {
   val kindProjector = "0.9.7"
   val silencer      = "1.2"
   val typedapi      = "0.2.0-RC1"
-  val circe       = "0.9.3"
+  val circe         = "0.9.3"
 }
 
 lazy val sharedDependencies = Seq(
@@ -62,20 +62,20 @@ lazy val sharedDependencies = Seq(
 ) map (_.withSources)
 
 lazy val apiDependencies = Seq(
-  "com.chuusai" %% "shapeless" % versionOf.shapeless,
-  "eu.timepit"  %% "refined"   % versionOf.refined,
+  "com.chuusai"         %% "shapeless"              % versionOf.shapeless,
+  "eu.timepit"          %% "refined"                % versionOf.refined,
   "com.github.pheymann" %% "typedapi-client"        % versionOf.typedapi,
   "com.github.pheymann" %% "typedapi-server"        % versionOf.typedapi,
   "com.github.pheymann" %% "typedapi-http4s-client" % versionOf.typedapi,
-  "io.circe"  %% "circe-generic" % versionOf.circe
+  "io.circe"            %% "circe-generic"          % versionOf.circe
 ) map (_.withSources)
 
 lazy val http4sDependencies = Seq(
-  "org.typelevel"       %% "cats-core"              % versionOf.cats,
-  "org.http4s"          %% "http4s-dsl"             % versionOf.http4s,
-  "org.http4s"          %% "http4s-blaze-server"    % versionOf.http4s,
-  "org.http4s"          %% "http4s-blaze-client"    % versionOf.http4s,
-  "org.http4s" %% "http4s-circe" % versionOf.http4s
+  "org.typelevel" %% "cats-core"           % versionOf.cats,
+  "org.http4s"    %% "http4s-dsl"          % versionOf.http4s,
+  "org.http4s"    %% "http4s-blaze-server" % versionOf.http4s,
+  "org.http4s"    %% "http4s-blaze-client" % versionOf.http4s,
+  "org.http4s"    %% "http4s-circe"        % versionOf.http4s
 ) map (_.withSources)
 
 lazy val testDependencies = Seq(
