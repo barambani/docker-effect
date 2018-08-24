@@ -13,10 +13,11 @@ import typedapi.client._
 import typedapi.client.http4s._
 import internal.syntax._
 
-sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F],
-                                                 host: EngineHost,
-                                                 port: EnginePort)
-    extends MaterializedApi[F]
+sealed abstract class Http4sDocker[F[_]: Effect](
+  client: Client[F],
+  host: EngineHost,
+  port: EnginePort
+) extends MaterializedApi[F]
     with Docker[λ[(A, B) => EitherT[F, A, B]]] {
 
   @silent final private type G[A, B] = EitherT[F, A, B]
@@ -58,7 +59,8 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F],
 
   def removeContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] =
     ???
-  def forceRemoveContainer: Container.Id | Container.Name => G[ErrorMessage, Unit]      = ???
+  def forceRemoveContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] = ???
+
   def removeContainerAndVolumes: Container.Id | Container.Name => G[ErrorMessage, Unit] = ???
 
   def removeImage: Image.Id | Image.Name => G[ErrorMessage, Unit] = ???

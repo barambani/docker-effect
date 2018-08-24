@@ -20,17 +20,19 @@ final private[syntax] class ResponseOps[F[_]](private val response: F[Response[F
 
   import org.http4s.Status.Ok
 
-  def handleFor[A](implicit
-                   ev1: EntityDecoder[F, A],
-                   ev2: EntityDecoder[F, ErrorMessage],
-                   ev3: MonadError[F, Throwable]): EitherT[F, ErrorMessage, A] =
+  def handleFor[A](
+    implicit
+    ev1: EntityDecoder[F, A],
+    ev2: EntityDecoder[F, ErrorMessage],
+    ev3: MonadError[F, Throwable]
+  ): EitherT[F, ErrorMessage, A] =
     mapRequestError(response) flatMap {
       case Ok(r) => EitherT.right[ErrorMessage](r.as[A])
       case other => EitherT.left[A](other.as[ErrorMessage])
     }
 
-  private def mapRequestError[A](
-    fa: F[A]
-  )(implicit ev: MonadError[F, Throwable]): EitherT[F, ErrorMessage, A] =
+  private def mapRequestError[A](fa: F[A])(
+    implicit ev: MonadError[F, Throwable]
+  ): EitherT[F, ErrorMessage, A] =
     fa.attemptT.leftMap(th => ErrorMessage(s"Request exception: $th"))
 }
