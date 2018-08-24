@@ -4,9 +4,10 @@ package http4s
 import cats.data.EitherT
 import cats.effect.{ Effect, Sync }
 import com.github.ghik.silencer.silent
-import docker.effect.Endpoint._
+import docker.effect.DockerApiEndpoints._
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types._
+import docker.effect.types.{ ErrorMessage, _ }
+import org.http4s.Status._
 import org.http4s.circe.{ jsonEncoderOf, jsonOf }
 import org.http4s.client.Client
 import typedapi.client._
@@ -33,14 +34,31 @@ sealed abstract class Http4sDocker[F[_]: Effect](
       implicit val encoder = jsonEncoderOf[F, Container.Create]
       implicit val decoder = jsonOf[F, Container.Created]
 
-      createContainerApi(cn, Container.Create(in))
+      createContainerC(cn, Container.Create(in))
         .run[F]
         .raw(clientManager)
-        .handleFor[Container.Created]
+        .handleRequestWith {
+          case Ok(r)         => EitherT.right(r.as[Container.Created])
+          case BadRequest(_) => EitherT.leftT(ErrorMessage("400 -> Bad parameter"))
+          case Conflict(_)   => EitherT.leftT(ErrorMessage("409 -> Conflict"))
+          case other         => EitherT.left(other.as[ErrorMessage])
+        }
     }
 
   def startContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] =
-    ???
+    eitherNameOrId => {
+
+      val response = eitherNameOrId.fold(
+        id => startContainerByIdC(id).run[F].raw(clientManager),
+        name => startContainerByNameC(name).run[F].raw(clientManager)
+      )
+
+      response.handleRequestWith {
+        case Ok(_)          => EitherT.rightT(())
+        case NotModified(_) => EitherT.leftT(ErrorMessage("304 -> Container already started"))
+        case other          => EitherT.left(other.as[ErrorMessage])
+      }
+    }
 
   def stopContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] =
     ???
@@ -68,16 +86,11 @@ sealed abstract class Http4sDocker[F[_]: Effect](
 
 abstract class MaterializedApi[F[_]: Sync] {
 
-//  implicit val decoder = jsonOf[F, Container.Create]
-//  implicit val encoder = jsonEncoderOf[F, Container.Create]
-//
-//  implicit val decoder1 = jsonOf[F, Container.Created]
-//  implicit val encoder1 = jsonEncoderOf[F, Container.Created]
-
-  val (createContainerApi, startContainerApi) =
+  val (createContainerC, startContainerByIdC, startContainerByNameC) =
     deriveAll(
       createContainerEp :|:
-        startContainerEp
+        startContainerByIdEp :|:
+        startContainerByNameEp
     )
 }
 

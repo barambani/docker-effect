@@ -25,16 +25,3 @@ trait Docker[F[_, _]] {
 
   def removeImage: Image.Id | Image.Name => F[ErrorMessage, Unit]
 }
-
-object Endpoint {
-
-  import typedapi.dsl._
-
-  val createContainerEp =
-    := :> "containers" :> "create" :> Query[Container.Name]("name") :>
-      ReqBody[Json, Container.Create] :> Post[Json, Container.Created]
-
-  val startContainerEp =
-    := :> "containers" :> "create" :> Query[Container.Name]("name") :>
-      ReqBody[Json, Container.Create] :> Post[Json, Container.Created]
-}

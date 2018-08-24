@@ -6,7 +6,7 @@ import cats.MonadError
 import cats.data.EitherT
 import cats.syntax.applicativeError._
 import docker.effect.types.ErrorMessage
-import org.http4s.{ EntityDecoder, Response }
+import org.http4s.Response
 
 import scala.language.implicitConversions
 
@@ -18,18 +18,10 @@ private[syntax] trait ResponseSyntax {
 
 final private[syntax] class ResponseOps[F[_]](private val response: F[Response[F]]) extends AnyVal {
 
-  import org.http4s.Status.Ok
-
-  def handleFor[A](
-    implicit
-    ev1: EntityDecoder[F, A],
-    ev2: EntityDecoder[F, ErrorMessage],
-    ev3: MonadError[F, Throwable]
+  def handleRequestWith[A](f: Response[F] => EitherT[F, ErrorMessage, A])(
+    implicit ev3: MonadError[F, Throwable]
   ): EitherT[F, ErrorMessage, A] =
-    mapRequestError(response) flatMap {
-      case Ok(r) => EitherT.right[ErrorMessage](r.as[A])
-      case other => EitherT.left[A](other.as[ErrorMessage])
-    }
+    mapRequestError(response) flatMap f
 
   private def mapRequestError[A](fa: F[A])(
     implicit ev: MonadError[F, Throwable]
