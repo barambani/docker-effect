@@ -37,7 +37,7 @@ sealed abstract class Http4sDocker[F[_]: Effect](
       createContainerC(cn, Container.Create(in))
         .run[F]
         .raw(clientManager)
-        .handleRequestWith {
+        .handleWith {
           case Ok(r)         => EitherT.right(r.as[Container.Created])
           case BadRequest(_) => EitherT.leftT(ErrorMessage("400 -> Bad parameter"))
           case Conflict(_)   => EitherT.leftT(ErrorMessage("409 -> Conflict"))
@@ -53,7 +53,7 @@ sealed abstract class Http4sDocker[F[_]: Effect](
         name => startContainerByNameC(name).run[F].raw(clientManager)
       )
 
-      response.handleRequestWith {
+      response.handleWith {
         case Ok(_)          => EitherT.rightT(())
         case NotModified(_) => EitherT.leftT(ErrorMessage("304 -> Container already started"))
         case other          => EitherT.left(other.as[ErrorMessage])

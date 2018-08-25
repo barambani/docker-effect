@@ -18,12 +18,12 @@ private[syntax] trait ResponseSyntax {
 
 final private[syntax] class ResponseOps[F[_]](private val response: F[Response[F]]) extends AnyVal {
 
-  def handleRequestWith[A](f: Response[F] => EitherT[F, ErrorMessage, A])(
+  def handleWith[A](f: Response[F] => EitherT[F, ErrorMessage, A])(
     implicit ev3: MonadError[F, Throwable]
   ): EitherT[F, ErrorMessage, A] =
-    mapRequestError(response) flatMap f
+    mapError(response) flatMap f
 
-  private def mapRequestError[A](fa: F[A])(
+  private def mapError[A](fa: F[A])(
     implicit ev: MonadError[F, Throwable]
   ): EitherT[F, ErrorMessage, A] =
     fa.attemptT.leftMap(th => ErrorMessage(s"Request exception: $th"))
