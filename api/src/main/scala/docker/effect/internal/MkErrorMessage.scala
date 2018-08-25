@@ -1,18 +1,25 @@
 package docker.effect.internal
 
-import cats.Applicative
+import cats.Show
 import docker.effect.types._
+import docker.effect.util.CirceCodecs._
 import io.circe.{ Decoder, Encoder }
 
-import scala.language.implicitConversions
+object MkErrorMessage extends newtype[String] with ErrorMessageInstances with ErrorMessageCodecs
 
-object MkErrorMessage extends newtype[String] {
-  implicit def errorMessageDecoder: Decoder[ErrorMessage] = ???
-  implicit def errorMessageEncoder: Encoder[ErrorMessage] = ???
+sealed private[internal] trait ErrorMessageCodecs {
 
-  implicit def errorMessageSyntax(e: ErrorMessage): ErrorMessageOps = new ErrorMessageOps(e)
+  implicit val errorMessageDecoder: Decoder[ErrorMessage] =
+    decoderFor(s => ErrorMessage(s))
 
-  final private[internal] class ErrorMessageOps(private val e: ErrorMessage) extends AnyVal {
-    def asPure[F[_]](implicit F: Applicative[F]): F[ErrorMessage] = F.pure(e)
-  }
+  implicit val errorMessageEncoder: Encoder[ErrorMessage] =
+    encoderFor[ErrorMessage]
+}
+
+sealed private[internal] trait ErrorMessageInstances {
+
+  implicit val showErrorMessage: Show[ErrorMessage] =
+    new Show[ErrorMessage] {
+      def show(t: ErrorMessage): String = t.unMk
+    }
 }

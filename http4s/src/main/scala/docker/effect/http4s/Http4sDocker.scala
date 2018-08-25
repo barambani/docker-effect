@@ -3,7 +3,6 @@ package http4s
 
 import cats.data.EitherT
 import cats.effect.{ Effect, Sync }
-import com.github.ghik.silencer.silent
 import docker.effect.DockerApiEndpoints._
 import docker.effect.types.Container.WaitBeforeKill
 import docker.effect.types.{ ErrorMessage, _ }
@@ -11,6 +10,7 @@ import org.http4s.Status._
 import org.http4s.circe.{ jsonEncoderOf, jsonOf }
 import org.http4s.client.Client
 import typedapi.client._
+import io.circe.generic.auto._
 import typedapi.client.http4s._
 import internal.syntax._
 
@@ -21,7 +21,7 @@ sealed abstract class Http4sDocker[F[_]: Effect](
 ) extends MaterializedApi[F]
     with Docker[λ[(A, B) => EitherT[F, A, B]]] {
 
-  @silent final private type G[A, B] = EitherT[F, A, B]
+  final type G[A, B] = EitherT[F, A, B]
 
   final private val clientManager =
     ClientManager(client, host.value, port.value)
