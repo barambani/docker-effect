@@ -1,6 +1,6 @@
 package docker.effect
 
-import docker.effect.types.Container
+import docker.effect.types.{ Container, Image }
 
 object DockerApiEndpoints {
 
@@ -15,4 +15,10 @@ object DockerApiEndpoints {
 
   val startContainerByNameEp =
     := :> "containers" :> Segment[Container.Name]("id") :> "start" :> Post[Json, Unit]
+
+  val pullImageEp =
+    := :> "images" :> "create" :> Query[Image.Name]("fromImage") :> Query[Image.Tag]("tag") :> Post[
+      Json,
+      Unit
+    ]
 }

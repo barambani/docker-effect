@@ -23,5 +23,6 @@ trait Docker[F[_, _]] {
   def forceRemoveContainer: Container.Id | Container.Name => F[ErrorMessage, Unit]
   def removeContainerAndVolumes: Container.Id | Container.Name => F[ErrorMessage, Unit]
 
+  def pullImage: (Image.Name, Image.Tag) => F[ErrorMessage, Unit]
   def removeImage: Image.Id | Image.Name => F[ErrorMessage, Unit]
 }

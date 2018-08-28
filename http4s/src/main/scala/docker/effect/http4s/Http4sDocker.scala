@@ -14,17 +14,14 @@ import io.circe.generic.auto._
 import typedapi.client.http4s._
 import internal.syntax._
 
-sealed abstract class Http4sDocker[F[_]: Effect](
-  client: Client[F],
-  host: EngineHost,
-  port: EnginePort
-) extends MaterializedApi[F]
+sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], path: EnginePath)
+    extends MaterializedApi[F]
     with Docker[λ[(A, B) => EitherT[F, A, B]]] {
 
   final type G[A, B] = EitherT[F, A, B]
 
   final private val clientManager =
-    ClientManager(client, host.value, port.value)
+    ClientManager(client, path.unMk.value)
 
   implicit private val errorDecoder = jsonOf[F, ErrorMessage]
 
@@ -82,16 +79,32 @@ sealed abstract class Http4sDocker[F[_]: Effect](
   def removeContainerAndVolumes: Container.Id | Container.Name => G[ErrorMessage, Unit] = ???
 
   def removeImage: Image.Id | Image.Name => G[ErrorMessage, Unit] = ???
+
+  def pullImage: (Image.Name, Image.Tag) => G[ErrorMessage, Unit] =
+    (in, it) =>
+      pullImageC(in, it)
+        .run[F]
+        .raw(clientManager)
+        .handleWith {
+          case Ok(_) => EitherT.rightT(())
+          case NotFound(_) =>
+            EitherT.leftT(ErrorMessage("404 -> repository does not exist or no read access"))
+          case other => EitherT.left(other.as[ErrorMessage])
+      }
 }
 
 abstract class MaterializedApi[F[_]: Sync] {
 
-  val (createContainerC, startContainerByIdC, startContainerByNameC) =
+  protected val (createContainerC, startContainerByIdC, startContainerByNameC, pullImageC) =
     deriveAll(
       createContainerEp :|:
         startContainerByIdEp :|:
-        startContainerByNameEp
+        startContainerByNameEp :|:
+        pullImageEp
     )
 }
 
-object Http4sDocker {}
+object Http4sDocker {
+  def apply[F[_]: Effect](cl: Client[F])(p: EnginePath): Http4sDocker[F] =
+    new Http4sDocker[F](cl, p) {}
+}
