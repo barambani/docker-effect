@@ -1,9 +1,12 @@
 package docker.effect
 
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types.{ |, Container, ErrorMessage, Image }
+import docker.effect.types.{Container, ErrorMessage, Image, |}
 
 trait Docker[F[_, _]] {
+
+  def startSocketRelay: F[ErrorMessage, Unit]
+  def cleanSocketRelay: F[ErrorMessage, Unit]
 
   def createContainer: (Container.Name, Image.Name) => F[ErrorMessage, Container.Created]
 

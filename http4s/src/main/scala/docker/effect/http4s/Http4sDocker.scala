@@ -2,7 +2,9 @@ package docker.effect
 package http4s
 
 import cats.data.EitherT
-import cats.effect.{Effect, Sync}
+import cats.effect.{Effect, IO, Sync}
+import cats.syntax.applicativeError._
+import cats.syntax.apply._
 import cats.syntax.functor._
 import docker.effect.DockerApiEndpoints._
 import docker.effect.types.Container.WaitBeforeKill
@@ -26,6 +28,26 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
     ClientManager(client, h.value, p.value)
 
   implicit private val errorDecoder = jsonOf[F, ErrorMessage]
+
+  def startSocketRelay: G[ErrorMessage, Unit] = {
+    import sys.process._
+
+    val F = Sync[F]
+    val startSocketRelay =
+      s"""docker run -d --name docker-effect-socket-relay -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:$p:$p bobrik/socat TCP-LISTEN:$p,fork UNIX-CONNECT:/var/run/docker.sock""".stripMargin
+
+    (F.delay(startSocketRelay.!) *> F.unit).attemptT leftMap (th => ErrorMessage(s"Exception: $th"))
+  }
+
+  def cleanSocketRelay: G[ErrorMessage, Unit] = {
+    import sys.process._
+
+    val F = Sync[F]
+    val killSocketRelay = "docker kill docker-effect-socket-relay"
+    val removeSocketRelay = "docker rm docker-effect-socket-relay"
+
+    (F.delay(killSocketRelay.!) *> F.delay(removeSocketRelay.!) *> F.unit).attemptT leftMap (th => ErrorMessage(s"Exception: $th"))
+  }
 
   def createContainer: (Container.Name, Image.Name) => G[ErrorMessage, Container.Created] =
     (cn, in) => {
@@ -113,4 +135,10 @@ object Http4sDocker {
 
   def apply[F[_]: Effect](h: EngineHost, p: EnginePort): F[Http4sDocker[F]] =
     Http1Client[F]() map (Http4sDocker[F](_)(h, p))
+
+  def setup(docker: Http4sDocker[IO]): EitherT[IO, ErrorMessage, Unit] =
+    docker.startSocketRelay
+
+  def cleanup(docker: Http4sDocker[IO]): EitherT[IO, ErrorMessage, Unit] =
+    docker.cleanSocketRelay
 }
