@@ -1,7 +1,7 @@
 package docker.effect
 
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types.{Container, ErrorMessage, Image, |}
+import docker.effect.types.{ |, Container, ErrorMessage, Image }
 
 trait Docker[F[_, _]] {
 

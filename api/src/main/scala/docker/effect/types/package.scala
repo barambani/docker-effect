@@ -2,8 +2,8 @@ package docker.effect
 
 import docker.effect.internal._
 import eu.timepit.refined.W
-import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.string.{MatchesRegex, Url}
+import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
+import eu.timepit.refined.string.{ MatchesRegex, Url }
 import eu.timepit.refined.types.numeric.PosInt
 
 import scala.concurrent.duration.FiniteDuration

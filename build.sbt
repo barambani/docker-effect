@@ -72,11 +72,11 @@ lazy val apiDependencies = Seq(
 ) map (_.withSources)
 
 lazy val http4sDependencies = Seq(
-  "org.typelevel"  %% "cats-core"           % versionOf.cats,
-  "org.http4s"     %% "http4s-dsl"          % versionOf.http4s,
-  "org.http4s"     %% "http4s-blaze-server" % versionOf.http4s,
-  "org.http4s"     %% "http4s-blaze-client" % versionOf.http4s,
-  "org.http4s"     %% "http4s-circe"        % versionOf.http4s
+  "org.typelevel" %% "cats-core"           % versionOf.cats,
+  "org.http4s"    %% "http4s-dsl"          % versionOf.http4s,
+  "org.http4s"    %% "http4s-blaze-server" % versionOf.http4s,
+  "org.http4s"    %% "http4s-blaze-client" % versionOf.http4s,
+  "org.http4s"    %% "http4s-circe"        % versionOf.http4s
 ) map (_.withSources)
 
 lazy val testDependencies = Seq(

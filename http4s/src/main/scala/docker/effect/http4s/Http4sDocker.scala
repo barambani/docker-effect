@@ -2,16 +2,16 @@ package docker.effect
 package http4s
 
 import cats.data.EitherT
-import cats.effect.{Effect, IO, Sync}
+import cats.effect.{ Effect, Sync }
 import cats.syntax.applicativeError._
 import cats.syntax.apply._
 import cats.syntax.functor._
 import docker.effect.DockerApiEndpoints._
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types.{ErrorMessage, _}
+import docker.effect.types.{ ErrorMessage, _ }
 import io.circe.generic.auto._
 import org.http4s.Status._
-import org.http4s.circe.{jsonEncoderOf, jsonOf}
+import org.http4s.circe.{ jsonEncoderOf, jsonOf }
 import org.http4s.client.Client
 import org.http4s.client.blaze.Http1Client
 import typedapi.client._
@@ -34,7 +34,8 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
 
     val F = Sync[F]
     val startSocketRelay =
-      s"""docker run -d --name docker-effect-socket-relay -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:$p:$p bobrik/socat TCP-LISTEN:$p,fork UNIX-CONNECT:/var/run/docker.sock""".stripMargin
+      s"""docker run -d --name docker-effect-socket-relay -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:$p:$p bobrik/socat TCP-LISTEN:$p,fork UNIX-CONNECT:/var/run/docker.sock"""
+        .stripMargin
 
     (F.delay(startSocketRelay.!) *> F.unit).attemptT leftMap (th => ErrorMessage(s"Exception: $th"))
   }
@@ -42,11 +43,13 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
   def cleanSocketRelay: G[ErrorMessage, Unit] = {
     import sys.process._
 
-    val F = Sync[F]
-    val killSocketRelay = "docker kill docker-effect-socket-relay"
+    val F                 = Sync[F]
+    val killSocketRelay   = "docker kill docker-effect-socket-relay"
     val removeSocketRelay = "docker rm docker-effect-socket-relay"
 
-    (F.delay(killSocketRelay.!) *> F.delay(removeSocketRelay.!) *> F.unit).attemptT leftMap (th => ErrorMessage(s"Exception: $th"))
+    (F.delay(killSocketRelay.!) *> F.delay(removeSocketRelay.!) *> F.unit).attemptT leftMap (
+      th => ErrorMessage(s"Exception: $th")
+    )
   }
 
   def createContainer: (Container.Name, Image.Name) => G[ErrorMessage, Container.Created] =
@@ -136,9 +139,9 @@ object Http4sDocker {
   def apply[F[_]: Effect](h: EngineHost, p: EnginePort): F[Http4sDocker[F]] =
     Http1Client[F]() map (Http4sDocker[F](_)(h, p))
 
-  def setup(docker: Http4sDocker[IO]): EitherT[IO, ErrorMessage, Unit] =
+  def setup[F[_]: Effect](docker: Http4sDocker[F]): EitherT[F, ErrorMessage, Unit] =
     docker.startSocketRelay
 
-  def cleanup(docker: Http4sDocker[IO]): EitherT[IO, ErrorMessage, Unit] =
+  def cleanup[F[_]: Effect](docker: Http4sDocker[F]): EitherT[F, ErrorMessage, Unit] =
     docker.cleanSocketRelay
 }
