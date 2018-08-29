@@ -17,8 +17,6 @@ object DockerApiEndpoints {
     := :> "containers" :> Segment[Container.Name]("id") :> "start" :> Post[Json, Unit]
 
   val pullImageEp =
-    := :> "images" :> "create" :> Query[Image.Name]("fromImage") :> Query[Image.Tag]("tag") :> Post[
-      Json,
-      Unit
-    ]
+    := :> "images" :> "create" :> Query[Image.Name]("fromImage") :>
+      Query[Image.Tag]("tag") :> Post[Json, Unit]
 }

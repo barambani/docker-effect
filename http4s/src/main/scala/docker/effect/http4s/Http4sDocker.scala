@@ -2,26 +2,28 @@ package docker.effect
 package http4s
 
 import cats.data.EitherT
-import cats.effect.{ Effect, Sync }
+import cats.effect.{Effect, Sync}
+import cats.syntax.functor._
 import docker.effect.DockerApiEndpoints._
 import docker.effect.types.Container.WaitBeforeKill
-import docker.effect.types.{ ErrorMessage, _ }
-import org.http4s.Status._
-import org.http4s.circe.{ jsonEncoderOf, jsonOf }
-import org.http4s.client.Client
-import typedapi.client._
+import docker.effect.types.{ErrorMessage, _}
 import io.circe.generic.auto._
+import org.http4s.Status._
+import org.http4s.circe.{jsonEncoderOf, jsonOf}
+import org.http4s.client.Client
+import org.http4s.client.blaze.Http1Client
+import typedapi.client._
 import typedapi.client.http4s._
 import internal.syntax._
 
-sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], path: EnginePath)
+sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHost, p: EnginePort)
     extends MaterializedApi[F]
     with Docker[λ[(A, B) => EitherT[F, A, B]]] {
 
   final type G[A, B] = EitherT[F, A, B]
 
   final private val clientManager =
-    ClientManager(client, path.unMk.value)
+    ClientManager(client, h.value, p.value)
 
   implicit private val errorDecoder = jsonOf[F, ErrorMessage]
 
@@ -105,6 +107,10 @@ abstract class MaterializedApi[F[_]: Sync] {
 }
 
 object Http4sDocker {
-  def apply[F[_]: Effect](cl: Client[F])(p: EnginePath): Http4sDocker[F] =
-    new Http4sDocker[F](cl, p) {}
+
+  def apply[F[_]: Effect](cl: Client[F])(h: EngineHost, p: EnginePort): Http4sDocker[F] =
+    new Http4sDocker[F](cl, h, p) {}
+
+  def apply[F[_]: Effect](h: EngineHost, p: EnginePort): F[Http4sDocker[F]] =
+    Http1Client[F]() map (Http4sDocker[F](_)(h, p))
 }

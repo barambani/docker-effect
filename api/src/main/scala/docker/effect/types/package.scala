@@ -2,8 +2,9 @@ package docker.effect
 
 import docker.effect.internal._
 import eu.timepit.refined.W
-import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
-import eu.timepit.refined.string.MatchesRegex
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.string.{MatchesRegex, Url}
+import eu.timepit.refined.types.numeric.PosInt
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -11,8 +12,11 @@ package object types {
 
   final type |[A, B] = Either[A, B]
 
-  final val EnginePath = MkEnginePath
-  final type EnginePath = EnginePath.T
+  final type EngineHost = String Refined Url
+  final object EngineHost extends RefinedTypeOps[EngineHost, String]
+
+  final type EnginePort = PosInt
+  final val EnginePort = PosInt
 
   final val ErrorMessage = MkErrorMessage
   final type ErrorMessage = ErrorMessage.T
@@ -29,7 +33,7 @@ package object types {
     final object Name extends RefinedTypeOps[Name, String]
 
     final case class Create(image: Image.Name)
-    final case class Created(id: Container.Id, warnings: List[WarningMessage])
+    final case class Created(Id: Container.Id, Warnings: Option[List[WarningMessage]])
 
     final val WaitBeforeKill = newtype[FiniteDuration]
     final type WaitBeforeKill = WaitBeforeKill.T

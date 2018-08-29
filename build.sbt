@@ -55,6 +55,7 @@ lazy val versionOf = new {
   val silencer      = "1.2"
   val typedapi      = "0.2.0-RC1"
   val circe         = "0.9.3"
+  val unixSocket    = "0.19"
 }
 
 lazy val sharedDependencies = Seq(
@@ -71,11 +72,11 @@ lazy val apiDependencies = Seq(
 ) map (_.withSources)
 
 lazy val http4sDependencies = Seq(
-  "org.typelevel" %% "cats-core"           % versionOf.cats,
-  "org.http4s"    %% "http4s-dsl"          % versionOf.http4s,
-  "org.http4s"    %% "http4s-blaze-server" % versionOf.http4s,
-  "org.http4s"    %% "http4s-blaze-client" % versionOf.http4s,
-  "org.http4s"    %% "http4s-circe"        % versionOf.http4s
+  "org.typelevel"  %% "cats-core"           % versionOf.cats,
+  "org.http4s"     %% "http4s-dsl"          % versionOf.http4s,
+  "org.http4s"     %% "http4s-blaze-server" % versionOf.http4s,
+  "org.http4s"     %% "http4s-blaze-client" % versionOf.http4s,
+  "org.http4s"     %% "http4s-circe"        % versionOf.http4s
 ) map (_.withSources)
 
 lazy val testDependencies = Seq(

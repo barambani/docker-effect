@@ -3,25 +3,23 @@ import cats.effect.IO
 import docker.effect.http4s.Http4sDocker
 import docker.effect.types.Image
 import eu.timepit.refined.auto._
-import org.http4s.client.blaze.Http1Client
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 final class CreateContainerTests extends WordSpecLike with Matchers with BeforeAndAfterAll {
 
-  val client = Http1Client[IO]() map (
-    cl => Http4sDocker(cl)("file:///var/run/docker.sock", 80)
-  )
+  val client = Http4sDocker[IO]("http://localhost", 1717)
 
-  "docker engine api CreateContainer" should {
+  "docker engine api" should {
 
-    "create a container of the expected image" in {
+    "pull an image and create a container with it" in {
 
-      val id = for {
+      val createdId = for {
         docker  <- EitherT.right(client)
+        _       <- docker.pullImage(Image.Name("alpine"), Image.Tag("latest"))
         created <- docker.createContainer("test-container", Image.Name("alpine"))
-      } yield created.id
+      } yield created.Id
 
-      id.value
+      createdId.value
         .unsafeRunSync()
         .fold(
           err => fail(s"Expected success but failed with $err"),

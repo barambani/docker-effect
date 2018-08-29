@@ -20,6 +20,13 @@ cache:
   - "$HOME/.ivy2/cache"
   - "$HOME/.sbt/boot/"
 
+before_install:
+  - docker run -d --name socket-relay -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:1717:1717 bobrik/socat TCP-LISTEN:1717,fork UNIX-CONNECT:/var/run/docker.sock
+
 before_cache:
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
   - find $HOME/.ivy2/cache -name "*SNAPSHOT*" | xargs rm -rf
+
+after_success:
+  - docker kill socket-relay
+  - docker rm socket-relay
