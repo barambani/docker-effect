@@ -5,6 +5,7 @@ import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
 import eu.timepit.refined.string.{ MatchesRegex, Url }
 import eu.timepit.refined.types.numeric.PosInt
+import io.circe.Decoder
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -33,7 +34,18 @@ package object types {
     final object Name extends RefinedTypeOps[Name, String]
 
     final case class Create(image: Image.Name)
-    final case class Created(Id: Container.Id, Warnings: Option[List[WarningMessage]])
+
+    final case class Created(id: Container.Id, warnings: Option[List[WarningMessage]])
+    object Created {
+
+      implicit val createdDecoder: Decoder[Container.Created] =
+        Decoder.instance { c =>
+          for {
+            id <- c.downField("Id").as[Container.Id]
+            ws <- c.downField("Warnings").as[Option[List[WarningMessage]]]
+          } yield Container.Created(id, ws)
+        }
+    }
 
     final val WaitBeforeKill = newtype[FiniteDuration]
     final type WaitBeforeKill = WaitBeforeKill.T

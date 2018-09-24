@@ -2,7 +2,7 @@ package docker.effect.internal
 
 import cats.Show
 import docker.effect.types.Image
-import docker.effect.util.CirceCodecs.encoderFor
+import docker.effect.util.CirceCodecs.stringEncoderFor
 import eu.timepit.refined.types.string.NonEmptyString
 import io.circe.Encoder
 
@@ -11,7 +11,7 @@ object MkImageName extends newtype[NonEmptyString] with ImageNameInstances with 
 sealed private[internal] trait ImageNameCodecs {
 
   implicit val imageNameEncoder: Encoder[Image.Name] =
-    encoderFor[Image.Name]
+    stringEncoderFor[Image.Name]
 }
 
 sealed private[internal] trait ImageNameInstances {

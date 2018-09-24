@@ -2,7 +2,7 @@ package docker.effect.internal
 
 import cats.Show
 import docker.effect.types.WarningMessage
-import docker.effect.util.CirceCodecs.{ decoderFor, encoderFor }
+import docker.effect.util.CirceCodecs.{ stringDecoderFor, stringEncoderFor }
 import io.circe.{ Decoder, Encoder }
 
 object MkWarningMessage
@@ -13,10 +13,10 @@ object MkWarningMessage
 sealed private[internal] trait WarningMessageCodecs {
 
   implicit val warningMessageDecoder: Decoder[WarningMessage] =
-    decoderFor(s => WarningMessage(s))
+    stringDecoderFor(s => WarningMessage(s))
 
   implicit val warningMessageEncoder: Encoder[WarningMessage] =
-    encoderFor[WarningMessage]
+    stringEncoderFor[WarningMessage]
 }
 
 sealed private[internal] trait WarningMessageInstances {

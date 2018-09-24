@@ -5,8 +5,8 @@ import docker.effect.types.{ |, Container, ErrorMessage, Image }
 
 trait Docker[F[_, _]] {
 
-  def startSocketRelay: F[ErrorMessage, Unit]
-  def cleanSocketRelay: F[ErrorMessage, Unit]
+  def startUnixSocketRelay: F[ErrorMessage, Unit]
+  def cleanUnixSocketRelay: F[ErrorMessage, Unit]
 
   def createContainer: (Container.Name, Image.Name) => F[ErrorMessage, Container.Created]
 

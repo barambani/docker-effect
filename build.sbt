@@ -45,17 +45,15 @@ lazy val scala212Options = Seq(
   * Dependencies
   */
 lazy val versionOf = new {
-  val cats          = "1.2.0"
-  val shapeless     = "2.3.3"
+  val cats          = "1.4.0"
   val refined       = "0.9.2"
-  val http4s        = "0.18.16"
+  val http4s        = "0.18.17"
   val scalaCheck    = "1.14.0"
   val scalaTest     = "3.0.5"
   val kindProjector = "0.9.7"
   val silencer      = "1.2"
-  val typedapi      = "0.2.0-RC1"
+  val typedapi      = "0.2.0"
   val circe         = "0.9.3"
-  val unixSocket    = "0.19"
 }
 
 lazy val sharedDependencies = Seq(
@@ -63,7 +61,6 @@ lazy val sharedDependencies = Seq(
 ) map (_.withSources)
 
 lazy val apiDependencies = Seq(
-  "com.chuusai"         %% "shapeless"              % versionOf.shapeless,
   "eu.timepit"          %% "refined"                % versionOf.refined,
   "com.github.pheymann" %% "typedapi-client"        % versionOf.typedapi,
   "com.github.pheymann" %% "typedapi-server"        % versionOf.typedapi,
@@ -95,16 +92,17 @@ lazy val compilerPluginsDependencies = Seq(
   * Settings
   */
 lazy val crossBuildSettings = Seq(
-  scalaVersion              := `scala 212`,
-  crossScalaVersions        := Seq(`scala 211`, `scala 212`),
-  scalacOptions             ++= crossBuildOptions,
-  libraryDependencies       ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
-  organization              := "io.laserdisc",
-  parallelExecution in Test := false,
+  scalaVersion        := `scala 212`,
+  crossScalaVersions  := Seq(`scala 211`, `scala 212`),
+  scalacOptions       ++= crossBuildOptions,
+  libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
+  organization        := "io.laserdisc",
+  parallelExecution   in Test := false,
   scalacOptions ++=
     (scalaVersion.value match {
-      case `scala 212` => scala212Options
-      case _           => Seq()
+      case `scala 212` =>
+        scala212Options
+      case _ => Seq()
     })
 )
 
@@ -125,9 +123,8 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
   ),
   releaseCrossBuild             := true,
   publishMavenStyle             := true,
-  credentials                   := Credentials(Path.userHome / ".ivy2" / ".credentials") :: Nil,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  publishArtifact in Test       := false,
+  publishArtifact               in Test := false,
   pomIncludeRepository := { _ =>
     false
   },

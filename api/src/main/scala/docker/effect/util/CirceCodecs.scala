@@ -4,7 +4,7 @@ package util
 import cats.Show
 import cats.syntax.either._
 import docker.effect.types.|
-import io.circe.{ Decoder, Encoder }
+import io.circe._
 
 object CirceCodecs {
 
@@ -27,7 +27,7 @@ object CirceCodecs {
     *
     * @return An encoder for `A`
     */
-  def encoderFor[A](implicit ev: Show[A]): Encoder[A] =
+  def stringEncoderFor[A](implicit ev: Show[A]): Encoder[A] =
     Encoder.encodeString.contramap[A](ev.show)
 
   /**
@@ -40,8 +40,8 @@ object CirceCodecs {
     *
     * @return A decoder for `A`
     */
-  def decoderFor[A]: (String => A) => Decoder[A] =
-    f => mappedDecoderFor(f, identity[A])
+  def stringDecoderFor[A]: (String => A) => Decoder[A] =
+    f => stringMappedDecoderFor(f, identity[A])
 
   /**
     * Gives a Circe Decoder for `A` that maps the successful decoded value with `f`
@@ -59,10 +59,8 @@ object CirceCodecs {
     *
     * @return A decoder for `A` that maps the result to `B` in case of successful decoding
     */
-  def mappedDecoderFor[A, B](ff: String => A, f: A => B): Decoder[B] =
-    Decoder.decodeString emap { str =>
-      Either.catchNonFatal[A](ff(str)) leftMap (_ => s"Cannot parse $str to Long") map f
-    }
+  def stringMappedDecoderFor[A, B](ff: String => A, f: A => B): Decoder[B] =
+    stringMappedDecoderWithError(s => ff(s).asRight, f, s => s"Cannot parse $s")
 
   /**
     * Similar to `mappedDecoderFor` but the possibility of choosing a custom error message
@@ -70,7 +68,7 @@ object CirceCodecs {
     * @return A decoder for `A` that maps the result to `B` in case of successful decoding and
     *         gives the provided error message in case of failure decoding
     */
-  def mappedDecoderWithError[A, B](
+  def stringMappedDecoderWithError[A, B](
     ff: String => String | A,
     f: A => B,
     err: String => String

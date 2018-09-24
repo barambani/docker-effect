@@ -2,18 +2,24 @@ package docker.effect.internal
 
 import cats.Show
 import docker.effect.types._
-import docker.effect.util.CirceCodecs._
-import io.circe.{ Decoder, Encoder }
+import io.circe.syntax._
+import io.circe.{ Decoder, Encoder, Json }
 
 object MkErrorMessage extends newtype[String] with ErrorMessageInstances with ErrorMessageCodecs
 
 sealed private[internal] trait ErrorMessageCodecs {
 
   implicit val errorMessageDecoder: Decoder[ErrorMessage] =
-    decoderFor(s => ErrorMessage(s))
+    Decoder.instance { c =>
+      c.downField("message").as[String] map ErrorMessage.apply
+    }
 
   implicit val errorMessageEncoder: Encoder[ErrorMessage] =
-    encoderFor[ErrorMessage]
+    Encoder.instance { em =>
+      Json.fromFields(
+        ("message" -> em.unMk.asJson) :: Nil
+      )
+    }
 }
 
 sealed private[internal] trait ErrorMessageInstances {

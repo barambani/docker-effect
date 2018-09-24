@@ -3,8 +3,8 @@ package http4s
 package syntax
 
 import cats.effect.Effect
-import cats.syntax.apply._
 import cats.syntax.flatMap._
+import docker.effect.types.ErrorMessage
 
 import scala.language.implicitConversions
 
@@ -20,18 +20,18 @@ private[syntax] trait Htt4psDockerSyntax {
 final private[syntax] class IoClientOps[F[_]](private val client: F[Http4sDocker[F]])
     extends AnyVal {
 
-  def setup(implicit F: Effect[F]): F[Unit] =
-    (client flatMap (cl => Http4sDocker.setup(cl).value)) *> F.unit
+  def setupUnixSocketRelay(implicit F: Effect[F]): F[Either[ErrorMessage, Unit]] =
+    client flatMap (cl => Http4sDocker.setupUnixSocketRelay(cl).value)
 
-  def cleanup(implicit F: Effect[F]): F[Unit] =
-    (client flatMap (cl => Http4sDocker.cleanup(cl).value)) *> F.unit
+  def cleanupUnixSocketRelay(implicit F: Effect[F]): F[Either[ErrorMessage, Unit]] =
+    client flatMap (cl => Http4sDocker.cleanupUnixSocketRelay(cl).value)
 }
 
 final private[syntax] class ClientOps[F[_]](private val client: Http4sDocker[F]) extends AnyVal {
 
-  def setup(implicit F: Effect[F]): F[Unit] =
-    Http4sDocker.setup(client).value *> F.unit
+  def setupUnixSocketRelay(implicit F: Effect[F]): F[Either[ErrorMessage, Unit]] =
+    Http4sDocker.setupUnixSocketRelay(client).value
 
-  def cleanup(implicit F: Effect[F]): F[Unit] =
-    Http4sDocker.cleanup(client).value *> F.unit
+  def cleanupUnixSocketRelay(implicit F: Effect[F]): F[Either[ErrorMessage, Unit]] =
+    Http4sDocker.cleanupUnixSocketRelay(client).value
 }

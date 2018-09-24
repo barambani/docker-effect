@@ -29,7 +29,7 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
 
   implicit private val errorDecoder = jsonOf[F, ErrorMessage]
 
-  def startSocketRelay: G[ErrorMessage, Unit] = {
+  def startUnixSocketRelay: G[ErrorMessage, Unit] = {
     import sys.process._
 
     val F = Sync[F]
@@ -40,7 +40,7 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
     (F.delay(startSocketRelay.!) *> F.unit).attemptT leftMap (th => ErrorMessage(s"Exception: $th"))
   }
 
-  def cleanSocketRelay: G[ErrorMessage, Unit] = {
+  def cleanUnixSocketRelay: G[ErrorMessage, Unit] = {
     import sys.process._
 
     val F                 = Sync[F]
@@ -62,9 +62,9 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
         .run[F]
         .raw(clientManager)
         .handleWith {
-          case Ok(r)         => EitherT.right(r.as[Container.Created])
-          case BadRequest(_) => EitherT.leftT(ErrorMessage("400 -> Bad parameter"))
-          case Conflict(_)   => EitherT.leftT(ErrorMessage("409 -> Conflict"))
+          case Created(r)    => EitherT.right(r.as[Container.Created])
+          case BadRequest(_) => EitherT.leftT(ErrorMessage(s"400 -> Bad parameter."))
+          case Conflict(_)   => EitherT.leftT(ErrorMessage(s"409 -> Conflict."))
           case other         => EitherT.left(other.as[ErrorMessage])
         }
     }
@@ -78,8 +78,8 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
       )
 
       response.handleWith {
-        case Ok(_)          => EitherT.rightT(())
-        case NotModified(_) => EitherT.leftT(ErrorMessage("304 -> Container already started"))
+        case NoContent(_)   => EitherT.rightT(())
+        case NotModified(_) => EitherT.leftT(ErrorMessage(s"304 -> Container already started."))
         case other          => EitherT.left(other.as[ErrorMessage])
       }
     }
@@ -97,10 +97,33 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
     ???
 
   def killContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] =
-    ???
+    eitherNameOrId => {
+
+      val response = eitherNameOrId.fold(
+        id => killContainerByIdC(id).run[F].raw(clientManager),
+        name => killContainerByNameC(name).run[F].raw(clientManager)
+      )
+
+      response.handleWith {
+        case NoContent(_) => EitherT.rightT(())
+        case other        => EitherT.left(other.as[ErrorMessage])
+      }
+    }
 
   def removeContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] =
-    ???
+    eitherNameOrId => {
+
+      val response = eitherNameOrId.fold(
+        id => removeContainerByIdC(id).run[F].raw(clientManager),
+        name => removeContainerByNameC(name).run[F].raw(clientManager)
+      )
+
+      response.handleWith {
+        case NoContent(_) => EitherT.rightT(())
+        case other        => EitherT.left(other.as[ErrorMessage])
+      }
+    }
+
   def forceRemoveContainer: Container.Id | Container.Name => G[ErrorMessage, Unit] = ???
 
   def removeContainerAndVolumes: Container.Id | Container.Name => G[ErrorMessage, Unit] = ???
@@ -113,20 +136,35 @@ sealed abstract class Http4sDocker[F[_]: Effect](client: Client[F], h: EngineHos
         .run[F]
         .raw(clientManager)
         .handleWith {
-          case Ok(_) => EitherT.rightT(())
+          case NoContent(_) => EitherT.rightT(())
           case NotFound(_) =>
-            EitherT.leftT(ErrorMessage("404 -> repository does not exist or no read access"))
+            EitherT.leftT(
+              ErrorMessage(s"404 -> repository does not exist or no read access.")
+            )
           case other => EitherT.left(other.as[ErrorMessage])
       }
 }
 
 abstract class MaterializedApi[F[_]: Sync] {
 
-  protected val (createContainerC, startContainerByIdC, startContainerByNameC, pullImageC) =
+  protected val (
+    createContainerC,
+    startContainerByIdC,
+    startContainerByNameC,
+    killContainerByIdC,
+    killContainerByNameC,
+    removeContainerByIdC,
+    removeContainerByNameC,
+    pullImageC
+  ) =
     deriveAll(
       createContainerEp :|:
         startContainerByIdEp :|:
         startContainerByNameEp :|:
+        killContainerByIdEp :|:
+        killContainerByNameEp :|:
+        removeContainerByIdEp :|:
+        removeContainerByNameEp :|:
         pullImageEp
     )
 }
@@ -139,9 +177,11 @@ object Http4sDocker {
   def apply[F[_]: Effect](h: EngineHost, p: EnginePort): F[Http4sDocker[F]] =
     Http1Client[F]() map (Http4sDocker[F](_)(h, p))
 
-  def setup[F[_]: Effect](docker: Http4sDocker[F]): EitherT[F, ErrorMessage, Unit] =
-    docker.startSocketRelay
+  def setupUnixSocketRelay[F[_]: Effect](docker: Http4sDocker[F]): EitherT[F, ErrorMessage, Unit] =
+    docker.startUnixSocketRelay
 
-  def cleanup[F[_]: Effect](docker: Http4sDocker[F]): EitherT[F, ErrorMessage, Unit] =
-    docker.cleanSocketRelay
+  def cleanupUnixSocketRelay[F[_]: Effect](
+    docker: Http4sDocker[F]
+  ): EitherT[F, ErrorMessage, Unit] =
+    docker.cleanUnixSocketRelay
 }

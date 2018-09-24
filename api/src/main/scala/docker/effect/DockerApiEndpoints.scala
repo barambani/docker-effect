@@ -16,6 +16,18 @@ object DockerApiEndpoints {
   val startContainerByNameEp =
     := :> "containers" :> Segment[Container.Name]("id") :> "start" :> Post[Json, Unit]
 
+  val killContainerByIdEp =
+    := :> "containers" :> Segment[Container.Id]("id") :> "kill" :> Post[Json, Unit]
+
+  val killContainerByNameEp =
+    := :> "containers" :> Segment[Container.Name]("id") :> "kill" :> Post[Json, Unit]
+
+  val removeContainerByIdEp =
+    := :> "containers" :> Segment[Container.Id]("id") :> Delete[Json, Unit]
+
+  val removeContainerByNameEp =
+    := :> "containers" :> Segment[Container.Name]("id") :> Delete[Json, Unit]
+
   val pullImageEp =
     := :> "images" :> "create" :> Query[Image.Name]("fromImage") :>
       Query[Image.Tag]("tag") :> Post[Json, Unit]
