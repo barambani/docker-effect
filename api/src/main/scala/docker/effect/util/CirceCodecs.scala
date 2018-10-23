@@ -1,4 +1,5 @@
-package docker.effect
+package docker
+package effect
 package util
 
 import cats.Show

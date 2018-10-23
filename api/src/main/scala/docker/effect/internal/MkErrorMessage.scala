@@ -1,4 +1,6 @@
-package docker.effect.internal
+package docker
+package effect
+package internal
 
 import cats.Show
 import docker.effect.types._

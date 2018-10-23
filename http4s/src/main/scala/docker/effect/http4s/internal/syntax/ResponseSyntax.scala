@@ -1,4 +1,5 @@
-package docker.effect
+package docker
+package effect
 package http4s
 package internal
 package syntax
@@ -13,7 +14,7 @@ import scala.language.implicitConversions
 
 private[syntax] trait ResponseSyntax {
 
-  implicit def responseSyntax[F[_]](response: F[Response[F]]): ResponseOps[F] =
+  @inline implicit def responseSyntax[F[_]](response: F[Response[F]]): ResponseOps[F] =
     new ResponseOps(response)
 }
 
@@ -24,7 +25,7 @@ final private[syntax] class ResponseOps[F[_]](private val response: F[Response[F
   ): EitherT[F, ErrorMessage, A] =
     mapError(response) flatMap f
 
-  private def mapError[A](fa: F[A])(
+  private[this] def mapError[A](fa: F[A])(
     implicit ev: MonadError[F, Throwable]
   ): EitherT[F, ErrorMessage, A] =
     fa.attemptT.leftMap(th => ErrorMessage(s"Request exception: $th"))

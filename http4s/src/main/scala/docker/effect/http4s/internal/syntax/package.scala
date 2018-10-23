@@ -1,4 +1,5 @@
-package docker.effect
+package docker
+package effect
 package http4s
 package internal
 

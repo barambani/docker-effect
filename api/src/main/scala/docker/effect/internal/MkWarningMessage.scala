@@ -1,14 +1,13 @@
-package docker.effect.internal
+package docker
+package effect
+package internal
 
 import cats.Show
 import docker.effect.types.WarningMessage
 import docker.effect.util.CirceCodecs.{ stringDecoderFor, stringEncoderFor }
 import io.circe.{ Decoder, Encoder }
 
-object MkWarningMessage
-    extends newtype[String]
-    with WarningMessageInstances
-    with WarningMessageCodecs
+object MkWarningMessage extends newtype[String] with WarningMessageInstances with WarningMessageCodecs
 
 sealed private[internal] trait WarningMessageCodecs {
 

@@ -1,4 +1,6 @@
-package docker.effect.internal
+package docker
+package effect
+package internal
 
 import docker.effect.types.Container
 import docker.effect.util.CirceCodecs.stringMappedDecoderWithError

@@ -1,7 +1,7 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 lazy val `scala 211` = "2.11.12"
-lazy val `scala 212` = "2.12.6"
+lazy val `scala 212` = "2.12.7"
 
 /**
   * Scalac options
@@ -38,22 +38,25 @@ lazy val scala212Options = Seq(
   "-opt-warnings",
   "-Xlint:constant",
   "-Ywarn-extra-implicit",
-  "-opt-inline-from:<source>"
+  "-opt-inline-from:**"
 )
 
 /**
   * Dependencies
   */
 lazy val versionOf = new {
+  val shapeless     = "2.3.3"
   val cats          = "1.4.0"
   val refined       = "0.9.2"
-  val http4s        = "0.18.17"
+  val http4s        = "0.18.20"
   val scalaCheck    = "1.14.0"
   val scalaTest     = "3.0.5"
-  val kindProjector = "0.9.7"
-  val silencer      = "1.2"
+  val kindProjector = "0.9.8"
+  val silencer      = "1.2.1"
   val typedapi      = "0.2.0"
-  val circe         = "0.9.3"
+  val circe         = "0.10.0"
+  val scalazZio     = "0.3.1"
+
 }
 
 lazy val sharedDependencies = Seq(
@@ -61,6 +64,8 @@ lazy val sharedDependencies = Seq(
 ) map (_.withSources)
 
 lazy val apiDependencies = Seq(
+  "com.chuusai"         %% "shapeless"              % versionOf.shapeless,
+  "org.scalaz"          %% "scalaz-zio"             % versionOf.scalazZio,
   "eu.timepit"          %% "refined"                % versionOf.refined,
   "com.github.pheymann" %% "typedapi-client"        % versionOf.typedapi,
   "com.github.pheymann" %% "typedapi-server"        % versionOf.typedapi,
@@ -74,6 +79,10 @@ lazy val http4sDependencies = Seq(
   "org.http4s"    %% "http4s-blaze-server" % versionOf.http4s,
   "org.http4s"    %% "http4s-blaze-client" % versionOf.http4s,
   "org.http4s"    %% "http4s-circe"        % versionOf.http4s
+) map (_.withSources)
+
+lazy val zioDependencies = Seq(
+  "org.scalaz" %% "scalaz-zio" % versionOf.scalazZio
 ) map (_.withSources)
 
 lazy val testDependencies = Seq(
@@ -182,4 +191,14 @@ lazy val http4s = project
   .settings(
     name                := "docker-effect-htt4s",
     libraryDependencies ++= http4sDependencies
+  )
+
+lazy val zio = project
+  .in(file("zio"))
+  .dependsOn(api)
+  .settings(crossBuildSettings)
+  .settings(releaseSettings)
+  .settings(
+    name                := "docker-effect-zio",
+    libraryDependencies ++= zioDependencies
   )
