@@ -4,23 +4,28 @@ package algebra
 
 import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences.{ Printed, Valid }
+import docker.effect.internal.newtype
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
+import eu.timepit.refined.types.string.NonEmptyString
 import shapeless._
 import shapeless.ops.hlist.Last
 
 @silent object algebra {
 
+  final val ErrorMessage = MkErrorMessage
+  final type ErrorMessage = ErrorMessage.T
+
+  final val SuccessMessage = MkSuccessMessage
+  final type SuccessMessage = SuccessMessage.T
+
   //  commands
   final type docker    = String Refined Equal[W.`"docker"`.T]
   final type container = String Refined Equal[W.`"container"`.T]
-  final type image     = String Refined Equal[W.`"image"`.T]
   final type images    = String Refined Equal[W.`"images"`.T]
   final type run       = String Refined Equal[W.`"run"`.T]
-  final type restart   = String Refined Equal[W.`"restart"`.T]
-  final type start     = String Refined Equal[W.`"start"`.T]
   final type stop      = String Refined Equal[W.`"stop"`.T]
   final type kill      = String Refined Equal[W.`"kill"`.T]
   final type rm        = String Refined Equal[W.`"rm"`.T]
@@ -50,34 +55,37 @@ import shapeless.ops.hlist.Last
   final type KILL = String Refined Equal[W.`"KILL"`.T]
   final type HUP  = String Refined Equal[W.`"HUP"`.T]
 
+  // arguments
   final type Id   = String Refined MatchesRegex[W.`"[0-9a-fA-F]+"`.T]
+  final type Name = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
   final type Repo = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
+  final type Tag  = Tag.T
 
   final object Id   extends RefinedTypeOps[Id, String]
+  final object Name extends RefinedTypeOps[Name, String]
   final object Repo extends RefinedTypeOps[Repo, String]
+  final val Tag = newtype[NonEmptyString]
 
+  // relationships
   final type :-:[ParCmd, ChiCmd] = ChildCommand[ParCmd, ChiCmd]
   sealed trait ChildCommand[ParCmd, ChiCmd]
   final object ChildCommand {
 
     implicit val evC1: docker :-: container = _evidenceOf[docker, container]
-    implicit val evC2: docker :-: image     = _evidenceOf[docker, image]
     implicit val evC3: docker :-: images    = _evidenceOf[docker, images]
-    implicit val evC4: docker :-: restart   = _evidenceOf[docker, restart]
     implicit val evC5: docker :-: run       = _evidenceOf[docker, run]
     implicit val evC6: docker :-: kill      = _evidenceOf[docker, kill]
-    implicit val evC7: docker :-: start     = _evidenceOf[docker, start]
-    implicit val evC8: docker :-: stop      = _evidenceOf[docker, stop]
-    implicit val evC9: docker :-: rm        = _evidenceOf[docker, rm]
-    implicit val evC10: docker :-: rmi      = _evidenceOf[docker, rmi]
-    implicit val evC11: docker :-: ps       = _evidenceOf[docker, ps]
+    implicit val evC7: docker :-: stop      = _evidenceOf[docker, stop]
+    implicit val evC8: docker :-: rm        = _evidenceOf[docker, rm]
+    implicit val evC9: docker :-: rmi       = _evidenceOf[docker, rmi]
+    implicit val evC10: docker :-: ps       = _evidenceOf[docker, ps]
 
     private[this] def _evidenceOf[A, B]: A :-: B = new ChildCommand[A, B] {}
   }
 
-  final type --|[Cmd, Opt] = VerboseOption0[Cmd, Opt]
-  sealed trait VerboseOption0[Cmd, Opt]
-  final object VerboseOption0 {
+  final type --|[Cmd, Opt] = VerboseOption[Cmd, Opt]
+  sealed trait VerboseOption[Cmd, Opt]
+  final object VerboseOption {
 
     implicit val evLo1: images --| all        = _evidenceOf[images, all]
     implicit val evLo2: images --| digest     = _evidenceOf[images, digest]
@@ -97,12 +105,12 @@ import shapeless.ops.hlist.Last
 
     implicit val evLo15: kill --| signal = _evidenceOf[kill, signal]
 
-    private[this] def _evidenceOf[A, B]: A --| B = new VerboseOption0[A, B] {}
+    private[this] def _evidenceOf[A, B]: A --| B = new VerboseOption[A, B] {}
   }
 
-  final type -|[Cmd, Opt] = CompactOption0[Cmd, Opt]
-  sealed trait CompactOption0[C, O]
-  final object CompactOption0 {
+  final type -|[Cmd, Opt] = CompactOption[Cmd, Opt]
+  sealed trait CompactOption[C, O]
+  final object CompactOption {
 
     implicit val evCo1: images -| a = _evidenceOf[images, a]
     implicit val evCo2: images -| f = _evidenceOf[images, f]
@@ -117,7 +125,7 @@ import shapeless.ops.hlist.Last
 
     implicit val evCo13: kill -| s = _evidenceOf[kill, s]
 
-    private[this] def _evidenceOf[A, B]: A -| B = new CompactOption0[A, B] {}
+    private[this] def _evidenceOf[A, B]: A -| B = new CompactOption[A, B] {}
   }
 
   final type =|[Opt, Arg] = OptionArg[Opt, Arg]
@@ -140,8 +148,9 @@ import shapeless.ops.hlist.Last
     private[this] def _evidenceOf[A, B]: A \\> B = new Target[A, B] {}
   }
 
+  // constraints
   sealed trait CanEndWith[A, B]
-  final object CanEndWith extends CanEnd2 {
+  final object CanEndWith extends CanEndWith2 {
 
     implicit def evNm1[Cmd]: CanEndWith[Cmd, images] = _evidenceOf[Cmd, images]
     implicit def evNm2[Cmd]: CanEndWith[Cmd, ps]     = _evidenceOf[Cmd, ps]
@@ -155,7 +164,7 @@ import shapeless.ops.hlist.Last
     ): CanEndWith[Cmd, Opt] = _evidenceOf[Cmd, Opt]
   }
 
-  sealed private[algebra] trait CanEnd2 {
+  sealed private[algebra] trait CanEndWith2 {
 
     implicit def noMoreThanOptionArg[Opt, Arg](
       implicit ev1: Opt =| Arg
@@ -164,26 +173,12 @@ import shapeless.ops.hlist.Last
     final protected def _evidenceOf[A, B]: CanEndWith[A, B] = new CanEndWith[A, B] {}
   }
 
+  // interpreters
   def print0[Cmd <: HList](implicit ev1: Valid[Cmd], ev2: Printed[Cmd]): String =
-    ev2.text
-
-  def run0[Cmd <: HList](implicit ev1: Valid[Cmd], ev2: Printed[Cmd]): String =
     ev2.text
 
   def print1[Cmd <: HList]: printPartialTypeApplication[Cmd] = new printPartialTypeApplication[Cmd](true)
   final private[algebra] class printPartialTypeApplication[Cmd <: HList](private val d: Boolean = true)
-      extends AnyVal {
-    def apply[Tgt, Exp](t: Tgt)(
-      implicit
-      ev1: Valid[Cmd],
-      ev2: Printed[Cmd],
-      ev4: Last.Aux[Cmd, Exp],
-      ev5: Tgt =:= Exp
-    ): String = s"${ev2.text} $t"
-  }
-
-  def run1[Cmd <: HList]: runPartialTypeApplication[Cmd] = new runPartialTypeApplication[Cmd](true)
-  final private[algebra] class runPartialTypeApplication[Cmd <: HList](private val d: Boolean = true)
       extends AnyVal {
     def apply[Tgt, Exp](t: Tgt)(
       implicit

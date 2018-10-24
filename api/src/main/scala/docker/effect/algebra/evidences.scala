@@ -50,7 +50,7 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
 
   sealed private[effect] trait Alternative1ValidCommand extends Alternative2ValidCommand {
 
-    implicit def validOption[Cmd, Opt, Rem <: HList, RefCmd, RefOpt](
+    implicit def validVerboseOption[Cmd, Opt, Rem <: HList, RefCmd, RefOpt](
       implicit
       ev1: Cmd <:!< HList,
       ev2: Opt <:!< HList,
