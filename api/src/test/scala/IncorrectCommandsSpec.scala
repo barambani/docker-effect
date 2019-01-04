@@ -23,6 +23,11 @@ final class IncorrectCommandsSpec extends WordSpecLike with Matchers {
         |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
         |print1[docker :: rmi :: Repo :: HNil]("test-repo")
       """.stripMargin shouldNot compile
+
+      """
+        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
+        |print0[kill :: signal :: KILL :: HNil]
+      """.stripMargin shouldNot compile
     }
   }
 }

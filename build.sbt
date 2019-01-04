@@ -1,7 +1,7 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 lazy val `scala 211` = "2.11.12"
-lazy val `scala 212` = "2.12.7"
+lazy val `scala 212` = "2.12.8"
 
 /**
   * Scalac options
@@ -46,16 +46,16 @@ lazy val scala212Options = Seq(
   */
 lazy val versionOf = new {
   val shapeless     = "2.3.3"
-  val cats          = "1.4.0"
-  val refined       = "0.9.2"
+  val cats          = "1.5.0"
+  val refined       = "0.9.3"
   val http4s        = "0.18.20"
   val scalaCheck    = "1.14.0"
   val scalaTest     = "3.0.5"
-  val kindProjector = "0.9.8"
-  val silencer      = "1.2.1"
+  val kindProjector = "0.9.9"
+  val silencer      = "1.3.1"
   val typedapi      = "0.2.0"
-  val circe         = "0.10.0"
-  val scalazZio     = "0.3.1"
+  val circe         = "0.11.0"
+  val scalazZio     = "0.5.3"
 
 }
 
@@ -166,6 +166,7 @@ lazy val root = project
     name            := "docker-effect",
     publishArtifact := false,
     addCommandAlias("format", ";scalafmt;test:scalafmt;scalafmtSbt"),
+    addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
     addCommandAlias(
       "checkFormat",
       ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck"

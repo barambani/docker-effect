@@ -3,7 +3,8 @@ package effect
 package algebra
 
 import com.github.ghik.silencer.silent
-import docker.effect.algebra.evidences.{ Printed, Valid }
+import docker.effect.algebra.evidences.{ Command, CompactOption, Init, VerboseOption }
+import docker.effect.algebra.proofs.{ Printed, Valid }
 import docker.effect.internal.newtype
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
@@ -13,7 +14,7 @@ import eu.timepit.refined.types.string.NonEmptyString
 import shapeless._
 import shapeless.ops.hlist.Last
 
-@silent object algebra {
+object algebra {
 
   final val ErrorMessage = MkErrorMessage
   final type ErrorMessage = ErrorMessage.T
@@ -67,25 +68,15 @@ import shapeless.ops.hlist.Last
   final val Tag = newtype[NonEmptyString]
 
   // relationships
-  final type :-:[ParCmd, ChiCmd] = ChildCommand[ParCmd, ChiCmd]
-  sealed trait ChildCommand[ParCmd, ChiCmd]
-  final object ChildCommand {
-
-    implicit val evC1: docker :-: container = _evidenceOf[docker, container]
-    implicit val evC3: docker :-: images    = _evidenceOf[docker, images]
-    implicit val evC5: docker :-: run       = _evidenceOf[docker, run]
-    implicit val evC6: docker :-: kill      = _evidenceOf[docker, kill]
-    implicit val evC7: docker :-: stop      = _evidenceOf[docker, stop]
-    implicit val evC8: docker :-: rm        = _evidenceOf[docker, rm]
-    implicit val evC9: docker :-: rmi       = _evidenceOf[docker, rmi]
-    implicit val evC10: docker :-: ps       = _evidenceOf[docker, ps]
-
-    private[this] def _evidenceOf[A, B]: A :-: B = new ChildCommand[A, B] {}
+  final type :-:[In, Cmd] = CommandAllowed[In, Cmd]
+  sealed trait CommandAllowed[In, Cmd]
+  final object CommandAllowed {
+    implicit def cmdEv[A: Init, B: Command]: A :-: B = new (A :-: B) {}
   }
 
-  final type --|[Cmd, Opt] = VerboseOption[Cmd, Opt]
-  sealed trait VerboseOption[Cmd, Opt]
-  final object VerboseOption {
+  final type --|[Cmd, Opt] = VerboseOptionAllowed[Cmd, Opt]
+  sealed trait VerboseOptionAllowed[Cmd, Opt]
+  final object VerboseOptionAllowed {
 
     implicit val evLo1: images --| all        = _evidenceOf[images, all]
     implicit val evLo2: images --| digest     = _evidenceOf[images, digest]
@@ -105,12 +96,12 @@ import shapeless.ops.hlist.Last
 
     implicit val evLo15: kill --| signal = _evidenceOf[kill, signal]
 
-    private[this] def _evidenceOf[A, B]: A --| B = new VerboseOption[A, B] {}
+    private[this] def _evidenceOf[A, B]: A --| B = new (A --| B) {}
   }
 
-  final type -|[Cmd, Opt] = CompactOption[Cmd, Opt]
-  sealed trait CompactOption[C, O]
-  final object CompactOption {
+  final type -|[Cmd, Opt] = CompactOptionAllowed[Cmd, Opt]
+  sealed trait CompactOptionAllowed[C, O]
+  final object CompactOptionAllowed {
 
     implicit val evCo1: images -| a = _evidenceOf[images, a]
     implicit val evCo2: images -| f = _evidenceOf[images, f]
@@ -125,67 +116,74 @@ import shapeless.ops.hlist.Last
 
     implicit val evCo13: kill -| s = _evidenceOf[kill, s]
 
-    private[this] def _evidenceOf[A, B]: A -| B = new CompactOption[A, B] {}
+    private[this] def _evidenceOf[A, B]: A -| B = new (A -| B) {}
   }
 
-  final type =|[Opt, Arg] = OptionArg[Opt, Arg]
-  sealed trait OptionArg[Opt, Arg]
-  final object OptionArg {
+  final type =|[Opt, Arg] = OptionArgumentAllowed[Opt, Arg]
+  sealed trait OptionArgumentAllowed[Opt, Arg]
+  final object OptionArgumentAllowed {
     implicit val evOa1: signal =| KILL = _evidenceOf[signal, KILL]
     implicit val evOa2: signal =| HUP  = _evidenceOf[signal, HUP]
     implicit val evOa3: s =| KILL      = _evidenceOf[s, KILL]
     implicit val evOa4: s =| HUP       = _evidenceOf[s, HUP]
 
-    private[this] def _evidenceOf[A, B]: OptionArg[A, B] = new OptionArg[A, B] {}
+    private[this] def _evidenceOf[A, B]: A =| B = new (A =| B) {}
   }
-  final type \\>[Prv, Tgt] = Target[Prv, Tgt]
-  sealed trait Target[Prv, Tgt]
-  final object Target {
+
+  final type \\>[Prv, Tgt] = CommandTargetAllowed[Prv, Tgt]
+  sealed trait CommandTargetAllowed[Prv, Tgt]
+  final object CommandTargetAllowed extends Target2 {
 
     implicit val evTg1: rmi \\> Id   = _evidenceOf[rmi, Id]
     implicit val evTg2: rmi \\> Repo = _evidenceOf[rmi, Repo]
+    implicit val evTg3: kill \\> Id  = _evidenceOf[kill, Id]
 
-    private[this] def _evidenceOf[A, B]: A \\> B = new Target[A, B] {}
+    implicit def evTg4[Sig: signal =| ?]: Sig \\> Id = _evidenceOf[Sig, Id]
   }
 
-  // constraints
+  sealed private[algebra] trait Target2 {
+
+    implicit def evTg5[Sig: s =| ?]: Sig \\> Id = _evidenceOf[Sig, Id]
+
+    protected def _evidenceOf[A, B]: A \\> B = new (A \\> B) {}
+  }
+
   sealed trait CanEndWith[A, B]
   final object CanEndWith extends CanEndWith2 {
 
-    implicit def evNm1[Cmd]: CanEndWith[Cmd, images] = _evidenceOf[Cmd, images]
-    implicit def evNm2[Cmd]: CanEndWith[Cmd, ps]     = _evidenceOf[Cmd, ps]
+    implicit def evCew1[O: VerboseOption: images --| ?]: CanEndWith[images, O] = _evidenceOf[images, O]
+    implicit def evCew2[O: VerboseOption: ps --| ?]: CanEndWith[ps, O]         = _evidenceOf[ps, O]
 
-    implicit def noMoreThanVerboseOptions[Cmd, Opt](
-      implicit ev1: Cmd --| Opt
-    ): CanEndWith[Cmd, Opt] = _evidenceOf[Cmd, Opt]
-
-    implicit def noMoreThanCompactOptions[Cmd, Opt](
-      implicit ev1: Cmd -| Opt
-    ): CanEndWith[Cmd, Opt] = _evidenceOf[Cmd, Opt]
+    implicit def targetEv[A, Tgt: A \\> ?]: CanEndWith[A, Tgt] = _evidenceOf[A, Tgt]
   }
 
   sealed private[algebra] trait CanEndWith2 {
 
-    implicit def noMoreThanOptionArg[Opt, Arg](
-      implicit ev1: Opt =| Arg
-    ): CanEndWith[Opt, Arg] = _evidenceOf[Opt, Arg]
+    implicit val evCew1: CanEndWith[docker, images] = _evidenceOf[docker, images]
+    implicit val evCew2: CanEndWith[docker, ps]     = _evidenceOf[docker, ps]
+
+    implicit def evCew3[O: CompactOption: images -| ?]: CanEndWith[images, O] = _evidenceOf[images, O]
+    implicit def evCew4[O: CompactOption: ps -| ?]: CanEndWith[ps, O]         = _evidenceOf[ps, O]
+    implicit def evCew5[O, Arg: O =| ?]: CanEndWith[O, Arg]                   = _evidenceOf[O, Arg]
 
     final protected def _evidenceOf[A, B]: CanEndWith[A, B] = new CanEndWith[A, B] {}
   }
 
   // interpreters
-  def print0[Cmd <: HList](implicit ev1: Valid[Cmd], ev2: Printed[Cmd]): String =
-    ev2.text
+  final def print0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): String = p.text
 
-  def print1[Cmd <: HList]: printPartialTypeApplication[Cmd] = new printPartialTypeApplication[Cmd](true)
-  final private[algebra] class printPartialTypeApplication[Cmd <: HList](private val d: Boolean = true)
-      extends AnyVal {
+  final def print1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
+    new printPartialTypeApplication[Cmd]
+
+  @silent final private[algebra] class printPartialTypeApplication[Cmd <: HList](
+    private val d: Boolean = true
+  ) extends AnyVal {
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],
-      ev2: Printed[Cmd],
-      ev4: Last.Aux[Cmd, Exp],
-      ev5: Tgt =:= Exp
-    ): String = s"${ev2.text} $t"
+      ev2: Last.Aux[Cmd, Exp],
+      ev3: Tgt =:= Exp,
+      p: Printed[Cmd]
+    ): String = s"${p.text} $t"
   }
 }
