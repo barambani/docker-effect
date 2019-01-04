@@ -5,8 +5,8 @@ package evidences
 
 import docker.effect.algebra.algebra.docker
 
-sealed trait Init[_]
+sealed trait Initial[_]
 
-object Init {
-  implicit val inEv: Init[docker] = new Init[docker] {}
+object Initial {
+  implicit val inEv: Initial[docker] = new Initial[docker] {}
 }

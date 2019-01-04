@@ -26,7 +26,7 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
 
   object ValidStart {
 
-    implicit def validStart[I: Init, Cmd: Command, Rem <: HList, LitC, LitS](
+    implicit def validStart[I: Initial, Cmd: Command, Rem <: HList, LitC, LitS](
       implicit
       ev1: I <:!< HList,
       ev2: Cmd <:!< HList,
@@ -112,7 +112,7 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
       ev7: Prev \\> Tgt
     ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
-    protected def _validChunk[A <: HList]: ValidChunk[A] = new ValidChunk[A] {}
+    final private[this] def _validChunk[A <: HList]: ValidChunk[A] = new ValidChunk[A] {}
   }
 
   /**
