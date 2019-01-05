@@ -3,32 +3,31 @@ package effect
 
 import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
-import cats.data.Validated.Valid
 import com.github.ghik.silencer.silent
 import shapeless.HList
 import shapeless.ops.hlist.Last
 
 @silent trait Docker[F[_, _]] {
 
-  def runContainer: Name | Id => F[ErrorMessage, SuccessMessage]
-  def stopContainer: Name | Id => F[ErrorMessage, SuccessMessage]
-  def killContainer: Name | Id => F[ErrorMessage, SuccessMessage]
-  def removeContainer: Name | Id => F[ErrorMessage, SuccessMessage]
-  def forceRemoveContainer: Name | Id => F[ErrorMessage, SuccessMessage]
-  def removeAllContainers: Unit => F[ErrorMessage, SuccessMessage]
+  def runContainer: Name | Id => F[ErrorMessage, SuccessMessage]         = ???
+  def stopContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
+  def killContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
+  def removeContainer: Name | Id => F[ErrorMessage, SuccessMessage]      = ???
+  def forceRemoveContainer: Name | Id => F[ErrorMessage, SuccessMessage] = ???
+  def removeAllContainers: Unit => F[ErrorMessage, SuccessMessage]       = ???
 
-  def pullImage: (Name, Tag) => F[ErrorMessage, SuccessMessage]
-  def listImages: Unit => F[ErrorMessage, SuccessMessage]
-  def removeImage: Name | Id => F[ErrorMessage, SuccessMessage]
-  def removeAllImages: Unit => F[ErrorMessage, SuccessMessage]
+  def pullImage: (Name, Tag) => F[ErrorMessage, SuccessMessage] = ???
+  def listImages: Unit => F[ErrorMessage, SuccessMessage]       = ???
+  def removeImage: Name | Id => F[ErrorMessage, SuccessMessage] = ???
+  def removeAllImages: Unit => F[ErrorMessage, SuccessMessage]  = ???
 
-  private[this] def run0[Cmd <: HList](
+  private[effect] def run0[Cmd <: HList](
     implicit
     `_`: Valid[Cmd],
     p: Printed[Cmd]
   ): F[ErrorMessage, SuccessMessage] = ???
 
-  private[this] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
+  private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
     new runPartialTypeApplication[Cmd, F]
 }
 
@@ -44,5 +43,4 @@ object Docker {
       p: Printed[Cmd]
     ): F[ErrorMessage, SuccessMessage] = ???
   }
-
 }

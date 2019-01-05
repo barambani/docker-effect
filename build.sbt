@@ -48,47 +48,16 @@ lazy val versionOf = new {
   val shapeless     = "2.3.3"
   val cats          = "1.5.0"
   val refined       = "0.9.3"
-  val http4s        = "0.18.20"
   val scalaCheck    = "1.14.0"
   val scalaTest     = "3.0.5"
   val kindProjector = "0.9.9"
   val silencer      = "1.3.1"
-  val typedapi      = "0.2.0"
-  val circe         = "0.11.0"
   val scalazZio     = "0.5.3"
-
 }
 
 lazy val sharedDependencies = Seq(
   "com.github.ghik" %% "silencer-lib" % versionOf.silencer
 ) map (_.withSources)
-
-lazy val apiDependencies = Seq(
-  "com.chuusai"         %% "shapeless"              % versionOf.shapeless,
-  "org.scalaz"          %% "scalaz-zio"             % versionOf.scalazZio,
-  "eu.timepit"          %% "refined"                % versionOf.refined,
-  "com.github.pheymann" %% "typedapi-client"        % versionOf.typedapi,
-  "com.github.pheymann" %% "typedapi-server"        % versionOf.typedapi,
-  "com.github.pheymann" %% "typedapi-http4s-client" % versionOf.typedapi,
-  "io.circe"            %% "circe-generic"          % versionOf.circe
-) map (_.withSources)
-
-lazy val http4sDependencies = Seq(
-  "org.typelevel" %% "cats-core"           % versionOf.cats,
-  "org.http4s"    %% "http4s-dsl"          % versionOf.http4s,
-  "org.http4s"    %% "http4s-blaze-server" % versionOf.http4s,
-  "org.http4s"    %% "http4s-blaze-client" % versionOf.http4s,
-  "org.http4s"    %% "http4s-circe"        % versionOf.http4s
-) map (_.withSources)
-
-lazy val zioDependencies = Seq(
-  "org.scalaz" %% "scalaz-zio" % versionOf.scalazZio
-) map (_.withSources)
-
-lazy val testDependencies = Seq(
-  "org.scalacheck" %% "scalacheck" % versionOf.scalaCheck % Test,
-  "org.scalatest"  %% "scalatest"  % versionOf.scalaTest  % Test
-)
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
@@ -96,6 +65,21 @@ lazy val compilerPluginsDependencies = Seq(
   ),
   compilerPlugin("com.github.ghik" %% "silencer-plugin" % versionOf.silencer)
 )
+
+lazy val testDependencies = Seq(
+  "org.scalacheck" %% "scalacheck" % versionOf.scalaCheck % Test,
+  "org.scalatest"  %% "scalatest"  % versionOf.scalaTest  % Test
+)
+
+lazy val apiDependencies = Seq(
+  "com.chuusai"   %% "shapeless" % versionOf.shapeless,
+  "eu.timepit"    %% "refined"   % versionOf.refined,
+  "org.typelevel" %% "cats-core" % versionOf.cats
+) map (_.withSources)
+
+lazy val zioDependencies = Seq(
+  "org.scalaz" %% "scalaz-zio" % versionOf.scalazZio
+) map (_.withSources)
 
 /**
   * Settings
@@ -105,7 +89,7 @@ lazy val crossBuildSettings = Seq(
   crossScalaVersions  := Seq(`scala 211`, `scala 212`),
   scalacOptions       ++= crossBuildOptions,
   libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
-  organization        := "io.laserdisc",
+  organization        := "com.github.barambani",
   parallelExecution   in Test := false,
   scalacOptions ++=
     (scalaVersion.value match {
@@ -139,14 +123,14 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
   },
   licenses := Seq(
     "MIT License" ->
-      url("https://raw.githubusercontent.com/laserdisc-io/docker-effect/master/LICENSE")
+      url("https://raw.githubusercontent.com/barambani/docker-effect/master/LICENSE")
   ),
-  homepage  := Some(url("http://laserdisc.io")),
+  homepage  := Some(url("https://github.com/barambani/http4s-extend")),
   publishTo := sonatypePublishTo.value,
   pomExtra :=
     <scm>
-      <url>https://github.com/laserdisc-io/docker-effect/tree/master</url>
-      <connection>scm:git:git@github.com:laserdisc-io/docker-effect.git</connection>
+      <url>https://github.com/barambani/docker-effect</url>
+      <connection>scm:git:git@github.com:barambani/docker-effect.git</connection>
     </scm>
     <developers>
       <developer>
@@ -159,7 +143,7 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(api, http4s)
+  .aggregate(api, zio)
   .settings(crossBuildSettings)
   .settings(releaseSettings)
   .settings(
@@ -182,16 +166,6 @@ lazy val api = project
     name                := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
     publishArtifact     := false
-  )
-
-lazy val http4s = project
-  .in(file("http4s"))
-  .dependsOn(api)
-  .settings(crossBuildSettings)
-  .settings(releaseSettings)
-  .settings(
-    name                := "docker-effect-htt4s",
-    libraryDependencies ++= http4sDependencies
   )
 
 lazy val zio = project
