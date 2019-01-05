@@ -3,8 +3,6 @@ package effect
 package algebra
 package evidences
 
-import docker.effect.algebra.algebra._
-
 sealed trait VerboseOptionAllowed[Cmd, Opt]
 
 object VerboseOptionAllowed {

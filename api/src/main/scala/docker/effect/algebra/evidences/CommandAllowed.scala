@@ -3,8 +3,6 @@ package effect
 package algebra
 package evidences
 
-import docker.effect.algebra.algebra.:-:
-
 sealed trait CommandAllowed[In, Cmd]
 
 object CommandAllowed {

@@ -1,9 +1,9 @@
 package docker
 package effect
 package algebra
+package newtypes
 
 import cats.Show
-import docker.effect.algebra.algebra.SuccessMessage
 import docker.effect.internal.newtype
 import eu.timepit.refined.types.string.NonEmptyString
 

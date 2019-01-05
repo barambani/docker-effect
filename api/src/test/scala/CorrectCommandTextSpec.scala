@@ -1,4 +1,4 @@
-import docker.effect.algebra.algebra._
+import docker.effect.algebra._
 import org.scalatest.{ Matchers, WordSpecLike }
 import shapeless.{ ::, HNil }
 

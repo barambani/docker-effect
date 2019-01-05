@@ -1,11 +1,10 @@
 package docker
 package effect
 
-import _root_.docker.effect.algebra.proofs.Printed
+import _root_.docker.effect.Docker.runPartialTypeApplication
+import _root_.docker.effect.algebra._
 import cats.data.Validated.Valid
 import com.github.ghik.silencer.silent
-import docker.effect.Docker.runPartialTypeApplication
-import docker.effect.algebra.algebra._
 import shapeless.HList
 import shapeless.ops.hlist.Last
 

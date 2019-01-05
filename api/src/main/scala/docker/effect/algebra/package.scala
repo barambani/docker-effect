@@ -1,20 +1,19 @@
 package docker
 package effect
-package algebra
 
 import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences._
-import docker.effect.algebra.proofs.{ Printed, Valid }
+import docker.effect.algebra.newtypes.{ MkErrorMessage, MkSuccessMessage }
 import docker.effect.internal.newtype
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import eu.timepit.refined.types.string.NonEmptyString
-import shapeless._
+import shapeless.HList
 import shapeless.ops.hlist.Last
 
-object algebra {
+package object algebra {
 
   final val ErrorMessage = MkErrorMessage
   final type ErrorMessage = ErrorMessage.T

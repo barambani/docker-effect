@@ -1,6 +1,7 @@
-package docker.effect.algebra.evidences
-
-import docker.effect.algebra.algebra._
+package docker
+package effect
+package algebra
+package evidences
 
 sealed trait CompactOption[_]
 

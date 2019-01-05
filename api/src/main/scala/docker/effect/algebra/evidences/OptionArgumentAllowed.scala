@@ -3,8 +3,6 @@ package effect
 package algebra
 package evidences
 
-import docker.effect.algebra.algebra._
-
 sealed trait OptionArgumentAllowed[Opt, Arg]
 
 object OptionArgumentAllowed {
