@@ -47,6 +47,7 @@ lazy val scala212Options = Seq(
 lazy val versionOf = new {
   val shapeless     = "2.3.3"
   val cats          = "1.5.0"
+  val catsEffect    = "1.1.0"
   val refined       = "0.9.3"
   val scalaCheck    = "1.14.0"
   val scalaTest     = "3.0.5"
@@ -72,13 +73,11 @@ lazy val testDependencies = Seq(
 )
 
 lazy val apiDependencies = Seq(
-  "com.chuusai"   %% "shapeless" % versionOf.shapeless,
-  "eu.timepit"    %% "refined"   % versionOf.refined,
-  "org.typelevel" %% "cats-core" % versionOf.cats
-) map (_.withSources)
-
-lazy val zioDependencies = Seq(
-  "org.scalaz" %% "scalaz-zio" % versionOf.scalazZio
+  "com.chuusai"   %% "shapeless"   % versionOf.shapeless,
+  "eu.timepit"    %% "refined"     % versionOf.refined,
+  "org.typelevel" %% "cats-core"   % versionOf.cats,
+  "org.scalaz"    %% "scalaz-zio"  % versionOf.scalazZio,
+  "org.typelevel" %% "cats-effect" % versionOf.catsEffect,
 ) map (_.withSources)
 
 /**
@@ -143,7 +142,7 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(api, zio)
+  .aggregate(api)
   .settings(crossBuildSettings)
   .settings(releaseSettings)
   .settings(
@@ -166,14 +165,4 @@ lazy val api = project
     name                := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
     publishArtifact     := false
-  )
-
-lazy val zio = project
-  .in(file("zio"))
-  .dependsOn(api)
-  .settings(crossBuildSettings)
-  .settings(releaseSettings)
-  .settings(
-    name                := "docker-effect-zio",
-    libraryDependencies ++= zioDependencies
   )

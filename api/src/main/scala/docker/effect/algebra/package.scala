@@ -21,6 +21,9 @@ package object algebra {
   final val SuccessMessage = MkSuccessMessage
   final type SuccessMessage = SuccessMessage.T
 
+  final val DockerCommand = newtype[String]
+  final type DockerCommand = DockerCommand.T
+
   //  commands
   final type docker    = String Refined Equal[W.`"docker"`.T]
   final type container = String Refined Equal[W.`"container"`.T]
@@ -74,7 +77,8 @@ package object algebra {
   final type \\>[Prv, Tgt] = CommandTargetAllowed[Prv, Tgt]
 
   //  printer
-  final def print0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): String = p.text
+  final def print0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =
+    DockerCommand(p.text)
 
   final def print1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
     new printPartialTypeApplication[Cmd]
@@ -82,12 +86,14 @@ package object algebra {
   @silent final private[algebra] class printPartialTypeApplication[Cmd <: HList](
     private val d: Boolean = true
   ) extends AnyVal {
+
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
       p: Printed[Cmd]
-    ): String = s"${p.text} $t"
+    ): DockerCommand =
+      DockerCommand(s"${p.text} $t")
   }
 }
