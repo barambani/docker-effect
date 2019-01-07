@@ -8,7 +8,9 @@ final class CorrectCommandTextSpec extends WordSpecLike with Matchers {
     "produce the expected text" in {
       print0[docker :: images :: HNil]                                           shouldBe "docker images"
       print0[docker :: images :: all :: HNil]                                    shouldBe "docker images --all"
+      print0[docker :: images :: a :: HNil]                                      shouldBe "docker images -a"
       print0[docker :: images :: q :: HNil]                                      shouldBe "docker images -q"
+      print0[docker :: images :: aq :: HNil]                                     shouldBe "docker images -aq"
       print0[docker :: ps :: HNil]                                               shouldBe "docker ps"
       print0[docker :: ps :: all :: HNil]                                        shouldBe "docker ps --all"
       print0[docker :: ps :: q :: HNil]                                          shouldBe "docker ps -q"
@@ -19,6 +21,8 @@ final class CorrectCommandTextSpec extends WordSpecLike with Matchers {
       print1[docker :: kill :: s :: HUP :: Id :: HNil](Id("fd484f19954f"))       shouldBe "docker kill -s=HUP fd484f19954f"
       print1[docker :: rmi :: Id :: HNil](Id("fd484f19954f"))                    shouldBe "docker rmi fd484f19954f"
       print1[docker :: rmi :: Repo :: HNil](Repo("test-repo"))                   shouldBe "docker rmi test-repo"
+      print1[docker :: run :: Name :: HNil](Name("test-container"))              shouldBe "docker run test-container"
+      print1[docker :: run :: Id :: HNil](Id("fd484f19954f"))                    shouldBe "docker run fd484f19954f"
     }
   }
 }

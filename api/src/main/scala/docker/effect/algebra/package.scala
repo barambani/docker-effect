@@ -54,6 +54,9 @@ package object algebra {
   final type l = String Refined Equal[W.`"l"`.T]
   final type s = String Refined Equal[W.`"s"`.T]
 
+  //  compact composite options
+  final type aq = String Refined Equal[W.`"aq"`.T]
+
   //  signals
   final type KILL = String Refined Equal[W.`"KILL"`.T]
   final type HUP  = String Refined Equal[W.`"HUP"`.T]

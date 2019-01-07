@@ -1,15 +1,20 @@
 package docker
 package effect
 
-import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
 import com.github.ghik.silencer.silent
-import shapeless.HList
+import _root_.docker.effect.Docker.runPartialTypeApplication
 import shapeless.ops.hlist.Last
+import shapeless.{ ::, HList, HNil }
 
 @silent abstract class Docker[F[_, _]](implicit exec: Exec[F]) {
 
-  val runContainer: Name | Id => F[ErrorMessage, SuccessMessage]         = ???
+  val runContainer: Name | Id => F[ErrorMessage, SuccessMessage] =
+    _.fold(
+      name => run1[docker :: run :: Name :: HNil](name),
+      id => run1[docker :: run :: Id :: HNil](id)
+    )
+
   val stopContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
   val killContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
   val removeContainer: Name | Id => F[ErrorMessage, SuccessMessage]      = ???
@@ -17,7 +22,13 @@ import shapeless.ops.hlist.Last
   val removeAllContainers: Unit => F[ErrorMessage, SuccessMessage]       = ???
 
   val pullImage: (Name, Tag) => F[ErrorMessage, SuccessMessage] = ???
-  val listImages: Unit => F[ErrorMessage, SuccessMessage]       = ???
+
+  val listAllImages: Unit => F[ErrorMessage, SuccessMessage] =
+    _ => run0[docker :: images :: all :: HNil]
+
+  val listAllImageIds: Unit => F[ErrorMessage, SuccessMessage] =
+    _ => run0[docker :: images :: aq :: HNil]
+
   val removeImage: Name | Id => F[ErrorMessage, SuccessMessage] = ???
   val removeAllImages: Unit => F[ErrorMessage, SuccessMessage]  = ???
 

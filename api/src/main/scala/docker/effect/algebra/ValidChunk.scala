@@ -2,7 +2,7 @@ package docker
 package effect
 package algebra
 
-import _root_.docker.effect.algebra.evidences.{ CanEndWith, Command, CompactOption, VerboseOption }
+import _root_.docker.effect.algebra.evidences._
 import cats.evidence.<~<
 import com.github.ghik.silencer.silent
 import eu.timepit.refined.api.Refined
