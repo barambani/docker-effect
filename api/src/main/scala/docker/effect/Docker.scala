@@ -11,8 +11,8 @@ import shapeless.{ ::, HList, HNil }
 
   val runContainer: Name | Id => F[ErrorMessage, SuccessMessage] =
     _.fold(
-      name => run1[docker :: run :: Name :: HNil](name),
-      id => run1[docker :: run :: Id :: HNil](id)
+      run1[docker :: run :: Name :: HNil](_),
+      run1[docker :: run :: Id :: HNil](_)
     )
 
   val stopContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
