@@ -29,7 +29,12 @@ import shapeless.{ ::, HList, HNil }
   val listAllImageIds: Unit => F[ErrorMessage, SuccessMessage] =
     _ => run0[docker :: images :: aq :: HNil]
 
-  val removeImage: Name | Id => F[ErrorMessage, SuccessMessage] = ???
+  val removeImage: Name | Id => F[ErrorMessage, SuccessMessage] =
+    _.fold(
+      run1[docker :: rmi :: Name :: HNil](_),
+      run1[docker :: rmi :: Id :: HNil](_),
+    )
+
   val removeAllImages: Unit => F[ErrorMessage, SuccessMessage]  = ???
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: F[ErrorMessage, SuccessMessage] =
