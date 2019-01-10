@@ -35,7 +35,7 @@ import shapeless.{ ::, HList, HNil }
       run1[docker :: rmi :: Id :: HNil](_),
     )
 
-  val removeAllImages: Unit => F[ErrorMessage, SuccessMessage]  = ???
+  val removeAllImages: Unit => F[ErrorMessage, SuccessMessage] = ???
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: F[ErrorMessage, SuccessMessage] =
     exec.run(print0[Cmd])
