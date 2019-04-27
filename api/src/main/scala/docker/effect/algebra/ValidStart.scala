@@ -22,5 +22,6 @@ sealed trait ValidStart[Cmd <: HList]
     ev5: Witness.Aux[LitC],
     ev6: Witness.Aux[LitS],
     ev7: I :-: Cmd
-  ): ValidStart[I :: Cmd :: Rem] = new ValidStart[I :: Cmd :: Rem] {}
+  ): ValidStart[I :: Cmd :: Rem] =
+    new ValidStart[I :: Cmd :: Rem] {}
 }

@@ -2,21 +2,16 @@ package docker
 package effect
 
 import docker.effect.algebra.{ DockerCommand, ErrorMessage, SuccessMessage }
-import scalaz.zio
+import scalaz.zio.ZIO
 
-sealed trait Exec[F[_, _]] {
-  def run: DockerCommand => F[ErrorMessage, SuccessMessage]
+sealed trait Exec[F[- _, + _, + _]] {
+  def run: F[DockerCommand, ErrorMessage, SuccessMessage]
 }
 
 object Exec {
 
-  implicit val zioExec: Exec[zio.IO] =
-    new Exec[zio.IO] {
-      def run: DockerCommand => zio.IO[ErrorMessage, SuccessMessage] = ???
-    }
-
-  implicit val catsEffectExec: Exec[CatsBio] =
-    new Exec[CatsBio] {
-      def run: DockerCommand => CatsBio[ErrorMessage, SuccessMessage] = ???
+  implicit val zioExec: Exec[ZIO] =
+    new Exec[ZIO] {
+      def run: ZIO[DockerCommand, ErrorMessage, SuccessMessage] = ???
     }
 }

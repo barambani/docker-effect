@@ -46,14 +46,15 @@ lazy val scala212Options = Seq(
   */
 lazy val versionOf = new {
   val shapeless     = "2.3.3"
-  val cats          = "1.5.0"
-  val catsEffect    = "1.1.0"
-  val refined       = "0.9.3"
+  val cats          = "1.6.0"
+  val catsEffect    = "1.2.0"
+  val refined       = "0.9.5"
   val scalaCheck    = "1.14.0"
-  val scalaTest     = "3.0.5"
-  val kindProjector = "0.9.9"
-  val silencer      = "1.3.1"
-  val scalazZio     = "0.5.3"
+  val scalaTest     = "3.0.7"
+  val kindProjector = "0.9.10"
+  val silencer      = "1.3.3"
+  val scalazZio     = "1.0-RC4"
+  val osLib         = "0.2.9"
 }
 
 lazy val sharedDependencies = Seq(
@@ -78,6 +79,7 @@ lazy val apiDependencies = Seq(
   "org.typelevel" %% "cats-core"   % versionOf.cats,
   "org.scalaz"    %% "scalaz-zio"  % versionOf.scalazZio,
   "org.typelevel" %% "cats-effect" % versionOf.catsEffect,
+  "com.lihaoyi"   %% "os-lib"      % versionOf.osLib
 ) map (_.withSources)
 
 /**

@@ -73,7 +73,7 @@ sealed trait ValidChunk[Cmd <: HList]
     ev7: CanEndWith[SecLst, Lst]
   ): ValidChunk[SecLst :: Lst :: HNil] = _validChunk[SecLst :: Lst :: HNil]
 
-  implicit def validLastTgt[Prev, Tgt, LitP, LitTgt](
+  implicit def validLastCommandTgt[Prev, Tgt, LitP, LitTgt](
     implicit
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
@@ -82,6 +82,17 @@ sealed trait ValidChunk[Cmd <: HList]
     ev5: Witness.Aux[LitP],
     ev6: Witness.Aux[LitTgt],
     ev7: Prev \\> Tgt
+  ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
+
+  implicit def validLastOptionTgt[Prev, Tgt, LitP, LitTgt](
+    implicit
+    ev1: Prev <:!< HList,
+    ev2: Tgt <:!< HList,
+    ev3: Prev <~< Refined[String, Equal[LitP]],
+    ev4: Tgt <~< Refined[String, MatchesRegex[LitTgt]],
+    ev5: Witness.Aux[LitP],
+    ev6: Witness.Aux[LitTgt],
+    ev7: Prev /\> Tgt
   ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
   final private[this] def _validChunk[A <: HList]: ValidChunk[A] = new ValidChunk[A] {}

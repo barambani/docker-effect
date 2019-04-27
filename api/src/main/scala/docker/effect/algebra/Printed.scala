@@ -58,10 +58,20 @@ sealed trait Printed[A] {
       val text: String = s"${prO.text}=${rem.text}"
     }
 
-  implicit def printedLastTgt[Prev, Tgt](
+  implicit def printedLastCommandTgt[Prev, Tgt](
     implicit
     ev1: ValidChunk[Prev :: Tgt :: HNil],
     ev2: Prev \\> Tgt,
+    prv: Printed[Prev]
+  ): Printed[Prev :: Tgt :: HNil] =
+    new Printed[Prev :: Tgt :: HNil] {
+      val text: String = prv.text
+    }
+
+  implicit def printedLastOptionTgt[Prev, Tgt](
+    implicit
+    ev1: ValidChunk[Prev :: Tgt :: HNil],
+    ev2: Prev /\> Tgt,
     prv: Printed[Prev]
   ): Printed[Prev :: Tgt :: HNil] =
     new Printed[Prev :: Tgt :: HNil] {

@@ -7,12 +7,13 @@ sealed trait VerboseOption[_]
 object VerboseOption {
   implicit val voEv0: VerboseOption[all]        = _isVerboseOption[all]
   implicit val voEv1: VerboseOption[digest]     = _isVerboseOption[digest]
-  implicit val voEv2: VerboseOption[filter]     = _isVerboseOption[filter]
-  implicit val voEv3: VerboseOption[`no-trunc`] = _isVerboseOption[`no-trunc`]
-  implicit val voEv4: VerboseOption[quiet]      = _isVerboseOption[quiet]
-  implicit val voEv5: VerboseOption[latest]     = _isVerboseOption[latest]
-  implicit val voEv6: VerboseOption[size]       = _isVerboseOption[size]
-  implicit val voEv7: VerboseOption[signal]     = _isVerboseOption[signal]
+  implicit val voEv2: VerboseOption[detached]   = _isVerboseOption[detached]
+  implicit val voEv3: VerboseOption[filter]     = _isVerboseOption[filter]
+  implicit val voEv4: VerboseOption[`no-trunc`] = _isVerboseOption[`no-trunc`]
+  implicit val voEv5: VerboseOption[quiet]      = _isVerboseOption[quiet]
+  implicit val voEv6: VerboseOption[latest]     = _isVerboseOption[latest]
+  implicit val voEv7: VerboseOption[size]       = _isVerboseOption[size]
+  implicit val voEv8: VerboseOption[signal]     = _isVerboseOption[signal]
 
   private[this] def _isVerboseOption[A]: VerboseOption[A] = new VerboseOption[A] {}
 }
@@ -37,6 +38,8 @@ object VerboseOptionAllowed {
   implicit val evLo14: ps --| size       = _isAllowed[ps, size]
 
   implicit val evLo15: kill --| signal = _isAllowed[kill, signal]
+
+  implicit val evLo16: run --| detached = _isAllowed[run, detached]
 
   private[this] def _isAllowed[A, B]: A --| B = new (A --| B) {}
 }

@@ -1,15 +1,13 @@
 import docker.effect.Docker
 import org.scalatest.WordSpecLike
-import scalaz.zio
+import scalaz.zio.ZIO
 
 final class ZioRunnerSpec extends WordSpecLike with ZioTestFunctions {
 
-  "a zio docker" should {
+  "a zio docker effect" should {
+
     "get the list of images correctly" in {
-
-      val io = Docker[zio.IO].listAllImages(())
-
-      successAssert(io)(
+      successAssert(Docker[ZIO].listAllImages)(
         res => res.unMk.value shouldBe ""
       )
     }

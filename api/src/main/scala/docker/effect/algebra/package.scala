@@ -38,6 +38,7 @@ package object algebra {
   //  verbose options
   final type all        = String Refined Equal[W.`"all"`.T]
   final type digest     = String Refined Equal[W.`"digest"`.T]
+  final type detached   = String Refined Equal[W.`"detached"`.T]
   final type filter     = String Refined Equal[W.`"filter"`.T]
   final type format     = String Refined Equal[W.`"format"`.T]
   final type `no-trunc` = String Refined Equal[W.`"no-trunc"`.T]
@@ -49,6 +50,7 @@ package object algebra {
 
   //  compact options
   final type a = String Refined Equal[W.`"a"`.T]
+  final type d = String Refined Equal[W.`"d"`.T]
   final type f = String Refined Equal[W.`"f"`.T]
   final type q = String Refined Equal[W.`"q"`.T]
   final type l = String Refined Equal[W.`"l"`.T]
@@ -77,7 +79,8 @@ package object algebra {
   final type --|[Cmd, Opt] = VerboseOptionAllowed[Cmd, Opt]
   final type -|[Cmd, Opt]  = CompactOptionAllowed[Cmd, Opt]
   final type =|[Opt, Arg]  = OptionArgumentAllowed[Opt, Arg]
-  final type \\>[Prv, Tgt] = CommandTargetAllowed[Prv, Tgt]
+  final type \\>[Cmd, Tgt] = CommandTargetAllowed[Cmd, Tgt]
+  final type /\>[Opt, Tgt] = OptionTargetAllowed[Opt, Tgt]
 
   //  printer
   final def print0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =

@@ -7,11 +7,12 @@ sealed trait CompactOption[_]
 object CompactOption {
 
   implicit val coEv0: CompactOption[a]  = _isCompactOption[a]
-  implicit val coEv1: CompactOption[f]  = _isCompactOption[f]
-  implicit val coEv2: CompactOption[q]  = _isCompactOption[q]
-  implicit val coEv3: CompactOption[l]  = _isCompactOption[l]
-  implicit val coEv4: CompactOption[s]  = _isCompactOption[s]
-  implicit val coEv5: CompactOption[aq] = _isCompactOption[aq]
+  implicit val coEv1: CompactOption[d]  = _isCompactOption[d]
+  implicit val coEv2: CompactOption[f]  = _isCompactOption[f]
+  implicit val coEv3: CompactOption[q]  = _isCompactOption[q]
+  implicit val coEv4: CompactOption[l]  = _isCompactOption[l]
+  implicit val coEv5: CompactOption[s]  = _isCompactOption[s]
+  implicit val coEv6: CompactOption[aq] = _isCompactOption[aq]
 
   private[this] def _isCompactOption[A]: CompactOption[A] = new CompactOption[A] {}
 }
@@ -32,6 +33,8 @@ object CompactOptionAllowed {
   implicit val evCo10: ps -| s = _isAllowed[ps, s]
 
   implicit val evCo11: kill -| s = _isAllowed[kill, s]
+
+  implicit val evLo12: run -| d = _isAllowed[run, d]
 
   private[this] def _isAllowed[A, B]: A -| B = new (A -| B) {}
 }

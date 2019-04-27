@@ -1,44 +1,82 @@
 package docker
 package effect
 
+import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
 import com.github.ghik.silencer.silent
-import _root_.docker.effect.Docker.runPartialTypeApplication
+import scalaz.zio.ZIO
 import shapeless.ops.hlist.Last
-import shapeless.{ ::, HList, HNil }
+import shapeless.{ ::, HList }
 
-@silent abstract class Docker[F[_, _]](implicit exec: Exec[F]) {
+sealed trait aaaaaa[F[- _, + _, + _]] {
+  def bbbbbb[R, E, A](f: R => F[R, E, A]): F[R, E, A]
+}
+object aaaaaa {
 
-  val runContainer: Name | Id => F[ErrorMessage, SuccessMessage] =
-    _.fold(
-      run1[docker :: run :: Name :: HNil](_),
-      run1[docker :: run :: Id :: HNil](_)
-    )
+  implicit val zioaaaaaa: aaaaaa[ZIO] =
+    new aaaaaa[ZIO] {
+      def bbbbbb[R, E, A](f: R => ZIO[R, E, A]): ZIO[R, E, A] = ZIO.accessM(f)
+    }
+}
 
-  val stopContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
-  val killContainer: Name | Id => F[ErrorMessage, SuccessMessage]        = ???
-  val removeContainer: Name | Id => F[ErrorMessage, SuccessMessage]      = ???
-  val forceRemoveContainer: Name | Id => F[ErrorMessage, SuccessMessage] = ???
-  val removeAllContainers: Unit => F[ErrorMessage, SuccessMessage]       = ???
+sealed trait cccccc[F[- _, + _, + _]] {
+  def provided[R, E, A](fa: F[R, E, A])(r: =>R): F[Any, E, A]
+}
+object cccccc {
 
-  val pullImage: (Name, Tag) => F[ErrorMessage, SuccessMessage] = ???
+  implicit val ziocccccc: cccccc[ZIO] =
+    new cccccc[ZIO] {
+      def provided[R, E, A](fa: ZIO[R, E, A])(r: =>R): ZIO[Any, E, A] = fa.provide(r)
+    }
+}
 
-  val listAllImages: Unit => F[ErrorMessage, SuccessMessage] =
-    _ => run0[docker :: images :: all :: HNil]
+@silent abstract class Docker[F[- _, + _, + _]](implicit access: aaaaaa[F], cccc: cccccc[F], exec: Exec[F]) {
 
-  val listAllImageIds: Unit => F[ErrorMessage, SuccessMessage] =
-    _ => run0[docker :: images :: aq :: HNil]
+  val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: run :: Name :: `.`](_),
+        run1[docker :: run :: Id :: `.`](_)
+      )
+    }
 
-  val removeImage: Name | Id => F[ErrorMessage, SuccessMessage] =
-    _.fold(
-      run1[docker :: rmi :: Name :: HNil](_),
-      run1[docker :: rmi :: Id :: HNil](_),
-    )
+  val stopContainer: F[Name | Id, ErrorMessage, SuccessMessage] = ???
+//    access.bbbbbb {
+//      _.fold(
+//        run1[docker :: stop :: Name :: `.`](_),
+//        run1[docker :: stop :: Id :: `.`](_)
+//      )
+//    }
 
-  val removeAllImages: Unit => F[ErrorMessage, SuccessMessage] = ???
+  val killContainer: F[Name | Id, ErrorMessage, SuccessMessage]        = ???
+  val removeContainer: F[Name | Id, ErrorMessage, SuccessMessage]      = ???
+  val forceRemoveContainer: F[Name | Id, ErrorMessage, SuccessMessage] = ???
+  val removeAllContainers: F[Any, ErrorMessage, SuccessMessage]        = ???
 
-  private[effect] def run0[Cmd <: HList: Valid: Printed]: F[ErrorMessage, SuccessMessage] =
-    exec.run(print0[Cmd])
+  val pullImage: F[(Name, Tag), ErrorMessage, SuccessMessage] = ???
+
+  val listAllImages: F[Any, ErrorMessage, SuccessMessage] =
+    access.bbbbbb { _ =>
+      run0[docker :: images :: all :: `.`]
+    }
+
+  val listAllImageIds: F[Any, ErrorMessage, SuccessMessage] =
+    access.bbbbbb { _ =>
+      run0[docker :: images :: aq :: `.`]
+    }
+
+  val removeImage: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: rmi :: Name :: `.`](_),
+        run1[docker :: rmi :: Id :: `.`](_),
+      )
+    }
+
+  val removeAllImages: F[Any, ErrorMessage, SuccessMessage] = ???
+
+  private[effect] def run0[Cmd <: HList: Valid: Printed]: F[Any, ErrorMessage, SuccessMessage] =
+    cccc.provided(exec.run)(print0[Cmd])
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
     new runPartialTypeApplication[Cmd, F]
@@ -46,9 +84,9 @@ import shapeless.{ ::, HList, HNil }
 
 object Docker {
 
-  def apply[F[_, _]: Exec]: Docker[F] = new Docker[F] {}
+  def apply[F[- _, + _, + _]: Exec: aaaaaa: cccccc]: Docker[F] = new Docker[F] {}
 
-  final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[_, _]](
+  final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[- _, + _, + _]](
     private val d: Boolean = true
   ) extends AnyVal {
 
@@ -58,8 +96,9 @@ object Docker {
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
       p: Printed[Cmd],
-      exec: Exec[F]
-    ): F[ErrorMessage, SuccessMessage] =
-      exec.run(print1[Cmd](t))
+      exec: Exec[F],
+      cccc: cccccc[F]
+    ): F[Any, ErrorMessage, SuccessMessage] =
+      cccc.provided(exec.run)(print1[Cmd](t))
   }
 }

@@ -3,7 +3,7 @@ package effect
 package algebra
 package evidences
 
-sealed trait CommandTargetAllowed[Prv, Tgt]
+sealed trait CommandTargetAllowed[Cmd, Tgt]
 
 object CommandTargetAllowed extends Target2 {
 
