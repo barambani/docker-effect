@@ -36,5 +36,7 @@ object CompactOptionAllowed {
 
   implicit val evLo12: run -| d = _isAllowed[run, d]
 
+  implicit val evLo13: rm -| f = _isAllowed[rm, f]
+
   private[this] def _isAllowed[A, B]: A -| B = new (A -| B) {}
 }

@@ -29,18 +29,20 @@ package object algebra {
   final type docker    = String Refined Equal[W.`"docker"`.T]
   final type container = String Refined Equal[W.`"container"`.T]
   final type images    = String Refined Equal[W.`"images"`.T]
-  final type run       = String Refined Equal[W.`"run"`.T]
-  final type stop      = String Refined Equal[W.`"stop"`.T]
   final type kill      = String Refined Equal[W.`"kill"`.T]
   final type rm        = String Refined Equal[W.`"rm"`.T]
   final type rmi       = String Refined Equal[W.`"rmi"`.T]
+  final type run       = String Refined Equal[W.`"run"`.T]
   final type ps        = String Refined Equal[W.`"ps"`.T]
+  final type pull      = String Refined Equal[W.`"pull"`.T]
+  final type stop      = String Refined Equal[W.`"stop"`.T]
 
   //  verbose options
   final type all        = String Refined Equal[W.`"all"`.T]
   final type digest     = String Refined Equal[W.`"digest"`.T]
   final type detached   = String Refined Equal[W.`"detached"`.T]
   final type filter     = String Refined Equal[W.`"filter"`.T]
+  final type force      = String Refined Equal[W.`"force"`.T]
   final type format     = String Refined Equal[W.`"format"`.T]
   final type `no-trunc` = String Refined Equal[W.`"no-trunc"`.T]
   final type quiet      = String Refined Equal[W.`"quiet"`.T]
@@ -102,5 +104,14 @@ package object algebra {
       p: Printed[Cmd]
     ): DockerCommand =
       DockerCommand(NonEmptyString.unsafeFrom(s"${p.show} $t"))
+
+    def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
+      implicit
+      ev1: Valid[Cmd],
+      ev2: Last.Aux[Cmd, Tgt],
+      ev3: Tgt =:= (ExpA, ExpB),
+      p: Printed[Cmd]
+    ): DockerCommand =
+      DockerCommand(NonEmptyString.unsafeFrom(s"${p.show} ${t._1}:${t._2}"))
   }
 }

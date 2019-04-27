@@ -44,20 +44,50 @@ object cccccc {
       )
     }
 
-  val stopContainer: F[Name | Id, ErrorMessage, SuccessMessage] = ???
-//    access.bbbbbb {
-//      _.fold(
-//        run1[docker :: stop :: Name :: `.`](_),
-//        run1[docker :: stop :: Id :: `.`](_)
-//      )
-//    }
+  val runDetachedContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: run :: detached :: Name :: `.`](_),
+        run1[docker :: run :: detached :: Id :: `.`](_)
+      )
+    }
 
-  val killContainer: F[Name | Id, ErrorMessage, SuccessMessage]        = ???
-  val removeContainer: F[Name | Id, ErrorMessage, SuccessMessage]      = ???
-  val forceRemoveContainer: F[Name | Id, ErrorMessage, SuccessMessage] = ???
-  val removeAllContainers: F[Any, ErrorMessage, SuccessMessage]        = ???
+  val stopContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: stop :: Name :: `.`](_),
+        run1[docker :: stop :: Id :: `.`](_)
+      )
+    }
 
-  val pullImage: F[(Name, Tag), ErrorMessage, SuccessMessage] = ???
+  val killContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: kill :: Name :: `.`](_),
+        run1[docker :: kill :: Id :: `.`](_)
+      )
+    }
+
+  val removeContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: rm :: Name :: `.`](_),
+        run1[docker :: rm :: Id :: `.`](_)
+      )
+    }
+
+  val forceRemoveContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      _.fold(
+        run1[docker :: rm :: force :: Name :: `.`](_),
+        run1[docker :: rm :: force :: Id :: `.`](_)
+      )
+    }
+
+  val pullImage: F[(Name, Tag), ErrorMessage, SuccessMessage] =
+    access.bbbbbb {
+      run1[docker :: pull :: (Name, Tag) :: `.`](_)
+    }
 
   val listAllImages: F[Any, ErrorMessage, SuccessMessage] =
     access.bbbbbb { _ =>
@@ -73,11 +103,9 @@ object cccccc {
     access.bbbbbb {
       _.fold(
         run1[docker :: rmi :: Name :: `.`](_),
-        run1[docker :: rmi :: Id :: `.`](_),
+        run1[docker :: rmi :: Id :: `.`](_)
       )
     }
-
-  val removeAllImages: F[Any, ErrorMessage, SuccessMessage] = ???
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: F[Any, ErrorMessage, SuccessMessage] =
     cccc.provided(command.executed)(print0[Cmd])
