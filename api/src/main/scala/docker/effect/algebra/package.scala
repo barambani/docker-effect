@@ -1,9 +1,10 @@
 package docker
 package effect
 
+import cats.syntax.show._
 import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences._
-import docker.effect.algebra.newtypes.{ MkErrorMessage, MkSuccessMessage }
+import docker.effect.algebra.newtypes.{ MkDockerCommand, MkErrorMessage, MkSuccessMessage }
 import docker.effect.internal.newtype
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
@@ -21,7 +22,7 @@ package object algebra {
   final val SuccessMessage = MkSuccessMessage
   final type SuccessMessage = SuccessMessage.T
 
-  final val DockerCommand = newtype[String]
+  final val DockerCommand = MkDockerCommand
   final type DockerCommand = DockerCommand.T
 
   //  commands
@@ -100,6 +101,6 @@ package object algebra {
       ev3: Tgt =:= Exp,
       p: Printed[Cmd]
     ): DockerCommand =
-      DockerCommand(s"${p.text} $t")
+      DockerCommand(NonEmptyString.unsafeFrom(s"${p.show} $t"))
   }
 }

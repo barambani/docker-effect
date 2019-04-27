@@ -30,7 +30,11 @@ object cccccc {
     }
 }
 
-@silent abstract class Docker[F[- _, + _, + _]](implicit access: aaaaaa[F], cccc: cccccc[F], exec: Exec[F]) {
+@silent abstract class Docker[F[- _, + _, + _]](
+  implicit access: aaaaaa[F],
+  cccc: cccccc[F],
+  command: Command[F]
+) {
 
   val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
     access.bbbbbb {
@@ -76,7 +80,7 @@ object cccccc {
   val removeAllImages: F[Any, ErrorMessage, SuccessMessage] = ???
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: F[Any, ErrorMessage, SuccessMessage] =
-    cccc.provided(exec.run)(print0[Cmd])
+    cccc.provided(command.executed)(print0[Cmd])
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
     new runPartialTypeApplication[Cmd, F]
@@ -84,7 +88,7 @@ object cccccc {
 
 object Docker {
 
-  def apply[F[- _, + _, + _]: Exec: aaaaaa: cccccc]: Docker[F] = new Docker[F] {}
+  def apply[F[- _, + _, + _]: Command: aaaaaa: cccccc]: Docker[F] = new Docker[F] {}
 
   final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[- _, + _, + _]](
     private val d: Boolean = true
@@ -96,9 +100,9 @@ object Docker {
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
       p: Printed[Cmd],
-      exec: Exec[F],
+      command: Command[F],
       cccc: cccccc[F]
     ): F[Any, ErrorMessage, SuccessMessage] =
-      cccc.provided(exec.run)(print1[Cmd](t))
+      cccc.provided(command.executed)(print1[Cmd](t))
   }
 }

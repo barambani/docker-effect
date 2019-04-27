@@ -2,17 +2,20 @@ package docker
 package effect
 package algebra
 
+import cats.Show
 import cats.evidence.<~<
 import com.github.ghik.silencer.silent
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.generic.Equal
+import eu.timepit.refined.types.string.NonEmptyString
 import shapeless.{ ::, <:!<, HList, HNil, Witness }
+import cats.syntax.show._
 
 sealed trait Printed[A] {
-  def text: String
+  def text: NonEmptyString
 }
 
-@silent object Printed {
+@silent object Printed extends PrintedInstances {
 
   implicit def printedCommand[ParCmd, ChiCmd, Rem <: HList](
     implicit
@@ -22,7 +25,7 @@ sealed trait Printed[A] {
     rem: Printed[ChiCmd :: Rem]
   ): Printed[ParCmd :: ChiCmd :: Rem] =
     new Printed[ParCmd :: ChiCmd :: Rem] {
-      val text: String = s"${prP.text} ${rem.text}"
+      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prP.show} ${rem.show}")
     }
 
   implicit def printedOption[Cmd, Opt, Rem <: HList](
@@ -33,7 +36,7 @@ sealed trait Printed[A] {
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
     new Printed[Cmd :: Opt :: Rem] {
-      val text: String = s"${prC.text} --${rem.text}"
+      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prC.show} --${rem.show}")
     }
 
   implicit def printedCompactOption[Cmd, Opt, Rem <: HList](
@@ -44,7 +47,7 @@ sealed trait Printed[A] {
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
     new Printed[Cmd :: Opt :: Rem] {
-      val text: String = s"${prC.text} -${rem.text}"
+      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prC.show} -${rem.show}")
     }
 
   implicit def printedOptionArgument[Opt, Arg, Rem <: HList](
@@ -55,7 +58,7 @@ sealed trait Printed[A] {
     rem: Printed[Arg :: Rem]
   ): Printed[Opt :: Arg :: Rem] =
     new Printed[Opt :: Arg :: Rem] {
-      val text: String = s"${prO.text}=${rem.text}"
+      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prO.show}=${rem.show}")
     }
 
   implicit def printedLastCommandTgt[Prev, Tgt](
@@ -65,7 +68,7 @@ sealed trait Printed[A] {
     prv: Printed[Prev]
   ): Printed[Prev :: Tgt :: HNil] =
     new Printed[Prev :: Tgt :: HNil] {
-      val text: String = prv.text
+      val text: NonEmptyString = prv.text
     }
 
   implicit def printedLastOptionTgt[Prev, Tgt](
@@ -75,7 +78,7 @@ sealed trait Printed[A] {
     prv: Printed[Prev]
   ): Printed[Prev :: Tgt :: HNil] =
     new Printed[Prev :: Tgt :: HNil] {
-      val text: String = prv.text
+      val text: NonEmptyString = prv.text
     }
 
   implicit def printedLast[Lst](
@@ -83,7 +86,7 @@ sealed trait Printed[A] {
     pl: Printed[Lst]
   ): Printed[Lst :: HNil] =
     new Printed[Lst :: HNil] {
-      val text: String = pl.text
+      val text: NonEmptyString = pl.text
     }
 
   implicit def printedLiteral[Lit, RefLit](
@@ -93,6 +96,14 @@ sealed trait Printed[A] {
     wit: Witness.Aux[RefLit]
   ): Printed[Lit] =
     new Printed[Lit] {
-      val text: String = wit.value.toString
+      val text: NonEmptyString = NonEmptyString.unsafeFrom(wit.value.toString)
+    }
+}
+
+sealed private[algebra] trait PrintedInstances {
+
+  implicit def printedShow[A]: Show[Printed[A]] =
+    new Show[Printed[A]] {
+      def show(t: Printed[A]): String = t.text.value
     }
 }

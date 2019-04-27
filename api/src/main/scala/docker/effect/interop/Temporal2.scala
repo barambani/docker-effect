@@ -1,4 +1,6 @@
-package docker.effect.interop
+package docker
+package effect
+package interop
 
 import java.time.Instant
 

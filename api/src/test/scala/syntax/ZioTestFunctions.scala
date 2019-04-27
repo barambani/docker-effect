@@ -1,8 +1,10 @@
+package syntax
+
 import org.scalatest.{ Assertion, Matchers }
 import scalaz.zio
 import scalaz.zio.IO
 
-trait ZioTestFunctions extends Matchers with zio.DefaultRuntime {
+sealed abstract private[syntax] class ZioTestFunctions extends Matchers with zio.DefaultRuntime {
 
   final def successAssert[E, A](io: IO[E, A])(assert: A => Assertion): Assertion =
     unsafeRun(io.either)
@@ -11,4 +13,8 @@ trait ZioTestFunctions extends Matchers with zio.DefaultRuntime {
   final def failureAssert[E, A](io: IO[E, A])(assert: E => Assertion): Assertion =
     unsafeRun(io.either)
       .fold(assert, res => fail(s"Expected failure but got $res"))
+}
+
+private[syntax] object ZioTestFunctions {
+  def apply(): ZioTestFunctions = new ZioTestFunctions {}
 }
