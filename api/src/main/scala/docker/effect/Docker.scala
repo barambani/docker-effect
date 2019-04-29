@@ -9,8 +9,6 @@ import _root_.docker.effect.syntax.provider._
 import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
 
-import scala.language.implicitConversions
-
 @silent abstract class Docker[F[- _, + _, + _]: Provider: Accessor](implicit command: Command[F]) {
 
   val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =

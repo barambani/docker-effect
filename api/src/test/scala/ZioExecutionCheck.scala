@@ -13,14 +13,14 @@ final class ZioExecutionCheck extends WordSpecLike with Matchers with ZioTestSyn
 
     "get the list of images" in {
       docker.listAllImages satisfies { res =>
-        res.unMk.value shouldBe ""
+        res.unMk.value shouldBe "a"
       }
     }
 
     "run a container by name" in {
 
       (docker.runContainer provide Name("alpine").asLeft) satisfies { res =>
-        res.unMk.value shouldBe ""
+        res.unMk.value shouldBe "a"
       }
     }
   }

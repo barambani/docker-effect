@@ -2,6 +2,7 @@ package docker
 package effect
 
 import docker.effect.algebra.{ DockerCommand, ErrorMessage, SuccessMessage }
+import eu.timepit.refined.types.string.NonEmptyString
 import scalaz.zio.ZIO
 
 sealed trait Command[F[- _, + _, + _]] {
@@ -10,8 +11,10 @@ sealed trait Command[F[- _, + _, + _]] {
 
 object Command {
 
-  implicit val zioExec: Command[ZIO] =
+  implicit val zioCommand: Command[ZIO] =
     new Command[ZIO] {
-      def executed: ZIO[DockerCommand, ErrorMessage, SuccessMessage] = ???
+
+      def executed: ZIO[DockerCommand, ErrorMessage, SuccessMessage] =
+        ZIO.effectTotal(SuccessMessage(NonEmptyString("a")))
     }
 }
