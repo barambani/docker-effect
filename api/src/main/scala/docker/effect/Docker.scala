@@ -102,9 +102,9 @@ object Docker {
       ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
-      p: Printed[Cmd],
-      command: Command[F],
-      cccc: Provider[F]
+      ev4: Provider[F],
+      ev5: Printed[Cmd],
+      command: Command[F]
     ): F[Any, ErrorMessage, SuccessMessage] =
       command.executed provided print1[Cmd](t)
   }

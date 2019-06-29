@@ -15,6 +15,6 @@ object Command {
     new Command[ZIO] {
 
       def executed: ZIO[DockerCommand, ErrorMessage, SuccessMessage] =
-        ZIO.effectTotal(SuccessMessage(NonEmptyString("a")))
+        ZIO.effectTotal(SuccessMessage(NonEmptyString("a"))) // TODO: fake
     }
 }

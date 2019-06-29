@@ -2,6 +2,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 lazy val `scala 211` = "2.11.12"
 lazy val `scala 212` = "2.12.8"
+lazy val `scala 213` = "2.13.0"
 
 /**
   * Scalac options
@@ -45,7 +46,7 @@ lazy val scala212Options = Seq(
   * Dependencies
   */
 lazy val versionOf = new {
-  val cats          = "1.6.1"
+  val cats          = "2.0.0-M4"
   val kindProjector = "0.9.10"
   val osLib         = "0.2.9"
   val refined       = "0.9.8"
