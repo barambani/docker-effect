@@ -54,7 +54,7 @@ lazy val versionOf = new {
   val scalaTest     = "3.0.8"
   val scalazZio     = "1.0-RC5"
   val shapeless     = "2.3.3"
-  val silencer      = "1.4.1"
+  val silencer      = "1.4.2"
 }
 
 lazy val sharedDependencies = Seq(
