@@ -46,7 +46,7 @@ lazy val scala212Options = Seq(
   * Dependencies
   */
 lazy val versionOf = new {
-  val cats          = "2.0.0-M4"
+  val cats          = "2.0.0-RC1"
   val kindProjector = "0.9.10"
   val osLib         = "0.2.9"
   val refined       = "0.9.9"
