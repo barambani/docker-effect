@@ -47,7 +47,7 @@ lazy val scala212Options = Seq(
   */
 lazy val versionOf = new {
   val cats          = "2.0.0-M4"
-  val kindProjector = "0.9.10"
+  val kindProjector = "0.10.0"
   val osLib         = "0.2.9"
   val refined       = "0.9.9"
   val scalaCheck    = "1.14.0"
@@ -63,7 +63,7 @@ lazy val sharedDependencies = Seq(
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
-    "org.spire-math" %% "kind-projector" % versionOf.kindProjector cross CrossVersion.binary
+    "org.typelevel" %% "kind-projector" % versionOf.kindProjector cross CrossVersion.binary
   ),
   compilerPlugin("com.github.ghik" %% "silencer-plugin" % versionOf.silencer)
 )
