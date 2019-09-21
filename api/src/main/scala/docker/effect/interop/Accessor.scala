@@ -4,13 +4,13 @@ package interop
 
 import scalaz.zio.ZIO
 
-sealed trait Accessor[F[- _, + _, + _]] {
+sealed trait Accessor[F[-_, +_, +_]] {
   def accessM[R, E, A](f: R => F[R, E, A]): F[R, E, A]
 }
 
 object Accessor {
 
-  def accessM[R, E, A, F[- _, + _, + _]](f: R => F[R, E, A])(implicit ev: Accessor[F]): F[R, E, A] =
+  def accessM[R, E, A, F[-_, +_, +_]](f: R => F[R, E, A])(implicit ev: Accessor[F]): F[R, E, A] =
     ev.accessM(f)
 
   implicit val zioAccessor: Accessor[ZIO] =
