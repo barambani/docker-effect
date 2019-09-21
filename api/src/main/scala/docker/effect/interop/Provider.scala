@@ -4,7 +4,7 @@ package interop
 
 import scalaz.zio.ZIO
 
-sealed trait Provider[F[- _, + _, + _]] {
+sealed trait Provider[F[-_, +_, +_]] {
   def provided[R, E, A](fa: F[R, E, A])(r: =>R): F[Any, E, A]
 }
 
