@@ -12,7 +12,6 @@ import shapeless.{ ::, <:!<, HList, Witness }
 sealed trait ValidStart[Cmd <: HList]
 
 @silent object ValidStart {
-
   implicit def validStart[I: Initial, Cmd: Command, Rem <: HList, LitC, LitS](
     implicit
     ev1: I <:!< HList,

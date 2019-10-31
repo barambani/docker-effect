@@ -6,7 +6,6 @@ import cats.syntax.show._
 import eu.timepit.refined.auto._
 
 final class CorrectCommandTextCheck extends WordSpecLike with Matchers {
-
   "printing command" should {
     "produce the expected text" in {
       print0[docker :: images :: `.`].show        shouldBe "docker images"

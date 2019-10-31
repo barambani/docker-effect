@@ -9,7 +9,6 @@ sealed trait Provider[F[-_, +_, +_]] {
 }
 
 object Provider {
-
   implicit val zioProvider: Provider[ZIO] =
     new Provider[ZIO] {
       def provided[R, E, A](fa: ZIO[R, E, A])(r: =>R): ZIO[Any, E, A] = fa.provide(r)

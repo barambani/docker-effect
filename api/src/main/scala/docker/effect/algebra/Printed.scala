@@ -16,7 +16,6 @@ sealed trait Printed[A] {
 }
 
 @silent object Printed extends PrintedInstances {
-
   implicit def printedCommand[ParCmd, ChiCmd, Rem <: HList](
     implicit
     ev1: ValidChunk[ParCmd :: ChiCmd :: Rem],
@@ -101,7 +100,6 @@ sealed trait Printed[A] {
 }
 
 sealed private[algebra] trait PrintedInstances {
-
   implicit def printedShow[A]: Show[Printed[A]] =
     new Show[Printed[A]] {
       def show(t: Printed[A]): String = t.text.value

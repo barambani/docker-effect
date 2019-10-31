@@ -10,10 +10,8 @@ sealed trait Command[F[-_, +_, +_]] {
 }
 
 object Command {
-
   implicit val zioCommand: Command[ZIO] =
     new Command[ZIO] {
-
       def executed: ZIO[DockerCommand, ErrorMessage, SuccessMessage] =
         ZIO.effectTotal(SuccessMessage(NonEmptyString("a"))) // TODO: fake
     }

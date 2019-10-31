@@ -6,7 +6,6 @@ package evidences
 sealed trait CanEndWith[A, B]
 
 object CanEndWith extends CanEndWith2 {
-
   implicit val evCew1: CanEndWith[docker, images] = _canEndWith[docker, images]
   implicit val evCew2: CanEndWith[docker, ps]     = _canEndWith[docker, ps]
 
@@ -17,7 +16,6 @@ object CanEndWith extends CanEndWith2 {
 }
 
 sealed private[algebra] trait CanEndWith2 {
-
   implicit def evCewIm2[O: CompactOption: images -| ?]: CanEndWith[images, O] = _canEndWith[images, O]
   implicit def evCewPs2[O: CompactOption: ps -| ?]: CanEndWith[ps, O]         = _canEndWith[ps, O]
 

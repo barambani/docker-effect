@@ -5,7 +5,6 @@ package evidences
 
 sealed trait Command[_]
 object Command {
-
   implicit val cmdEv0: Command[container] = _isCommand[container]
   implicit val cmdEv1: Command[images]    = _isCommand[images]
   implicit val cmdEv2: Command[kill]      = _isCommand[kill]

@@ -15,7 +15,6 @@ import shapeless.HList
 import shapeless.ops.hlist.Last
 
 package object algebra {
-
   final val ErrorMessage = MkErrorMessage
   final type ErrorMessage = ErrorMessage.T
 
@@ -95,7 +94,6 @@ package object algebra {
   @silent final private[algebra] class printPartialTypeApplication[Cmd <: HList](
     private val d: Boolean = true
   ) extends AnyVal {
-
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],

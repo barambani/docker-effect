@@ -1,7 +1,6 @@
 import org.scalatest.{ Matchers, WordSpecLike }
 
 final class IncorrectCommandsCheck extends WordSpecLike with Matchers {
-
   "printing incorrect commands command" should {
     "not compile" in {
       """

@@ -5,7 +5,6 @@ package evidences
 
 sealed trait CompactOption[_]
 object CompactOption {
-
   implicit val coEv0: CompactOption[a]  = _isCompactOption[a]
   implicit val coEv1: CompactOption[d]  = _isCompactOption[d]
   implicit val coEv2: CompactOption[f]  = _isCompactOption[f]
@@ -19,7 +18,6 @@ object CompactOption {
 
 sealed trait CompactOptionAllowed[C, O]
 object CompactOptionAllowed {
-
   implicit val evCo1: images -| a  = _isAllowed[images, a]
   implicit val evCo2: images -| f  = _isAllowed[images, f]
   implicit val evCo3: images -| q  = _isAllowed[images, q]

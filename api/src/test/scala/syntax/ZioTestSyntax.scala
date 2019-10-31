@@ -10,7 +10,6 @@ trait ZioTestSyntax {
 }
 
 final private[syntax] class ZioTestOps[E, A](private val io: IO[E, A]) extends AnyVal {
-
   def satisfies(assert: A => Assertion): Assertion =
     ZioTestFunctions().successAssert(io)(assert)
 

@@ -10,7 +10,6 @@ import eu.timepit.refined.types.string.NonEmptyString
 object MkErrorMessage extends newtype[NonEmptyString] with ErrorMessageInstances
 
 sealed private[newtypes] trait ErrorMessageInstances {
-
   implicit val errorMessageShow: Show[ErrorMessage] =
     new Show[ErrorMessage] {
       def show(t: ErrorMessage): String = t.unMk.value

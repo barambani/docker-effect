@@ -22,7 +22,6 @@ object VerboseOption {
 
 sealed trait VerboseOptionAllowed[Cmd, Opt]
 object VerboseOptionAllowed {
-
   implicit val evLo1: images --| all        = _isAllowed[images, all]
   implicit val evLo2: images --| digest     = _isAllowed[images, digest]
   implicit val evLo3: images --| filter     = _isAllowed[images, filter]

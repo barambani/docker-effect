@@ -13,7 +13,6 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
 sealed trait ValidChunk[Cmd <: HList]
 
 @silent object ValidChunk {
-
   implicit def validCommand[A, Cmd: Command, Rem <: HList, LitI, LitC](
     implicit
     ev1: A <:!< HList,

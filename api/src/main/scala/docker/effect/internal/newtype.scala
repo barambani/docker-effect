@@ -25,7 +25,6 @@ trait newtype[A] {
 }
 
 object newtype {
-
   @inline def apply[A]: newtype[A] = new newtype[A] {}
 
   implicit final class NewTypeSyntax[A](private val t: newtype[A]#T) extends AnyVal {

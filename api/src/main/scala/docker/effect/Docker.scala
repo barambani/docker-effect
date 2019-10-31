@@ -10,7 +10,6 @@ import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
 
 @silent abstract class Docker[F[-_, +_, +_]: Provider: Accessor](implicit command: Command[F]) {
-
   val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
     Accessor.accessM {
       _.fold(
@@ -90,13 +89,11 @@ import shapeless.{ ::, HList }
 }
 
 object Docker {
-
   def apply[F[-_, +_, +_]: Command: Accessor: Provider]: Docker[F] = new Docker[F] {}
 
   final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[-_, +_, +_]](
     private val d: Boolean = true
   ) extends AnyVal {
-
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],
