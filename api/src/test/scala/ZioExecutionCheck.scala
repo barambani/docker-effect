@@ -1,11 +1,12 @@
+import cats.syntax.either._
 import docker.effect.Docker
 import docker.effect.algebra.Name
-import org.scalatest.{ Matchers, WordSpecLike }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import scalaz.zio.ZIO
-import cats.syntax.either._
 import syntax.ZioTestSyntax
 
-final class ZioExecutionCheck extends WordSpecLike with Matchers with ZioTestSyntax {
+final class ZioExecutionCheck extends AnyWordSpecLike with Matchers with ZioTestSyntax {
   val docker = Docker[ZIO]
 
   "a zio docker effect" should {

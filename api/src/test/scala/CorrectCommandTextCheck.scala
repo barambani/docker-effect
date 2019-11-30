@@ -1,11 +1,12 @@
-import docker.effect.algebra._
-import org.scalatest.{ Matchers, WordSpecLike }
-import shapeless.::
-import docker.effect.`.`
+import _root_.docker.effect.`.`
 import cats.syntax.show._
+import docker.effect.algebra._
 import eu.timepit.refined.auto._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+import shapeless.::
 
-final class CorrectCommandTextCheck extends WordSpecLike with Matchers {
+final class CorrectCommandTextCheck extends AnyWordSpecLike with Matchers {
   "printing command" should {
     "produce the expected text" in {
       print0[docker :: images :: `.`].show        shouldBe "docker images"

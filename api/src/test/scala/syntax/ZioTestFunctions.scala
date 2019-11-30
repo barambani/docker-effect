@@ -1,6 +1,7 @@
 package syntax
 
-import org.scalatest.{ Assertion, Matchers }
+import org.scalatest.Assertion
+import org.scalatest.matchers.should.Matchers
 import scalaz.zio
 import scalaz.zio.IO
 

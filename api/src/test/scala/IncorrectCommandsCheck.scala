@@ -1,6 +1,7 @@
-import org.scalatest.{ Matchers, WordSpecLike }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
-final class IncorrectCommandsCheck extends WordSpecLike with Matchers {
+final class IncorrectCommandsCheck extends AnyWordSpecLike with Matchers {
   "printing incorrect commands command" should {
     "not compile" in {
       """
