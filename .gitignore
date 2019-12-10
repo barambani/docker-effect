@@ -27,3 +27,7 @@ project/project/*
 
 # Vim .swp
 *.swp
+
+# Metals + Bloop
+.metals/
+.bloop/
