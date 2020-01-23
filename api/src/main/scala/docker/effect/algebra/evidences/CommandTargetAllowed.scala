@@ -23,11 +23,11 @@ object CommandTargetAllowed extends Target2 {
 
   implicit val evTg11: pull \\> (Name, Tag) = _allowed[pull, (Name, Tag)]
 
-  implicit def signalEvTg4[Sig: signal =| ?]: Sig \\> Id = _allowed[Sig, Id]
+  implicit def signalEvTg4[Sig: signal =| *]: Sig \\> Id = _allowed[Sig, Id]
 }
 
 sealed private[algebra] trait Target2 {
-  implicit def signalEvTg5[Sig: s =| ?]: Sig \\> Id = _allowed[Sig, Id]
+  implicit def signalEvTg5[Sig: s =| *]: Sig \\> Id = _allowed[Sig, Id]
 
   final protected def _allowed[A, B]: A \\> B = new (A \\> B) {}
 }

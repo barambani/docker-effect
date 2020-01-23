@@ -1,13 +1,6 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-lazy val `scala 211` = "2.11.12"
-lazy val `scala 212` = "2.12.8"
-lazy val `scala 213` = "2.13.0"
-
-/**
-  * Scalac options
-  */
-lazy val crossBuildOptions = Seq(
+lazy val scala212Options = Seq(
   "-deprecation",
   "-encoding",
   "UTF-8",
@@ -29,43 +22,49 @@ lazy val crossBuildOptions = Seq(
   "-Ywarn-nullary-unit",
   "-Ywarn-numeric-widen",
   "-Ywarn-value-discard",
-  "-Xfatal-warnings"
-)
-
-lazy val scala212Options = Seq(
+  "-Xfatal-warnings",
   "-opt:l:inline",
   "-Ywarn-unused:imports",
   "-Ywarn-unused:_,imports",
   "-opt-warnings",
   "-Xlint:constant",
   "-Ywarn-extra-implicit",
-  "-opt-inline-from:**"
+  "-opt-inline-from:<source>"
 )
 
-/**
-  * Dependencies
-  */
+lazy val scala213Options = scala212Options diff Seq(
+  "-Ywarn-nullary-override",
+  "-Ypartial-unification",
+  "-Ywarn-nullary-unit",
+  "-Ywarn-inaccessible",
+  "-Ywarn-infer-any",
+  "-Yno-adapted-args",
+  "-Xfuture"
+)
+
 lazy val versionOf = new {
   val cats          = "2.0.0"
-  val kindProjector = "0.10.3"
-  val osLib         = "0.2.9"
+  val kindProjector = "0.11.0"
+  val osLib         = "0.6.3"
   val refined       = "0.9.10"
   val scalaCheck    = "1.14.3"
   val scalaTest     = "3.1.0"
-  val scalazZio     = "1.0-RC5"
+  val zio           = "1.0.0-RC17"
   val shapeless     = "2.3.3"
-  val silencer      = "1.4.2"
+  val silencer      = "1.4.4"
 }
 
 lazy val sharedDependencies = Seq(
-  "com.github.ghik" %% "silencer-lib" % versionOf.silencer
-) map (_.withSources)
+  "com.github.ghik" %% "silencer-lib" % versionOf.silencer % Provided cross CrossVersion.full
+)
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
-    "org.typelevel" %% "kind-projector" % versionOf.kindProjector cross CrossVersion.binary
+    "org.typelevel" %% "kind-projector" % versionOf.kindProjector cross CrossVersion.full
   ),
-  compilerPlugin("com.github.ghik" %% "silencer-plugin" % versionOf.silencer)
+  compilerPlugin(
+    "com.github.ghik" %% "silencer-plugin" % versionOf.silencer cross CrossVersion.full
+  )
 )
 
 lazy val testDependencies = Seq(
@@ -74,28 +73,21 @@ lazy val testDependencies = Seq(
 )
 
 lazy val apiDependencies = Seq(
-  "com.chuusai"   %% "shapeless"  % versionOf.shapeless,
-  "eu.timepit"    %% "refined"    % versionOf.refined,
-  "org.typelevel" %% "cats-core"  % versionOf.cats,
-  "org.scalaz"    %% "scalaz-zio" % versionOf.scalazZio,
-  "com.lihaoyi"   %% "os-lib"     % versionOf.osLib
+  "org.typelevel" %% "cats-core" % versionOf.cats,
+  "com.lihaoyi"   %% "os-lib"    % versionOf.osLib,
+  "eu.timepit"    %% "refined"   % versionOf.refined,
+  "com.chuusai"   %% "shapeless" % versionOf.shapeless,
+  "dev.zio"       %% "zio"       % versionOf.zio
 ) map (_.withSources)
 
-/**
-  * Settings
-  */
 lazy val crossBuildSettings = Seq(
-  scalaVersion        := `scala 212`,
-  crossScalaVersions  := Seq(`scala 211`, `scala 212`),
-  scalacOptions       ++= crossBuildOptions,
   libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
   organization        := "com.github.barambani",
   parallelExecution   in Test := false,
   scalacOptions ++=
-    (scalaVersion.value match {
-      case `scala 212` =>
-        scala212Options
-      case _ => Seq()
+    (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 12)) => scala212Options
+      case _             => scala213Options
     })
 )
 

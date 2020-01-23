@@ -2,8 +2,7 @@ package syntax
 
 import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
-import scalaz.zio
-import scalaz.zio.IO
+import zio.IO
 
 sealed abstract private[syntax] class ZioTestFunctions extends Matchers with zio.DefaultRuntime {
   final def successAssert[E, A](io: IO[E, A])(assert: A => Assertion): Assertion =

@@ -2,7 +2,7 @@ package docker
 package effect
 package interop
 
-import scalaz.zio.ZIO
+import zio.ZIO
 
 sealed trait Accessor[F[-_, +_, +_]] {
   def accessM[R, E, A](f: R => F[R, E, A]): F[R, E, A]

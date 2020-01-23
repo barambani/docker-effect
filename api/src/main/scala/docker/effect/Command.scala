@@ -3,7 +3,7 @@ package effect
 
 import docker.effect.algebra.{ DockerCommand, ErrorMessage, SuccessMessage }
 import eu.timepit.refined.types.string.NonEmptyString
-import scalaz.zio.ZIO
+import zio.ZIO
 
 sealed trait Command[F[-_, +_, +_]] {
   def executed: F[DockerCommand, ErrorMessage, SuccessMessage]

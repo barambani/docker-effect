@@ -1,7 +1,7 @@
 package syntax
 
 import org.scalatest.Assertion
-import scalaz.zio.IO
+import zio.IO
 
 import scala.language.implicitConversions
 
