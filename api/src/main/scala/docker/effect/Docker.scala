@@ -3,13 +3,12 @@ package effect
 
 import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
-import _root_.docker.effect.interop.{ Accessor, Provider }
-import com.github.ghik.silencer.silent
+import _root_.docker.effect.interop.{Accessor, Command, Provider}
 import _root_.docker.effect.syntax.provider._
 import shapeless.ops.hlist.Last
-import shapeless.{ ::, HList }
+import shapeless.{::, HList}
 
-@silent abstract class Docker[F[-_, +_, +_]: Provider: Accessor](implicit command: Command[F]) {
+abstract class Docker[F[-_, +_, +_]: Provider: Accessor](implicit command: Command[F]) {
   val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
     Accessor.accessM {
       _.fold(
@@ -82,7 +81,7 @@ import shapeless.{ ::, HList }
     }
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: F[Any, ErrorMessage, SuccessMessage] =
-    command.executed provided print0[Cmd]
+    command.executed provided printed0[Cmd]
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
     new runPartialTypeApplication[Cmd, F]
@@ -103,6 +102,6 @@ object Docker {
       ev5: Printed[Cmd],
       command: Command[F]
     ): F[Any, ErrorMessage, SuccessMessage] =
-      command.executed provided print1[Cmd](t)
+      command.executed provided printed1[Cmd](t)
   }
 }

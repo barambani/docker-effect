@@ -1,5 +1,4 @@
-package docker
-package effect
+package docker.effect
 package syntax
 
 import docker.effect.interop.Provider

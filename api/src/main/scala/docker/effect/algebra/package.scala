@@ -1,5 +1,4 @@
-package docker
-package effect
+package docker.effect
 
 import cats.syntax.show._
 import com.github.ghik.silencer.silent
@@ -85,10 +84,10 @@ package object algebra {
   final type /\>[Opt, Tgt] = OptionTargetAllowed[Opt, Tgt]
 
   //  printer
-  final def print0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =
+  final def printed0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =
     DockerCommand(p.text)
 
-  final def print1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
+  final def printed1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
     new printPartialTypeApplication[Cmd]
 
   @silent final private[algebra] class printPartialTypeApplication[Cmd <: HList](

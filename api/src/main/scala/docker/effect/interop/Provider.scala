@@ -1,5 +1,4 @@
-package docker
-package effect
+package docker.effect
 package interop
 
 import zio.ZIO

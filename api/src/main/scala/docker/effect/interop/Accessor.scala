@@ -1,5 +1,4 @@
-package docker
-package effect
+package docker.effect
 package interop
 
 import zio.ZIO
@@ -13,6 +12,11 @@ object Accessor {
     ev.accessM(f)
 
   implicit val zioAccessor: Accessor[ZIO] =
+    new Accessor[ZIO] {
+      def accessM[R, E, A](f: R => ZIO[R, E, A]): ZIO[R, E, A] = ZIO.accessM(f)
+    }
+
+  implicit val catsEffectAccessor: Accessor[ZIO] =
     new Accessor[ZIO] {
       def accessM[R, E, A](f: R => ZIO[R, E, A]): ZIO[R, E, A] = ZIO.accessM(f)
     }
