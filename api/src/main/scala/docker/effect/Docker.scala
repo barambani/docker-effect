@@ -3,10 +3,10 @@ package effect
 
 import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
-import _root_.docker.effect.interop.{Accessor, Command, Provider}
+import _root_.docker.effect.interop.{ Accessor, Command, Provider }
 import _root_.docker.effect.syntax.provider._
 import shapeless.ops.hlist.Last
-import shapeless.{::, HList}
+import shapeless.{ ::, HList }
 
 abstract class Docker[F[-_, +_, +_]: Provider: Accessor](implicit command: Command[F]) {
   val runContainer: F[Name | Id, ErrorMessage, SuccessMessage] =
@@ -63,14 +63,10 @@ abstract class Docker[F[-_, +_, +_]: Provider: Accessor](implicit command: Comma
     }
 
   val listAllImages: F[Any, ErrorMessage, SuccessMessage] =
-    Accessor.accessM { _ =>
-      run0[docker :: images :: all :: `.`]
-    }
+    Accessor.accessM(_ => run0[docker :: images :: all :: `.`])
 
   val listAllImageIds: F[Any, ErrorMessage, SuccessMessage] =
-    Accessor.accessM { _ =>
-      run0[docker :: images :: aq :: `.`]
-    }
+    Accessor.accessM(_ => run0[docker :: images :: aq :: `.`])
 
   val removeImage: F[Name | Id, ErrorMessage, SuccessMessage] =
     Accessor.accessM {

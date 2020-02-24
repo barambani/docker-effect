@@ -1,7 +1,7 @@
 package docker.effect
 package interop
 
-import docker.effect.algebra.{DockerCommand, ErrorMessage, SuccessMessage}
+import docker.effect.algebra.{ DockerCommand, ErrorMessage, SuccessMessage }
 import eu.timepit.refined.types.string.NonEmptyString
 import zio.ZIO
 

@@ -11,15 +11,11 @@ final class ZioExecutionCheck extends AnyWordSpecLike with Matchers with ZioTest
 
   "a zio docker effect" should {
     "get the list of images" in {
-      docker.listAllImages satisfies { res =>
-        res.unMk.value shouldBe "a"
-      }
+      docker.listAllImages satisfies { res => res.unMk.value shouldBe "a" }
     }
 
     "run a container by name" in {
-      (docker.runContainer provide Name("alpine").asLeft) satisfies { res =>
-        res.unMk.value shouldBe "a"
-      }
+      (docker.runContainer provide Name("alpine").asLeft) satisfies { res => res.unMk.value shouldBe "a" }
     }
   }
 }

@@ -110,9 +110,7 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
   publishMavenStyle             := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishArtifact               in Test := false,
-  pomIncludeRepository := { _ =>
-    false
-  },
+  pomIncludeRepository          := { _ => false },
   licenses := Seq(
     "MIT License" ->
       url("https://raw.githubusercontent.com/barambani/docker-effect/master/LICENSE")
