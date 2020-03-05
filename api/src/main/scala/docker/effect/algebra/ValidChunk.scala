@@ -89,7 +89,7 @@ sealed trait ValidChunk[Cmd <: HList]
     ev3: TgtB <:!< HList,
     ev4: Prev <~< Refined[String, Equal[LitP]],
     ev5: TgtA <~< Refined[String, MatchesRegex[LitTgtA]],
-    ev6: TgtB <~< Tag.T,
+    ev6: TgtB <~< Tag.opaque,
     ev7: Witness.Aux[LitP],
     ev8: Witness.Aux[LitTgtA],
     ev9: Prev \\> (TgtA, TgtB)

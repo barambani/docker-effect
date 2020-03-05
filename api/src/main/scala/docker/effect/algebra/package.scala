@@ -15,13 +15,13 @@ import shapeless.ops.hlist.Last
 
 package object algebra {
   final val ErrorMessage = MkErrorMessage
-  final type ErrorMessage = ErrorMessage.T
+  final type ErrorMessage = ErrorMessage.opaque
 
   final val SuccessMessage = MkSuccessMessage
-  final type SuccessMessage = SuccessMessage.T
+  final type SuccessMessage = SuccessMessage.opaque
 
   final val DockerCommand = MkDockerCommand
-  final type DockerCommand = DockerCommand.T
+  final type DockerCommand = DockerCommand.opaque
 
   //  commands
   final type docker    = String Refined Equal[W.`"docker"`.T]
@@ -68,7 +68,7 @@ package object algebra {
   final type Id   = String Refined MatchesRegex[W.`"[0-9a-fA-F]+"`.T]
   final type Name = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
   final type Repo = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
-  final type Tag  = Tag.T
+  final type Tag  = Tag.opaque
 
   final object Id   extends RefinedTypeOps[Id, String]
   final object Name extends RefinedTypeOps[Name, String]
