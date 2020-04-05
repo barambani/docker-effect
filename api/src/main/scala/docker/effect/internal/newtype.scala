@@ -1,14 +1,12 @@
 package docker.effect
 package internal
 
-import com.github.ghik.silencer.silent
-
 trait newtype[A] {
   type Base <: Any
   private[newtype] trait Tag extends Any
   type opaque <: Base with Tag
 
-  @silent final private[this] type Id[AA] = AA
+  final private[this] type Id[AA] = AA
 
   @inline final def apply(a: A): opaque =
     a.asInstanceOf[opaque]

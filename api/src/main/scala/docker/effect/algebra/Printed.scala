@@ -14,7 +14,8 @@ sealed trait Printed[A] {
   def text: NonEmptyString
 }
 
-@silent object Printed extends PrintedInstances {
+@silent("parameter value ev. in method [a-zA-Z0-9]+ is never used")
+object Printed extends PrintedInstances {
   implicit def printedCommand[ParCmd, ChiCmd, Rem <: HList](
     implicit
     ev1: ValidChunk[ParCmd :: ChiCmd :: Rem],

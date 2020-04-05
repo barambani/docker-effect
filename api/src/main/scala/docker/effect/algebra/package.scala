@@ -90,7 +90,9 @@ package object algebra {
   final def printed1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
     new printPartialTypeApplication[Cmd]
 
-  @silent final private[algebra] class printPartialTypeApplication[Cmd <: HList](
+  @silent("parameter value ev. in method apply is never used")
+  @silent("it is not recommended to define classes/objects inside of package objects")
+  final private[algebra] class printPartialTypeApplication[Cmd <: HList](
     private val d: Boolean = true
   ) extends AnyVal {
     def apply[Tgt, Exp](t: Tgt)(

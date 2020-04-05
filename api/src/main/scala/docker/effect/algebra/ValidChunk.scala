@@ -11,7 +11,8 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
 
 sealed trait ValidChunk[Cmd <: HList]
 
-@silent object ValidChunk {
+@silent("parameter value (ev.|rec) in method [a-zA-Z0-9]+ is never used")
+object ValidChunk {
   implicit def validCommand[A, Cmd: Command, Rem <: HList, LitI, LitC](
     implicit
     ev1: A <:!< HList,
