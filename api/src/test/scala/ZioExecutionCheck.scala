@@ -1,21 +1,40 @@
-import cats.syntax.either._
+import cats.syntax.show._
 import docker.effect.Docker
 import docker.effect.algebra.Name
+import docker.effect.syntax.successMessage._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
-import zio.ZIO
+import eu.timepit.refined.auto._
 import syntax.ZioTestSyntax
+import zio.RIO
 
 final class ZioExecutionCheck extends AnyWordSpecLike with Matchers with ZioTestSyntax {
-  val docker = Docker[ZIO]
+  val docker = Docker[RIO]
 
   "a zio docker effect" should {
     "get the list of images" in {
-      docker.listAllImages satisfies { res => res.unMk.value shouldBe "a" }
+      docker.listAllImages satisfies { res =>
+        val resText = res.show
+        resText should startWith("REPOSITORY")
+        resText should include("TAG")
+        resText should include("IMAGE ID")
+        resText should include("CREATED")
+        resText should include("SIZE")
+      }
     }
 
-    "run a container by name" in {
-      (docker.runContainer provide Name("alpine").asLeft) satisfies { res => res.unMk.value shouldBe "a" }
+    "start a redis instance" in {
+      docker.runDetachedContainerN.map(_.unsafeId) >>>
+        docker.stopContainerId provide Name("redis") satisfies { stopRes =>
+        stopRes.unsafeId.value should not be empty
+      }
+    }
+
+    "start a redis instance mapping the port" in {
+      docker.runDetachedContainerN.map(_.unsafeId) >>>
+        docker.stopContainerId provide Name("redis") satisfies { stopRes =>
+        stopRes.unsafeId.value should not be empty
+      }
     }
   }
 }

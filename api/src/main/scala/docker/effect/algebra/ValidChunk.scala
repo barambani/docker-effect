@@ -5,6 +5,8 @@ import _root_.docker.effect.algebra.evidences._
 import cats.evidence.<~<
 import com.github.ghik.silencer.silent
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.boolean.And
+import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import shapeless.{ ::, <:!<, HList, HNil, Witness }
@@ -77,7 +79,7 @@ object ValidChunk {
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
     ev3: Prev <~< Refined[String, Equal[LitP]],
-    ev4: Tgt <~< Refined[String, MatchesRegex[LitTgt]],
+    ev4: Tgt <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
     ev5: Witness.Aux[LitP],
     ev6: Witness.Aux[LitTgt],
     ev7: Prev \\> Tgt
@@ -89,19 +91,19 @@ object ValidChunk {
     ev2: TgtA <:!< HList,
     ev3: TgtB <:!< HList,
     ev4: Prev <~< Refined[String, Equal[LitP]],
-    ev5: TgtA <~< Refined[String, MatchesRegex[LitTgtA]],
+    ev5: TgtA <~< Refined[String, NonEmpty And MatchesRegex[LitTgtA]],
     ev6: TgtB <~< Tag.opaque,
     ev7: Witness.Aux[LitP],
     ev8: Witness.Aux[LitTgtA],
     ev9: Prev \\> (TgtA, TgtB)
   ): ValidChunk[Prev :: (TgtA, TgtB) :: HNil] = _validChunk[Prev :: (TgtA, TgtB) :: HNil]
 
-  implicit def validLastOptionTgt[Prev, Tgt, LitP, LitTgt](
+  implicit def validLastOptionArgument[Prev, Tgt, LitP, LitTgt](
     implicit
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
     ev3: Prev <~< Refined[String, Equal[LitP]],
-    ev4: Tgt <~< Refined[String, MatchesRegex[LitTgt]],
+    ev4: Tgt <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
     ev5: Witness.Aux[LitP],
     ev6: Witness.Aux[LitTgt],
     ev7: Prev /\> Tgt

@@ -1,18 +1,18 @@
 package docker.effect
 package interop
 
-import zio.ZIO
+import zio.RIO
 
-sealed trait Accessor[F[-_, +_, +_]] {
-  def accessM[R, E, A](f: R => F[R, E, A]): F[R, E, A]
+sealed trait Accessor[F[-_, +_]] {
+  def accessM[R, A](f: R => F[R, A]): F[R, A]
 }
 
 object Accessor {
-  def accessM[R, E, A, F[-_, +_, +_]](f: R => F[R, E, A])(implicit ev: Accessor[F]): F[R, E, A] =
+  def accessM[R, A, F[-_, +_]](f: R => F[R, A])(implicit ev: Accessor[F]): F[R, A] =
     ev.accessM(f)
 
-  implicit val zioAccessor: Accessor[ZIO] =
-    new Accessor[ZIO] {
-      def accessM[R, E, A](f: R => ZIO[R, E, A]): ZIO[R, E, A] = ZIO.accessM(f)
+  implicit val rioAccessor: Accessor[RIO] =
+    new Accessor[RIO] {
+      def accessM[R, A](f: R => RIO[R, A]): RIO[R, A] = RIO.accessM(f)
     }
 }

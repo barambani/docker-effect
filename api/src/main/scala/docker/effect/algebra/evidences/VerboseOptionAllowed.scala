@@ -6,7 +6,7 @@ sealed trait VerboseOption[_]
 object VerboseOption {
   implicit val voEv0: VerboseOption[all]        = _isVerboseOption[all]
   implicit val voEv1: VerboseOption[digest]     = _isVerboseOption[digest]
-  implicit val voEv2: VerboseOption[detached]   = _isVerboseOption[detached]
+  implicit val voEv2: VerboseOption[detach]     = _isVerboseOption[detach]
   implicit val voEv3: VerboseOption[filter]     = _isVerboseOption[filter]
   implicit val voEv4: VerboseOption[force]      = _isVerboseOption[force]
   implicit val voEv5: VerboseOption[format]     = _isVerboseOption[format]
@@ -39,7 +39,7 @@ object VerboseOptionAllowed {
 
   implicit val evLo15: kill --| signal = _isAllowed[kill, signal]
 
-  implicit val evLo16: run --| detached = _isAllowed[run, detached]
+  implicit val evLo16: run --| detach = _isAllowed[run, detach]
 
   implicit val evLo17: rm --| force = _isAllowed[rm, force]
 

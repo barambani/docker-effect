@@ -1,12 +1,14 @@
 package docker.effect
 
-import cats.syntax.show._
 import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences._
-import docker.effect.algebra.newtypes.{ MkDockerCommand, MkErrorMessage, MkSuccessMessage }
+import docker.effect.algebra.newtypes.{ MkDockerCommand, MkSuccessMessage }
 import docker.effect.internal.newtype
+import docker.effect.syntax.nes._
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
+import eu.timepit.refined.boolean.And
+import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import eu.timepit.refined.types.string.NonEmptyString
@@ -14,8 +16,6 @@ import shapeless.HList
 import shapeless.ops.hlist.Last
 
 package object algebra {
-  final val ErrorMessage = MkErrorMessage
-  final type ErrorMessage = ErrorMessage.opaque
 
   final val SuccessMessage = MkSuccessMessage
   final type SuccessMessage = SuccessMessage.opaque
@@ -38,7 +38,7 @@ package object algebra {
   //  verbose options
   final type all        = String Refined Equal[W.`"all"`.T]
   final type digest     = String Refined Equal[W.`"digest"`.T]
-  final type detached   = String Refined Equal[W.`"detached"`.T]
+  final type detach     = String Refined Equal[W.`"detach"`.T]
   final type filter     = String Refined Equal[W.`"filter"`.T]
   final type force      = String Refined Equal[W.`"force"`.T]
   final type format     = String Refined Equal[W.`"format"`.T]
@@ -65,9 +65,12 @@ package object algebra {
   final type HUP  = String Refined Equal[W.`"HUP"`.T]
 
   //  targets
-  final type Id   = String Refined MatchesRegex[W.`"[0-9a-fA-F]+"`.T]
-  final type Name = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
-  final type Repo = String Refined MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
+  final type IdRef   = NonEmpty And MatchesRegex[W.`"[0-9a-fA-F]+"`.T]
+  final type TextRef = NonEmpty And MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
+
+  final type Id   = String Refined IdRef
+  final type Name = String Refined TextRef
+  final type Repo = String Refined TextRef
   final type Tag  = Tag.opaque
 
   final object Id   extends RefinedTypeOps[Id, String]
@@ -102,7 +105,7 @@ package object algebra {
       ev3: Tgt =:= Exp,
       p: Printed[Cmd]
     ): DockerCommand =
-      DockerCommand(NonEmptyString.unsafeFrom(s"${p.show} $t"))
+      DockerCommand(p.text + " " + t.toString)
 
     def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
       implicit
@@ -111,6 +114,6 @@ package object algebra {
       ev3: Tgt =:= (ExpA, ExpB),
       p: Printed[Cmd]
     ): DockerCommand =
-      DockerCommand(NonEmptyString.unsafeFrom(s"${p.show} ${t._1}:${t._2}"))
+      DockerCommand(p.text + s" ${t._1.toString}:${t._2.toString}")
   }
 }
