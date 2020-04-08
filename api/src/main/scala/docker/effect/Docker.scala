@@ -73,10 +73,10 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: pull :: (Name, Tag) :: `.`](_)
     }
 
-  val listAllImages: F[Any, SuccessMessage] =
+  val listAllImages: F[Unit, SuccessMessage] =
     Accessor.accessM(_ => run0[docker :: images :: all :: `.`])
 
-  val listAllImageIds: F[Any, SuccessMessage] =
+  val listAllImageIds: F[Unit, SuccessMessage] =
     Accessor.accessM(_ => run0[docker :: images :: aq :: `.`])
 
   val removeImage: F[Name, SuccessMessage] =

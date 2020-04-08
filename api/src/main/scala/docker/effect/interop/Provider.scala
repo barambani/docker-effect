@@ -8,8 +8,14 @@ sealed trait Provider[F[-_, +_]] {
 }
 
 object Provider {
-  implicit val rioProvider: Provider[RIO] =
+  implicit val zioRioProvider: Provider[RIO] =
     new Provider[RIO] {
       def provided[R, A](fa: RIO[R, A])(r: =>R): RIO[Any, A] = fa.provide(r)
+    }
+
+  implicit val catsRioProvider: Provider[CatsRIO] =
+    new Provider[CatsRIO] {
+      def provided[R, A](fa: CatsRIO[R, A])(r: =>R): CatsRIO[Any, A] =
+        CovariantKleisli(_ => fa.provided(r))
     }
 }

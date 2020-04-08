@@ -44,6 +44,7 @@ lazy val scala213Options = scala212Options diff Seq(
 
 lazy val versionOf = new {
   val cats          = "2.1.1"
+  val `cats-effect` = "2.1.2"
   val kindProjector = "0.11.0"
   val osLib         = "0.6.3"
   val refined       = "0.9.13"
@@ -73,11 +74,12 @@ lazy val testDependencies = Seq(
 )
 
 lazy val apiDependencies = Seq(
-  "org.typelevel" %% "cats-core" % versionOf.cats,
-  "com.lihaoyi"   %% "os-lib"    % versionOf.osLib,
-  "eu.timepit"    %% "refined"   % versionOf.refined,
-  "com.chuusai"   %% "shapeless" % versionOf.shapeless,
-  "dev.zio"       %% "zio"       % versionOf.zio
+  "org.typelevel" %% "cats-core"   % versionOf.cats,
+  "org.typelevel" %% "cats-effect" % versionOf.`cats-effect`,
+  "com.lihaoyi"   %% "os-lib"      % versionOf.osLib,
+  "eu.timepit"    %% "refined"     % versionOf.refined,
+  "com.chuusai"   %% "shapeless"   % versionOf.shapeless,
+  "dev.zio"       %% "zio"         % versionOf.zio
 ) map (_.withSources)
 
 lazy val crossBuildSettings = Seq(
