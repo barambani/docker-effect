@@ -16,7 +16,8 @@ sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](val rio: (=>R) => F
 
   @inline final def map[B](f: A => B): CovariantKleisli[F, R, B] = <&>(f)
 
-  @inline final def flatMap[RR <: R, B](f: A => CovariantKleisli[F, RR, B]): CovariantKleisli[F, RR, B] = >>=(f)
+  @inline final def flatMap[RR <: R, B](f: A => CovariantKleisli[F, RR, B]): CovariantKleisli[F, RR, B] =
+    >>=(f)
 
   @inline final def provided[RR <: R](r: =>RR): F[A] = rio(r)
 }
@@ -26,6 +27,8 @@ object CovariantKleisli {
   @inline final def apply[F[+_]: Monad, R, A](rio: (=>R) => F[A]): CovariantKleisli[F, R, A] =
     new CovariantKleisli[F, R, A](rio) {}
 
-  @inline final def accessing[F[+_]: Monad, R, A](read: R => CovariantKleisli[F, R, A]): CovariantKleisli[F, R, A] =
+  @inline final def accessing[F[+_]: Monad, R, A](
+    read: R => CovariantKleisli[F, R, A]
+  ): CovariantKleisli[F, R, A] =
     CovariantKleisli(r => read(r).rio(r))
 }
