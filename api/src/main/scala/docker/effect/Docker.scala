@@ -8,7 +8,7 @@ import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
 
 abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F]) {
-  val runContainerN: F[Name, SuccessMessage] =
+  val runContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: run :: Name :: `.`](_)
     }
@@ -18,7 +18,7 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: run :: Id :: `.`](_)
     }
 
-  val runDetachedContainerN: F[Name, SuccessMessage] =
+  val runDetachedContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: run :: detach :: Name :: `.`](_)
     }
@@ -28,7 +28,7 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: run :: detach :: Id :: `.`](_)
     }
 
-  val stopContainerN: F[Name, SuccessMessage] =
+  val stopContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: stop :: Name :: `.`](_)
     }
@@ -38,7 +38,7 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: stop :: Id :: `.`](_)
     }
 
-  val killContainerN: F[Name, SuccessMessage] =
+  val killContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: kill :: Name :: `.`](_)
     }
@@ -48,7 +48,7 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: kill :: Id :: `.`](_)
     }
 
-  val removeContainerN: F[Name, SuccessMessage] =
+  val removeContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: rm :: Name :: `.`](_)
     }
@@ -58,12 +58,12 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: rm :: Id :: `.`](_)
     }
 
-  val forceRemoveContainerN: F[Name, SuccessMessage] =
+  val forceRemoveContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: rm :: force :: Name :: `.`](_)
     }
 
-  val forceRemoveContainer: F[Id, SuccessMessage] =
+  val forceRemoveContainerId: F[Id, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: rm :: force :: Id :: `.`](_)
     }
@@ -79,7 +79,7 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
   val listAllImageIds: F[Any, SuccessMessage] =
     Accessor.accessM(_ => run0[docker :: images :: aq :: `.`])
 
-  val removeImageN: F[Name, SuccessMessage] =
+  val removeImage: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: rmi :: Name :: `.`](_)
     }

@@ -24,14 +24,14 @@ final class ZioExecutionCheck extends AnyWordSpecLike with Matchers with ZioTest
     }
 
     "start a redis instance" in {
-      docker.runDetachedContainerN.map(_.unsafeId) >>>
+      docker.runDetachedContainer.map(_.unsafeId) >>>
         docker.stopContainerId provide Name("redis") satisfies { stopRes =>
         stopRes.unsafeId.value should not be empty
       }
     }
 
     "start a redis instance mapping the port" in {
-      docker.runDetachedContainerN.map(_.unsafeId) >>>
+      docker.runDetachedContainer.map(_.unsafeId) >>>
         docker.stopContainerId provide Name("redis") satisfies { stopRes =>
         stopRes.unsafeId.value should not be empty
       }
