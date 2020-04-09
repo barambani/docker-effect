@@ -36,12 +36,12 @@ final class CorrectCommandTextCheck extends AnyWordSpecLike with Matchers {
       printed1[docker :: rmi :: Id :: `.`](Id("fd484f19954f")).show  shouldBe "docker rmi fd484f19954f"
       printed1[docker :: rmi :: Repo :: `.`](Repo("test-repo")).show shouldBe "docker rmi test-repo"
 
-      printed1[docker :: run :: Name :: `.`](Name("test-container")).show             shouldBe "docker run test-container"
-      printed1[docker :: run :: Id :: `.`](Id("fd484f19954f")).show                   shouldBe "docker run fd484f19954f"
-      printed1[docker :: run :: detached :: Name :: `.`](Name("test-container")).show shouldBe "docker run --detached test-container"
-      printed1[docker :: run :: detached :: Id :: `.`](Id("fd484f19954f")).show       shouldBe "docker run --detached fd484f19954f"
-      printed1[docker :: run :: d :: Name :: `.`](Name("test-container")).show        shouldBe "docker run -d test-container"
-      printed1[docker :: run :: d :: Id :: `.`](Id("fd484f19954f")).show              shouldBe "docker run -d fd484f19954f"
+      printed1[docker :: run :: Name :: `.`](Name("test-container")).show           shouldBe "docker run test-container"
+      printed1[docker :: run :: Id :: `.`](Id("fd484f19954f")).show                 shouldBe "docker run fd484f19954f"
+      printed1[docker :: run :: detach :: Name :: `.`](Name("test-container")).show shouldBe "docker run --detach test-container"
+      printed1[docker :: run :: detach :: Id :: `.`](Id("fd484f19954f")).show       shouldBe "docker run --detach fd484f19954f"
+      printed1[docker :: run :: d :: Name :: `.`](Name("test-container")).show      shouldBe "docker run -d test-container"
+      printed1[docker :: run :: d :: Id :: `.`](Id("fd484f19954f")).show            shouldBe "docker run -d fd484f19954f"
 
       printed1[docker :: stop :: Name :: `.`](Name("test-container")).show shouldBe "docker stop test-container"
       printed1[docker :: stop :: Id :: `.`](Id("fd484f19954f")).show       shouldBe "docker stop fd484f19954f"

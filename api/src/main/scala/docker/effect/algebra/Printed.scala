@@ -1,21 +1,20 @@
 package docker.effect
 package algebra
 
-import cats.Show
 import cats.evidence.<~<
 import com.github.ghik.silencer.silent
+import docker.effect.syntax.nes._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.types.string.NonEmptyString
 import shapeless.{ ::, <:!<, HList, HNil, Witness }
-import cats.syntax.show._
 
 sealed trait Printed[A] {
   def text: NonEmptyString
 }
 
 @silent("parameter value ev. in method [a-zA-Z0-9]+ is never used")
-object Printed extends PrintedInstances {
+object Printed {
   implicit def printedCommand[ParCmd, ChiCmd, Rem <: HList](
     implicit
     ev1: ValidChunk[ParCmd :: ChiCmd :: Rem],
@@ -24,7 +23,7 @@ object Printed extends PrintedInstances {
     rem: Printed[ChiCmd :: Rem]
   ): Printed[ParCmd :: ChiCmd :: Rem] =
     new Printed[ParCmd :: ChiCmd :: Rem] {
-      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prP.show} ${rem.show}")
+      val text: NonEmptyString = prP.text space rem.text
     }
 
   implicit def printedOption[Cmd, Opt, Rem <: HList](
@@ -35,7 +34,7 @@ object Printed extends PrintedInstances {
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
     new Printed[Cmd :: Opt :: Rem] {
-      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prC.show} --${rem.show}")
+      val text: NonEmptyString = prC.text ++ " --" ++ rem.text
     }
 
   implicit def printedCompactOption[Cmd, Opt, Rem <: HList](
@@ -46,7 +45,7 @@ object Printed extends PrintedInstances {
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
     new Printed[Cmd :: Opt :: Rem] {
-      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prC.show} -${rem.show}")
+      val text: NonEmptyString = prC.text ++ " -" ++ rem.text
     }
 
   implicit def printedOptionArgument[Opt, Arg, Rem <: HList](
@@ -57,7 +56,7 @@ object Printed extends PrintedInstances {
     rem: Printed[Arg :: Rem]
   ): Printed[Opt :: Arg :: Rem] =
     new Printed[Opt :: Arg :: Rem] {
-      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${prO.show}=${rem.show}")
+      val text: NonEmptyString = prO.text ++ "=" ++ rem.text
     }
 
   implicit def printedLastCommandTgt[Prev, Tgt](
@@ -96,12 +95,5 @@ object Printed extends PrintedInstances {
   ): Printed[Lit] =
     new Printed[Lit] {
       val text: NonEmptyString = NonEmptyString.unsafeFrom(wit.value.toString)
-    }
-}
-
-sealed private[algebra] trait PrintedInstances {
-  implicit def printedShow[A]: Show[Printed[A]] =
-    new Show[Printed[A]] {
-      def show(t: Printed[A]): String = t.text.value
     }
 }
