@@ -16,6 +16,6 @@ object Provider {
   implicit val catsRioProvider: Provider[CatsRIO] =
     new Provider[CatsRIO] {
       def provided[R, A](fa: CatsRIO[R, A])(r: =>R): CatsRIO[Any, A] =
-        CovariantKleisli(_ => fa.provided(r))
+        CatsRIO(_ => fa.provided(r))
     }
 }
