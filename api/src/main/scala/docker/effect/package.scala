@@ -10,7 +10,5 @@ package object effect {
   final type `.` = HNil
 
   final type CatsRIO[-R, A] = Kleisli[IO, R, A]
-  final type CatsIO[A]      = CatsRIO[Any, A]
-
   final val CatsRIO = Kleisli
 }
