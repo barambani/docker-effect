@@ -1,20 +1,16 @@
-import cats.Functor
-import cats.syntax.functor._
 import cats.syntax.show._
+import docker.effect.Docker
 import docker.effect.algebra.Name
-import docker.effect.interop.{ Provider, RioChain }
-import docker.effect.syntax.rioChain._
+import docker.effect.interop.{ Provider, RioChain, RioFunctor }
 import docker.effect.syntax.provider._
+import docker.effect.syntax.rio._
 import docker.effect.syntax.successMessage._
-import docker.effect.{ CatsRIO, Docker }
 import instances.TestRun
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import syntax.TestSyntax
-import zio.RIO
-import zio.interop.catz
 
-sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain, G[_]: TestRun](
+sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: RioFunctor, G[_]: TestRun](
   docker: Docker[F, G],
   name: String
 ) extends AnyWordSpecLike
@@ -22,8 +18,6 @@ sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain, G
     with TestSyntax {
 
   import docker._
-
-  implicit def F[R]: Functor[F[R, *]]
 
   s"a $name docker effect" should {
     "get the list of images" in {
@@ -38,22 +32,18 @@ sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain, G
     }
 
     "start a redis instance" in {
-      (runDetachedContainer.map(_.unsafeId) >>> stopContainerId)
+      (runDetachedContainer <&> (_.unsafeId) >>> stopContainerId)
         .provided(Name("redis"))
         .satisfies(_.unsafeId.value should not be empty)
     }
 
     "start a redis instance mapping the port" in {
-      (runDetachedContainer.map(_.unsafeId) >>> stopContainerId)
+      (runDetachedContainer <&> (_.unsafeId) >>> stopContainerId)
         .provided(Name("redis"))
         .satisfies(_.unsafeId.value should not be empty)
     }
   }
 }
 
-final class ZioExecutionCheck extends ExecutionCheck(Docker.zio, "Zio") {
-  def F[R]: Functor[RIO[R, *]] = catz.monadErrorInstance
-}
-final class CatsExecutionCheck extends ExecutionCheck(Docker.cats, "Cats IO") {
-  def F[R]: Functor[CatsRIO[R, *]] = Functor[CatsRIO[R, *]]
-}
+final class ZioExecutionCheck  extends ExecutionCheck(Docker.zio, "Zio")
+final class CatsExecutionCheck extends ExecutionCheck(Docker.cats, "Cats IO")
