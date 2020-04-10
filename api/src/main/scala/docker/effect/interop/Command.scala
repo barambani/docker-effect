@@ -1,12 +1,13 @@
 package docker.effect
 package interop
 
+import cats.data.Kleisli
 import cats.effect.{ IO => CatsIO }
 import docker.effect.algebra.{ DockerCommand, SuccessMessage }
 import docker.effect.syntax.commands._
 import zio.RIO
 
-sealed trait Command[F[-_, +_]] {
+sealed trait Command[F[-_, _]] {
   def executed: F[DockerCommand, SuccessMessage]
 }
 
@@ -38,7 +39,7 @@ object Command {
     new Command[CatsRIO] {
       import cats.syntax.flatMap._
       def executed: CatsRIO[DockerCommand, SuccessMessage] =
-        CovariantKleisli { cmd =>
+        Kleisli { cmd =>
           CatsIO.delay(
             os.proc(cmd.words)
               .call(

@@ -14,8 +14,8 @@ import syntax.TestSyntax
 import zio.RIO
 import zio.interop.catz
 
-sealed abstract class ExecutionCheck[F[-_, +_]: Provider: RioChain: TestRun](
-  docker: Docker[F],
+sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain, G[_]: TestRun](
+  docker: Docker[F, G],
   name: String
 ) extends AnyWordSpecLike
     with Matchers
@@ -51,9 +51,9 @@ sealed abstract class ExecutionCheck[F[-_, +_]: Provider: RioChain: TestRun](
   }
 }
 
-final class ZioExecutionCheck extends ExecutionCheck(Docker[RIO], "Zio") {
+final class ZioExecutionCheck extends ExecutionCheck(Docker.zio, "Zio") {
   def F[R]: Functor[RIO[R, *]] = catz.monadErrorInstance
 }
-final class CatsExecutionCheck extends ExecutionCheck(Docker[CatsRIO], "Cats IO") {
+final class CatsExecutionCheck extends ExecutionCheck(Docker.cats, "Cats IO") {
   def F[R]: Functor[CatsRIO[R, *]] = Functor[CatsRIO[R, *]]
 }

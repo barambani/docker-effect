@@ -4,10 +4,14 @@ import _root_.docker.effect.Docker.runPartialTypeApplication
 import _root_.docker.effect.algebra._
 import _root_.docker.effect.interop.{ Accessor, Command, Provider }
 import _root_.docker.effect.syntax.provider._
+import cats.effect.IO
 import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
+import zio.{ RIO, Task }
 
-abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F]) {
+abstract class Docker[F[-_, _]: Provider[*[_, _], G]: Accessor[G, *[_, _]], G[_]](
+  implicit command: Command[F]
+) {
   val runContainer: F[Name, SuccessMessage] =
     Accessor.accessM {
       run1[docker :: run :: Name :: `.`](_)
@@ -89,28 +93,33 @@ abstract class Docker[F[-_, +_]: Provider: Accessor](implicit command: Command[F
       run1[docker :: rmi :: Id :: `.`](_)
     }
 
-  private[effect] def run0[Cmd <: HList: Valid: Printed]: F[Any, SuccessMessage] =
+  private[effect] def run0[Cmd <: HList: Valid: Printed]: G[SuccessMessage] =
     command.executed provided printed0[Cmd]
 
-  private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F] =
-    new runPartialTypeApplication[Cmd, F]
+  private[effect] def run1[Cmd <: HList]: runPartialTypeApplication[Cmd, F, G] =
+    new runPartialTypeApplication[Cmd, F, G]
 }
 
 object Docker {
-  def apply[F[-_, +_]: Command: Accessor: Provider]: Docker[F] = new Docker[F] {}
 
-  final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[-_, +_]](
-    private val d: Boolean = true
+  @inline final val zio: Docker[RIO, Task]    = Docker[RIO, Task]
+  @inline final val cats: Docker[CatsRIO, IO] = Docker[CatsRIO, IO]
+
+  @inline final def apply[F[-_, _]: Command: Provider[*[_, _], G], G[_]: Accessor[*[_], F]]: Docker[F, G] =
+    new Docker[F, G] {}
+
+  final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[-_, _], G[_]](
+    private val `_`: Boolean = true
   ) extends AnyVal {
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
-      ev4: Provider[F],
+      ev4: Provider[F, G],
       ev5: Printed[Cmd],
       command: Command[F]
-    ): F[Any, SuccessMessage] =
+    ): G[SuccessMessage] =
       command.executed provided printed1[Cmd](t)
   }
 }

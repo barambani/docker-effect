@@ -1,7 +1,7 @@
 package docker
 
+import cats.data.Kleisli
 import cats.effect.IO
-import docker.effect.interop.{ CovariantKleisli, CovariantKleisliAny }
 import shapeless.HNil
 
 package object effect {
@@ -9,9 +9,8 @@ package object effect {
 
   final type `.` = HNil
 
-  final type CatsRIO[-R, +A] = CovariantKleisli[IO, R, A]
-  final type CatsIO[+A]      = CatsRIO[Any, A]
+  final type CatsRIO[-R, A] = Kleisli[IO, R, A]
+  final type CatsIO[A]      = CatsRIO[Any, A]
 
-  final val CatsRIO = CovariantKleisli
-  final val CatsIO  = CovariantKleisliAny
+  final val CatsRIO = Kleisli
 }
