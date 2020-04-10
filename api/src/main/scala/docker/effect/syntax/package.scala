@@ -5,4 +5,5 @@ package object syntax {
   object provider       extends ProviderSyntax
   object commands       extends DockerCommandSyntax
   object successMessage extends SuccessMessageSyntax
+  object rioChain       extends RioChainSyntax
 }
