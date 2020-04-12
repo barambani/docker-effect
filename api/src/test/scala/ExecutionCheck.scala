@@ -1,17 +1,23 @@
+import cats.effect.Sync
 import cats.syntax.show._
 import docker.effect.Docker
 import docker.effect.algebra.Name
-import docker.effect.interop.{ Provider, RioChain, RioMonad }
+import docker.effect.interop.{ Accessor, Provider, RioMonad }
 import docker.effect.syntax.provider._
 import docker.effect.syntax.rio._
 import instances.TestRun
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import syntax.TestSyntax
+import zio.interop.catz._
 
-sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: RioMonad, G[_]: TestRun](
-  docker: Docker[F, G],
-  name: String
+sealed abstract class ExecutionCheck[F[-_, _], G[_]](docker: Docker[F, G], name: String)(
+  implicit
+  ev1: RioMonad[F],
+  ev2: Provider[F, G],
+  ev3: Accessor[G, F],
+  ev4: TestRun[G],
+  syc: Sync[G]
 ) extends AnyWordSpecLike
     with Matchers
     with TestSyntax {
@@ -37,8 +43,10 @@ sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: R
     }
 
     "start a redis instance mapping the port" in {
-      (runDetachedContainer >>>
-        stopContainerId.flatTap(_ => RioMonad[F].pure(())) >>>
+      (runDetachedContainer.flatTap { _ =>
+        syc.unit
+      } >>>
+        stopContainerId >>>
         removeContainerId)
         .provided(Name("redis"))
         .satisfies(_.value should not be empty)
