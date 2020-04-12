@@ -1,76 +1,82 @@
 package docker.effect
 
-import _root_.docker.effect.Docker.runPartialTypeApplication
-import _root_.docker.effect.algebra._
-import _root_.docker.effect.interop.{ Accessor, Command, Provider }
-import _root_.docker.effect.syntax.provider._
+import docker.effect.Docker.runPartialTypeApplication
+import docker.effect.algebra._
+import docker.effect.interop.{ Accessor, Command, Provider, RioFunctor }
+import docker.effect.syntax.provider._
+import docker.effect.syntax.rio._
+import docker.effect.syntax.successMessage._
 import cats.effect.IO
 import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
 import zio.{ RIO, Task }
 
-abstract class Docker[F[-_, _]: Provider[*[_, _], G]: Accessor[G, *[_, _]], G[_]](
-  implicit command: Command[F]
+abstract class Docker[F[-_, _], G[_]](
+  implicit
+  ev0: RioFunctor[F],
+  ev1: Accessor[G, F],
+  ev2: Provider[F, G],
+  command: Command[F]
 ) {
-  val runContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val runContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: run :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val runContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val runContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: run :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val runDetachedContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val runDetachedContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: run :: detach :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val runDetachedContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val runDetachedContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: run :: detach :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val stopContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val stopContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: stop :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val stopContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val stopContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: stop :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val killContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val killContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: kill :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val killContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val killContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: kill :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val removeContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val removeContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: rm :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val removeContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val removeContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: rm :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val forceRemoveContainer: F[Name, SuccessMessage] =
-    Accessor.accessM {
+  val forceRemoveContainer: F[Name, Id] =
+    Accessor.accessM[Name] {
       run1[docker :: rm :: force :: Name :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
-  val forceRemoveContainerId: F[Id, SuccessMessage] =
-    Accessor.accessM {
+  val forceRemoveContainerId: F[Id, Id] =
+    Accessor.accessM[Id] {
       run1[docker :: rm :: force :: Id :: `.`](_)
-    }
+    } <&> (_.unsafeId)
 
   val pullImage: F[(Name, Tag), SuccessMessage] =
     Accessor.accessM {
@@ -102,10 +108,16 @@ abstract class Docker[F[-_, _]: Provider[*[_, _], G]: Accessor[G, *[_, _]], G[_]
 
 object Docker {
 
-  @inline final val zio: Docker[RIO, Task]    = Docker[RIO, Task]
-  @inline final val cats: Docker[CatsRIO, IO] = Docker[CatsRIO, IO]
+  @inline final val zio: Docker[RIO, Task]      = Docker[RIO, Task]
+  @inline final val catsIo: Docker[CatsRIO, IO] = Docker[CatsRIO, IO]
 
-  @inline final def apply[F[-_, _]: Command: Provider[*[_, _], G], G[_]: Accessor[*[_], F]]: Docker[F, G] =
+  @inline final def apply[F[-_, _], G[_]](
+    implicit
+    ev0: RioFunctor[F],
+    ev2: Provider[F, G],
+    ev3: Accessor[G, F],
+    ev4: Command[F]
+  ): Docker[F, G] =
     new Docker[F, G] {}
 
   final private[Docker] class runPartialTypeApplication[Cmd <: HList, F[-_, _], G[_]](

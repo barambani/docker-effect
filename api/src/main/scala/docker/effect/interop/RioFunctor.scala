@@ -3,7 +3,7 @@ package interop
 
 import zio.RIO
 
-sealed trait RioFunctor[F[-_, _]] {
+trait RioFunctor[F[-_, _]] {
   def <&>[R, A, B](fa: F[R, A])(f: A => B): F[R, B]
 }
 

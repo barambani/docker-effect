@@ -1,16 +1,15 @@
 import cats.syntax.show._
 import docker.effect.Docker
 import docker.effect.algebra.Name
-import docker.effect.interop.{ Provider, RioChain, RioFunctor }
+import docker.effect.interop.{ Provider, RioChain, RioMonad }
 import docker.effect.syntax.provider._
 import docker.effect.syntax.rio._
-import docker.effect.syntax.successMessage._
 import instances.TestRun
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import syntax.TestSyntax
 
-sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: RioFunctor, G[_]: TestRun](
+sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: RioMonad, G[_]: TestRun](
   docker: Docker[F, G],
   name: String
 ) extends AnyWordSpecLike
@@ -32,18 +31,20 @@ sealed abstract class ExecutionCheck[F[-_, _]: Provider[*[_, _], G]: RioChain: R
     }
 
     "start a redis instance" in {
-      (runDetachedContainer <&> (_.unsafeId) >>> stopContainerId)
+      (runDetachedContainer >>> stopContainerId >>> removeContainerId)
         .provided(Name("redis"))
-        .satisfies(_.unsafeId.value should not be empty)
+        .satisfies(_.value should not be empty)
     }
 
     "start a redis instance mapping the port" in {
-      (runDetachedContainer <&> (_.unsafeId) >>> stopContainerId)
+      (runDetachedContainer >>>
+        stopContainerId.flatTap(_ => RioMonad[F].pure(())) >>>
+        removeContainerId)
         .provided(Name("redis"))
-        .satisfies(_.unsafeId.value should not be empty)
+        .satisfies(_.value should not be empty)
     }
   }
 }
 
 final class ZioExecutionCheck  extends ExecutionCheck(Docker.zio, "Zio")
-final class CatsExecutionCheck extends ExecutionCheck(Docker.cats, "Cats IO")
+final class CatsExecutionCheck extends ExecutionCheck(Docker.catsIo, "Cats IO")
