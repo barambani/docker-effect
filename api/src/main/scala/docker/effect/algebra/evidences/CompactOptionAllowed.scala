@@ -17,23 +17,23 @@ object CompactOption {
 
 sealed trait CompactOptionAllowed[C, O]
 object CompactOptionAllowed {
-  implicit val evCo1: images -| a  = _isAllowed[images, a]
-  implicit val evCo2: images -| f  = _isAllowed[images, f]
-  implicit val evCo3: images -| q  = _isAllowed[images, q]
-  implicit val evCo4: images -| aq = _isAllowed[images, aq]
+  implicit val evCo1: images AcceptsCompactOpt a  = _isAllowed[images, a]
+  implicit val evCo2: images AcceptsCompactOpt f  = _isAllowed[images, f]
+  implicit val evCo3: images AcceptsCompactOpt q  = _isAllowed[images, q]
+  implicit val evCo4: images AcceptsCompactOpt aq = _isAllowed[images, aq]
 
-  implicit val evCo5: ps -| a  = _isAllowed[ps, a]
-  implicit val evCo6: ps -| f  = _isAllowed[ps, f]
-  implicit val evCo7: ps -| f  = _isAllowed[ps, f]
-  implicit val evCo8: ps -| l  = _isAllowed[ps, l]
-  implicit val evCo9: ps -| q  = _isAllowed[ps, q]
-  implicit val evCo10: ps -| s = _isAllowed[ps, s]
+  implicit val evCo5: ps AcceptsCompactOpt a  = _isAllowed[ps, a]
+  implicit val evCo6: ps AcceptsCompactOpt f  = _isAllowed[ps, f]
+  implicit val evCo7: ps AcceptsCompactOpt f  = _isAllowed[ps, f]
+  implicit val evCo8: ps AcceptsCompactOpt l  = _isAllowed[ps, l]
+  implicit val evCo9: ps AcceptsCompactOpt q  = _isAllowed[ps, q]
+  implicit val evCo10: ps AcceptsCompactOpt s = _isAllowed[ps, s]
 
-  implicit val evCo11: kill -| s = _isAllowed[kill, s]
+  implicit val evCo11: kill AcceptsCompactOpt s = _isAllowed[kill, s]
 
-  implicit val evLo12: run -| d = _isAllowed[run, d]
+  implicit val evLo12: run AcceptsCompactOpt d = _isAllowed[run, d]
 
-  implicit val evLo13: rm -| f = _isAllowed[rm, f]
+  implicit val evLo13: rm AcceptsCompactOpt f = _isAllowed[rm, f]
 
-  private[this] def _isAllowed[A, B]: A -| B = new (A -| B) {}
+  private[this] def _isAllowed[A, B]: A AcceptsCompactOpt B = new (A AcceptsCompactOpt B) {}
 }
