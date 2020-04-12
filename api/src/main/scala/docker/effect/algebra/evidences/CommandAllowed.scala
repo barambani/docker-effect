@@ -19,5 +19,6 @@ object Command {
 
 sealed trait CommandAllowed[In, Cmd]
 object CommandAllowed {
-  implicit def initialCommandEv[A: Initial, B: Command]: A :-: B = new (A :-: B) {}
+  implicit def initialCommandEv[A: Initial, B: Command]: B CmdCanFollow A =
+    new (B CmdCanFollow A) {}
 }

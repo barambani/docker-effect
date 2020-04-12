@@ -79,12 +79,12 @@ package object algebra {
   final val Tag = newtype[NonEmptyString]
 
   // relationships
-  final type :-:[In, Cmd]  = CommandAllowed[In, Cmd]
-  final type --|[Cmd, Opt] = VerboseOptionAllowed[Cmd, Opt]
-  final type -|[Cmd, Opt]  = CompactOptionAllowed[Cmd, Opt]
-  final type =|[Opt, Arg]  = OptionArgumentAllowed[Opt, Arg]
-  final type \\>[Cmd, Tgt] = CommandTargetAllowed[Cmd, Tgt]
-  final type /\>[Opt, Tgt] = OptionTargetAllowed[Opt, Tgt]
+  final type CmdCanFollow[Cmd, In]       = CommandAllowed[In, Cmd]
+  final type AcceptsVerboseOpt[Cmd, Opt] = VerboseOptionAllowed[Cmd, Opt]
+  final type AcceptsCompactOpt[Cmd, Opt] = CompactOptionAllowed[Cmd, Opt]
+  final type AcceptsArgument[Opt, Arg]   = OptionArgumentAllowed[Opt, Arg]
+  final type AcceptsCmdTarget[Cmd, Tgt]  = CommandTargetAllowed[Cmd, Tgt]
+  final type AcceptsOptTarget[Opt, Tgt]  = OptionTargetAllowed[Opt, Tgt]
 
   //  printer
   final def printed0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =

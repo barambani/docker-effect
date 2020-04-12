@@ -15,21 +15,21 @@ sealed trait Printed[A] {
 
 @silent("parameter value ev. in method [a-zA-Z0-9]+ is never used")
 object Printed {
-  implicit def printedCommand[ParCmd, ChiCmd, Rem <: HList](
+  implicit def printedCommand[Par, Chi, Rem <: HList](
     implicit
-    ev1: ValidChunk[ParCmd :: ChiCmd :: Rem],
-    ev2: ParCmd :-: ChiCmd,
-    prP: Printed[ParCmd],
-    rem: Printed[ChiCmd :: Rem]
-  ): Printed[ParCmd :: ChiCmd :: Rem] =
-    new Printed[ParCmd :: ChiCmd :: Rem] {
+    ev1: ValidChunk[Par :: Chi :: Rem],
+    ev2: Chi CmdCanFollow Par,
+    prP: Printed[Par],
+    rem: Printed[Chi :: Rem]
+  ): Printed[Par :: Chi :: Rem] =
+    new Printed[Par :: Chi :: Rem] {
       val text: NonEmptyString = prP.text space rem.text
     }
 
   implicit def printedOption[Cmd, Opt, Rem <: HList](
     implicit
     ev1: ValidChunk[Cmd :: Opt :: Rem],
-    ev2: Cmd --| Opt,
+    ev2: Cmd AcceptsVerboseOpt Opt,
     prC: Printed[Cmd],
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
@@ -40,7 +40,7 @@ object Printed {
   implicit def printedCompactOption[Cmd, Opt, Rem <: HList](
     implicit
     ev1: ValidChunk[Cmd :: Opt :: Rem],
-    ev2: Cmd -| Opt,
+    ev2: Cmd AcceptsCompactOpt Opt,
     prC: Printed[Cmd],
     rem: Printed[Opt :: Rem]
   ): Printed[Cmd :: Opt :: Rem] =
@@ -51,7 +51,7 @@ object Printed {
   implicit def printedOptionArgument[Opt, Arg, Rem <: HList](
     implicit
     ev1: ValidChunk[Opt :: Arg :: Rem],
-    ev2: Opt =| Arg,
+    ev2: Opt AcceptsArgument Arg,
     prO: Printed[Opt],
     rem: Printed[Arg :: Rem]
   ): Printed[Opt :: Arg :: Rem] =
@@ -62,7 +62,7 @@ object Printed {
   implicit def printedLastCommandTgt[Prev, Tgt](
     implicit
     ev1: ValidChunk[Prev :: Tgt :: HNil],
-    ev2: Prev \\> Tgt,
+    ev2: Prev AcceptsCmdTarget Tgt,
     prv: Printed[Prev]
   ): Printed[Prev :: Tgt :: HNil] =
     new Printed[Prev :: Tgt :: HNil] {
@@ -72,7 +72,7 @@ object Printed {
   implicit def printedLastOptionTgt[Prev, Tgt](
     implicit
     ev1: ValidChunk[Prev :: Tgt :: HNil],
-    ev2: Prev /\> Tgt,
+    ev2: Prev AcceptsOptTarget Tgt,
     prv: Printed[Prev]
   ): Printed[Prev :: Tgt :: HNil] =
     new Printed[Prev :: Tgt :: HNil] {
