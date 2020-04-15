@@ -43,15 +43,17 @@ lazy val scala213Options = scala212Options diff Seq(
 )
 
 lazy val versionOf = new {
-  val cats          = "2.1.1"
-  val kindProjector = "0.11.0"
-  val osLib         = "0.6.3"
-  val refined       = "0.9.13"
-  val scalaCheck    = "1.14.3"
-  val scalaTest     = "3.1.1"
-  val zio           = "1.0.0-RC18-2"
-  val shapeless     = "2.3.3"
-  val silencer      = "1.6.0"
+  val cats           = "2.1.1"
+  val catsEffect     = "2.1.2"
+  val kindProjector  = "0.11.0"
+  val osLib          = "0.6.3"
+  val refined        = "0.9.13"
+  val scalaCheck     = "1.14.3"
+  val scalaTest      = "3.1.1"
+  val zio            = "1.0.0-RC18-2"
+  val zioInteropCats = "2.0.0.0-RC12"
+  val shapeless      = "2.3.3"
+  val silencer       = "1.6.0"
 }
 
 lazy val sharedDependencies = Seq(
@@ -68,16 +70,18 @@ lazy val compilerPluginsDependencies = Seq(
 )
 
 lazy val testDependencies = Seq(
-  "org.scalacheck" %% "scalacheck" % versionOf.scalaCheck % Test,
-  "org.scalatest"  %% "scalatest"  % versionOf.scalaTest  % Test
+  "org.scalacheck" %% "scalacheck"       % versionOf.scalaCheck     % Test,
+  "org.scalatest"  %% "scalatest"        % versionOf.scalaTest      % Test,
+  "dev.zio"        %% "zio-interop-cats" % versionOf.zioInteropCats % Test
 )
 
 lazy val apiDependencies = Seq(
-  "org.typelevel" %% "cats-core" % versionOf.cats,
-  "com.lihaoyi"   %% "os-lib"    % versionOf.osLib,
-  "eu.timepit"    %% "refined"   % versionOf.refined,
-  "com.chuusai"   %% "shapeless" % versionOf.shapeless,
-  "dev.zio"       %% "zio"       % versionOf.zio
+  "org.typelevel" %% "cats-core"   % versionOf.cats,
+  "org.typelevel" %% "cats-effect" % versionOf.catsEffect,
+  "com.lihaoyi"   %% "os-lib"      % versionOf.osLib,
+  "eu.timepit"    %% "refined"     % versionOf.refined,
+  "com.chuusai"   %% "shapeless"   % versionOf.shapeless,
+  "dev.zio"       %% "zio"         % versionOf.zio
 ) map (_.withSources)
 
 lazy val crossBuildSettings = Seq(
