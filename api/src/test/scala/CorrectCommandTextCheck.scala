@@ -9,15 +9,17 @@ import shapeless.::
 final class CorrectCommandTextCheck extends AnyWordSpecLike with Matchers {
   "printing command" should {
     "produce the expected text" in {
-      printed0[docker :: images :: `.`].show        shouldBe "docker images"
-      printed0[docker :: images :: all :: `.`].show shouldBe "docker images --all"
-      printed0[docker :: images :: a :: `.`].show   shouldBe "docker images -a"
-      printed0[docker :: images :: q :: `.`].show   shouldBe "docker images -q"
-      printed0[docker :: images :: aq :: `.`].show  shouldBe "docker images -aq"
+      printed0[docker :: images :: `.`].show                             shouldBe "docker images"
+      printed0[docker :: images :: all :: `.`].show                      shouldBe "docker images --all"
+      printed0[docker :: images :: a :: `.`].show                        shouldBe "docker images -a"
+      printed0[docker :: images :: q :: `.`].show                        shouldBe "docker images -q"
+      printed0[docker :: images :: aq :: `.`].show                       shouldBe "docker images -aq"
+      printed0[docker :: images :: (all, quiet, `no-trunc`) :: `.`].show shouldBe "docker images --all --quiet --no-trunc"
 
-      printed0[docker :: ps :: `.`].show        shouldBe "docker ps"
-      printed0[docker :: ps :: all :: `.`].show shouldBe "docker ps --all"
-      printed0[docker :: ps :: q :: `.`].show   shouldBe "docker ps -q"
+      printed0[docker :: ps :: `.`].show                             shouldBe "docker ps"
+      printed0[docker :: ps :: all :: `.`].show                      shouldBe "docker ps --all"
+      printed0[docker :: ps :: q :: `.`].show                        shouldBe "docker ps -q"
+      printed0[docker :: ps :: (all, quiet, `no-trunc`) :: `.`].show shouldBe "docker ps --all --quiet --no-trunc"
 
       printed0[docker :: kill :: s :: HUP :: `.`].show                                 shouldBe "docker kill -s=HUP"
       printed0[docker :: kill :: signal :: KILL :: `.`].show                           shouldBe "docker kill --signal=KILL"
@@ -46,7 +48,8 @@ final class CorrectCommandTextCheck extends AnyWordSpecLike with Matchers {
       printed1[docker :: stop :: Name :: `.`](Name("test-container")).show shouldBe "docker stop test-container"
       printed1[docker :: stop :: Id :: `.`](Id("fd484f19954f")).show       shouldBe "docker stop fd484f19954f"
 
-      printed1[docker :: pull :: (Name, Tag) :: `.`](Name("test-container") -> Tag("a-tag")).show shouldBe "docker pull test-container:a-tag"
+      printed1[docker :: pull :: (Name, Tag) :: `.`](Name("test-container")          -> Tag("a-tag")).show shouldBe "docker pull test-container:a-tag"
+      printed1[docker :: run :: detach :: (Name, Tag) :: `.`](Name("test-container") -> Tag("a-tag")).show shouldBe "docker run --detach test-container:a-tag"
     }
   }
 }

@@ -1,0 +1,40 @@
+package docker.effect
+
+import cats.Functor
+import cats.effect.{ IO, Resource }
+import docker.effect.syntax.rio._
+import docker.effect.syntax.provider._
+import docker.effect.algebra.{ Id, Name, Tag }
+import docker.effect.interop.{ Provider, RioMonadError }
+import zio.{ RIO, Task }
+import zio.interop.catz._
+
+sealed abstract class Container[F[-_, _], G[_]](
+  implicit
+  ev0: RioMonadError[F],
+  ev1: Provider[F, G],
+  ev3: Functor[G]
+) {
+  val docker: Docker[F, G]
+  import docker._
+
+  /***
+    * Creates a resource running a detached container by name.
+    * The container will be stopped and deleted at the end of
+    * the resource's `use`
+    */
+  def detached(n: Name): Resource[G, Id] =
+    Resource.make(runDetachedContainer provided n)(id =>
+      (stopContainerId >>> removeContainerId <&> (_ => ())) provided id
+    )
+
+  def detached(n: Name, t: Tag): Resource[G, Id] =
+    Resource.make(runTaggedDetachedContainer provided (n -> t))(id =>
+      (stopContainerId >>> removeContainerId <&> (_ => ())) provided id
+    )
+}
+
+object Container {
+  @inline final val zio: Container[RIO, Task]      = new Container[RIO, Task]   { val docker = Docker.zio    }
+  @inline final val catsIo: Container[CatsRIO, IO] = new Container[CatsRIO, IO] { val docker = Docker.catsIo }
+}

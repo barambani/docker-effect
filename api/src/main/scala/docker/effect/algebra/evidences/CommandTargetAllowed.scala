@@ -21,6 +21,7 @@ object CommandTargetAllowed extends Target2 {
   implicit val evTg10: rm AcceptsCmdTarget Name = _allowed[rm, Name]
 
   implicit val evTg11: pull AcceptsCmdTarget (Name, Tag) = _allowed[pull, (Name, Tag)]
+  implicit val evTg12: run AcceptsCmdTarget (Name, Tag)  = _allowed[run, (Name, Tag)]
 
   implicit def signalEvTg4[Sig: signal AcceptsArgument *]: Sig AcceptsCmdTarget Id = _allowed[Sig, Id]
 }

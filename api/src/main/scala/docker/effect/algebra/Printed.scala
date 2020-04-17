@@ -37,6 +37,20 @@ object Printed {
       val text: NonEmptyString = prC.text ++ " --" ++ rem.text
     }
 
+  implicit def printedOptionT3[Cmd, OptA, OptB, OptC, Rem <: HList](
+    implicit
+    ev1: ValidChunk[Cmd :: (OptA, OptB, OptC) :: Rem],
+    ev2: Cmd AcceptsVerboseOpt (OptA, OptB, OptC),
+    pCm: Printed[Cmd],
+    prA: Printed[OptA],
+    prB: Printed[OptB],
+    rem: Printed[OptC :: Rem]
+  ): Printed[Cmd :: (OptA, OptB, OptC) :: Rem] =
+    new Printed[Cmd :: (OptA, OptB, OptC) :: Rem] {
+      val text: NonEmptyString =
+        pCm.text ++ " --" ++ prA.text ++ " --" ++ prB.text ++ " --" ++ rem.text
+    }
+
   implicit def printedCompactOption[Cmd, Opt, Rem <: HList](
     implicit
     ev1: ValidChunk[Cmd :: Opt :: Rem],
@@ -96,4 +110,20 @@ object Printed {
     new Printed[Lit] {
       val text: NonEmptyString = NonEmptyString.unsafeFrom(wit.value.toString)
     }
+
+//  implicit def printedLiteralT3[Lit, RefLitA, RefLitB, RefLitC](
+//    implicit
+//    ev1: Lit <:!< HList,
+//    ev2: Lit <~< (
+//      Refined[String, Equal[RefLitA]],
+//      Refined[String, Equal[RefLitB]],
+//      Refined[String, Equal[RefLitC]]
+//    ),
+//    witA: Witness.Aux[RefLitA],
+//    witB: Witness.Aux[RefLitB],
+//    witC: Witness.Aux[RefLitC]
+//  ): Printed[Lit] =
+//    new Printed[Lit] {
+//      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${witA.value}, ${witA.value}, ${witA.value}")
+//    }
 }

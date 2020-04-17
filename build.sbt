@@ -70,18 +70,18 @@ lazy val compilerPluginsDependencies = Seq(
 )
 
 lazy val testDependencies = Seq(
-  "org.scalacheck" %% "scalacheck"       % versionOf.scalaCheck     % Test,
-  "org.scalatest"  %% "scalatest"        % versionOf.scalaTest      % Test,
-  "dev.zio"        %% "zio-interop-cats" % versionOf.zioInteropCats % Test
+  "org.scalacheck" %% "scalacheck" % versionOf.scalaCheck % Test,
+  "org.scalatest"  %% "scalatest"  % versionOf.scalaTest  % Test
 )
 
 lazy val apiDependencies = Seq(
-  "org.typelevel" %% "cats-core"   % versionOf.cats,
-  "org.typelevel" %% "cats-effect" % versionOf.catsEffect,
-  "com.lihaoyi"   %% "os-lib"      % versionOf.osLib,
-  "eu.timepit"    %% "refined"     % versionOf.refined,
-  "com.chuusai"   %% "shapeless"   % versionOf.shapeless,
-  "dev.zio"       %% "zio"         % versionOf.zio
+  "org.typelevel" %% "cats-core"        % versionOf.cats,
+  "org.typelevel" %% "cats-effect"      % versionOf.catsEffect,
+  "com.lihaoyi"   %% "os-lib"           % versionOf.osLib,
+  "eu.timepit"    %% "refined"          % versionOf.refined,
+  "com.chuusai"   %% "shapeless"        % versionOf.shapeless,
+  "dev.zio"       %% "zio"              % versionOf.zio,
+  "dev.zio"       %% "zio-interop-cats" % versionOf.zioInteropCats
 ) map (_.withSources)
 
 lazy val crossBuildSettings = Seq(
