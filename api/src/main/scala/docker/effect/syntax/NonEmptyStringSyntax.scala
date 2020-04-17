@@ -21,6 +21,9 @@ private[syntax] object NonEmptyStringSyntax {
 
     def ++(str: String): andPartialApplication =
       new andPartialApplication(nes.value ++ str)
+
+    def +++(other: NonEmptyString): NonEmptyString =
+      NonEmptyString.unsafeFrom(nes.value ++ other.value)
   }
 
   final private[syntax] class andPartialApplication(private val s: String) extends AnyVal {

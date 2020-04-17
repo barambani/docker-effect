@@ -9,11 +9,16 @@ sealed trait Accessor[G[_], F[-_, _]] {
 }
 
 object Accessor {
+  def liftM: AccessUnitPartiallyApplied     = new AccessUnitPartiallyApplied
   def accessM[R]: AccessPartiallyApplied[R] = new AccessPartiallyApplied[R]
 
   final private[interop] class AccessPartiallyApplied[R](private val `_`: Boolean = false) extends AnyVal {
-    def apply[F[-_, _], A, G[_]](f: R => G[A])(implicit ev: Accessor[G, F]) =
-      ev.accessM(f)
+    def apply[F[-_, _], A, G[_]](f: R => G[A])(implicit ev: Accessor[G, F]): F[R, A] = ev.accessM(f)
+  }
+
+  final private[interop] class AccessUnitPartiallyApplied(private val `_`: Boolean = false) extends AnyVal {
+    def apply[F[-_, _], A, G[_]](ga: G[A])(implicit ev: Accessor[G, F]): F[Unit, A] =
+      ev.accessM { _: Unit => ga }
   }
 
   implicit val zioRioAccessor: Accessor[Task, RIO] =

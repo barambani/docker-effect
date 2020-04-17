@@ -12,6 +12,11 @@ object CompactOption {
   implicit val coEv5: CompactOption[s]  = _isCompactOption[s]
   implicit val coEv6: CompactOption[aq] = _isCompactOption[aq]
 
+  implicit def coEvT2[A: CompactOption, B: CompactOption]: CompactOption[(A, B)] =
+    _isCompactOption[(A, B)]
+  implicit def coEvT3[A: CompactOption, B: CompactOption, C: CompactOption]: CompactOption[(A, B, C)] =
+    _isCompactOption[(A, B, C)]
+
   private[this] def _isCompactOption[A]: CompactOption[A] = new CompactOption[A] {}
 }
 
@@ -22,12 +27,22 @@ object CompactOptionAllowed {
   implicit val evCo3: images AcceptsCompactOpt q  = _isAllowed[images, q]
   implicit val evCo4: images AcceptsCompactOpt aq = _isAllowed[images, aq]
 
+  implicit def evCoT2_1[A: CompactOption, B: CompactOption]: images AcceptsCompactOpt (A, B) =
+    _isAllowed[images, (A, B)]
+  implicit def evCoT3_1[A: CompactOption, B: CompactOption, C: CompactOption]: images AcceptsCompactOpt (A, B, C) =
+    _isAllowed[images, (A, B, C)]
+
   implicit val evCo5: ps AcceptsCompactOpt a  = _isAllowed[ps, a]
   implicit val evCo6: ps AcceptsCompactOpt f  = _isAllowed[ps, f]
   implicit val evCo7: ps AcceptsCompactOpt f  = _isAllowed[ps, f]
   implicit val evCo8: ps AcceptsCompactOpt l  = _isAllowed[ps, l]
   implicit val evCo9: ps AcceptsCompactOpt q  = _isAllowed[ps, q]
   implicit val evCo10: ps AcceptsCompactOpt s = _isAllowed[ps, s]
+
+  implicit def evCoT2_2[A: CompactOption, B: CompactOption]: ps AcceptsCompactOpt (A, B) =
+    _isAllowed[ps, (A, B)]
+  implicit def evCoT3_2[A: CompactOption, B: CompactOption, C: CompactOption]: ps AcceptsCompactOpt (A, B, C) =
+    _isAllowed[ps, (A, B, C)]
 
   implicit val evCo11: kill AcceptsCompactOpt s = _isAllowed[kill, s]
 

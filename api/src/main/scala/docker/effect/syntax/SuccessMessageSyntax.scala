@@ -14,6 +14,7 @@ private[syntax] trait SuccessMessageSyntax {
 
 private[syntax] object SuccessMessageSyntax {
   final class SuccessMessageOps(private val sm: SuccessMessage) extends AnyVal {
-    def unsafeId: Id = Id.unsafeFrom(sm.show)
+    def unsafeId: Id               = Id.unsafeFrom(sm.show)
+    def safeId: Either[String, Id] = Id.from(sm.show)
   }
 }

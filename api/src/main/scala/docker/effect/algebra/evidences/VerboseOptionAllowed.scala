@@ -16,6 +16,11 @@ object VerboseOption {
   implicit val voEv9: VerboseOption[size]       = _isVerboseOption[size]
   implicit val voEv10: VerboseOption[signal]    = _isVerboseOption[signal]
 
+  implicit def voEvT2[A: VerboseOption, B: VerboseOption]: VerboseOption[(A, B)] =
+    _isVerboseOption[(A, B)]
+  implicit def voEvT3[A: VerboseOption, B: VerboseOption, C: VerboseOption]: VerboseOption[(A, B, C)] =
+    _isVerboseOption[(A, B, C)]
+
   private[this] def _isVerboseOption[A]: VerboseOption[A] = new VerboseOption[A] {}
 }
 
@@ -28,6 +33,11 @@ object VerboseOptionAllowed {
   implicit val evLo5: images AcceptsVerboseOpt `no-trunc` = _isAllowed[images, `no-trunc`]
   implicit val evLo6: images AcceptsVerboseOpt quiet      = _isAllowed[images, quiet]
 
+  implicit def evVoT2_1[A: VerboseOption, B: VerboseOption]: images AcceptsVerboseOpt (A, B) =
+    _isAllowed[images, (A, B)]
+  implicit def evVoT3_1[A: VerboseOption, B: VerboseOption, C: VerboseOption]: images AcceptsVerboseOpt (A, B, C) =
+    _isAllowed[images, (A, B, C)]
+
   implicit val evLo7: ps AcceptsVerboseOpt all         = _isAllowed[ps, all]
   implicit val evLo8: ps AcceptsVerboseOpt filter      = _isAllowed[ps, filter]
   implicit val evLo9: ps AcceptsVerboseOpt format      = _isAllowed[ps, format]
@@ -36,6 +46,11 @@ object VerboseOptionAllowed {
   implicit val evLo12: ps AcceptsVerboseOpt `no-trunc` = _isAllowed[ps, `no-trunc`]
   implicit val evLo13: ps AcceptsVerboseOpt quiet      = _isAllowed[ps, quiet]
   implicit val evLo14: ps AcceptsVerboseOpt size       = _isAllowed[ps, size]
+
+  implicit def evVoT2_2[A: VerboseOption, B: VerboseOption]: ps AcceptsVerboseOpt (A, B) =
+    _isAllowed[ps, (A, B)]
+  implicit def evVoT3_2[A: VerboseOption, B: VerboseOption, C: VerboseOption]: ps AcceptsVerboseOpt (A, B, C) =
+    _isAllowed[ps, (A, B, C)]
 
   implicit val evLo15: kill AcceptsVerboseOpt signal = _isAllowed[kill, signal]
 

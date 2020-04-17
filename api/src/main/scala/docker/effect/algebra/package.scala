@@ -7,6 +7,7 @@ import docker.effect.internal.newtype
 import docker.effect.syntax.nes._
 import eu.timepit.refined.W
 import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
+import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.generic.Equal
@@ -76,7 +77,8 @@ package object algebra {
   final object Id   extends RefinedTypeOps[Id, String]
   final object Name extends RefinedTypeOps[Name, String]
   final object Repo extends RefinedTypeOps[Repo, String]
-  final val Tag = newtype[NonEmptyString]
+  final val Tag    = newtype[NonEmptyString]
+  final val latest = Tag("latest")
 
   // relationships
   final type CmdCanFollow[Cmd, In]       = CommandAllowed[In, Cmd]
@@ -90,23 +92,15 @@ package object algebra {
   final def printed0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =
     DockerCommand(p.text)
 
-  final def printed1[Cmd <: HList]: printPartialTypeApplication[Cmd] =
-    new printPartialTypeApplication[Cmd]
+  final def printed1[Cmd <: HList]: printPartialTypeApplicationTuple[Cmd] =
+    new printPartialTypeApplicationTuple[Cmd]
 
   @silent("parameter value ev. in method apply is never used")
   @silent("it is not recommended to define classes/objects inside of package objects")
-  final private[algebra] class printPartialTypeApplication[Cmd <: HList](
-    private val d: Boolean = true
-  ) extends AnyVal {
-    def apply[Tgt, Exp](t: Tgt)(
-      implicit
-      ev1: Valid[Cmd],
-      ev2: Last.Aux[Cmd, Exp],
-      ev3: Tgt =:= Exp,
-      p: Printed[Cmd]
-    ): DockerCommand =
-      DockerCommand(p.text + " " + t.toString)
-
+  final private[algebra] class printPartialTypeApplicationTuple[Cmd <: HList](
+    private val `_`: Boolean = true
+  ) extends AnyVal
+      with printPartialTypeApplication[Cmd] {
     def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
       implicit
       ev1: Valid[Cmd],
@@ -115,5 +109,18 @@ package object algebra {
       p: Printed[Cmd]
     ): DockerCommand =
       DockerCommand(p.text + s" ${t._1.toString}:${t._2.toString}")
+  }
+
+  @silent("parameter value ev. in method apply is never used")
+  @silent("it is not recommended to define classes/objects inside of package objects")
+  sealed private[algebra] trait printPartialTypeApplication[Cmd <: HList] extends Any {
+    def apply[Tgt, Exp](t: Tgt)(
+      implicit
+      ev1: Valid[Cmd],
+      ev2: Last.Aux[Cmd, Exp],
+      ev3: Tgt =:= Exp,
+      p: Printed[Cmd]
+    ): DockerCommand =
+      DockerCommand(p.text + " " + t.toString)
   }
 }

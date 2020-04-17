@@ -14,7 +14,7 @@ import shapeless.{ ::, <:!<, HList, HNil, Witness }
 sealed trait ValidChunk[Cmd <: HList]
 
 @silent("parameter value (ev.|rec) in method [a-zA-Z0-9]+ is never used")
-object ValidChunk {
+object ValidChunk extends ValidFinalChunk {
   implicit def validCommand[A, Cmd: Command, Rem <: HList, LitI, LitC](
     implicit
     ev1: A <:!< HList,
@@ -63,18 +63,7 @@ object ValidChunk {
     rec: ValidChunk[Arg :: Rem]
   ): ValidChunk[Opt :: Arg :: Rem] = _validChunk[Opt :: Arg :: Rem]
 
-  implicit def validLast[SecLst, Lst, LitSecLst, LitLst](
-    implicit
-    ev1: SecLst <:!< HList,
-    ev2: Lst <:!< HList,
-    ev3: SecLst <~< Refined[String, Equal[LitSecLst]],
-    ev4: Lst <~< Refined[String, Equal[LitLst]],
-    ev5: Witness.Aux[LitSecLst],
-    ev6: Witness.Aux[LitLst],
-    ev7: CanEndWith[SecLst, Lst]
-  ): ValidChunk[SecLst :: Lst :: HNil] = _validChunk[SecLst :: Lst :: HNil]
-
-  implicit def validLastCommandTgt[Prev, Tgt, LitP, LitTgt](
+  implicit def validLastCommandTarget[Prev, Tgt, LitP, LitTgt](
     implicit
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
@@ -85,20 +74,20 @@ object ValidChunk {
     ev7: Prev AcceptsCmdTarget Tgt
   ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
-  implicit def validLastCommandTgtPair[Prev, TgtA, TgtB, LitP, LitTgtA](
+  implicit def validLastCommandTargetPair[Prev, TgtA, TgtB, LitP, LitTgt](
     implicit
     ev1: Prev <:!< HList,
     ev2: TgtA <:!< HList,
     ev3: TgtB <:!< HList,
     ev4: Prev <~< Refined[String, Equal[LitP]],
-    ev5: TgtA <~< Refined[String, NonEmpty And MatchesRegex[LitTgtA]],
+    ev5: TgtA <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
     ev6: TgtB <~< Tag.opaque,
     ev7: Witness.Aux[LitP],
-    ev8: Witness.Aux[LitTgtA],
+    ev8: Witness.Aux[LitTgt],
     ev9: Prev AcceptsCmdTarget (TgtA, TgtB)
   ): ValidChunk[Prev :: (TgtA, TgtB) :: HNil] = _validChunk[Prev :: (TgtA, TgtB) :: HNil]
 
-  implicit def validLastOptionArgument[Prev, Tgt, LitP, LitTgt](
+  implicit def validLastOptionTarget[Prev, Tgt, LitP, LitTgt](
     implicit
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
@@ -109,5 +98,64 @@ object ValidChunk {
     ev7: Prev AcceptsOptTarget Tgt
   ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
-  final private[this] def _validChunk[A <: HList]: ValidChunk[A] = new ValidChunk[A] {}
+  implicit def validLastOptionTargetPair[Prev, TgtA, TgtB, LitP, LitTgt](
+    implicit
+    ev1: Prev <:!< HList,
+    ev2: TgtA <:!< HList,
+    ev3: TgtB <:!< HList,
+    ev4: Prev <~< Refined[String, Equal[LitP]],
+    ev5: TgtA <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
+    ev6: TgtB <~< Tag.opaque,
+    ev7: Witness.Aux[LitP],
+    ev8: Witness.Aux[LitTgt],
+    ev9: Prev AcceptsOptTarget (TgtA, TgtB)
+  ): ValidChunk[Prev :: (TgtA, TgtB) :: HNil] = _validChunk[Prev :: (TgtA, TgtB) :: HNil]
+}
+
+@silent("parameter value (ev.|rec) in method [a-zA-Z0-9]+ is never used")
+sealed private[algebra] trait ValidFinalChunk {
+  implicit def validLast[SecLst, Lst, LitSecLst, LitLst](
+    implicit
+    ev1: SecLst <:!< HList,
+    ev2: Lst <:!< HList,
+    ev3: SecLst <~< Refined[String, Equal[LitSecLst]],
+    ev4: Lst <~< Refined[String, Equal[LitLst]],
+    ev5: Witness.Aux[LitSecLst],
+    ev6: Witness.Aux[LitLst],
+    ev7: IsFinal[SecLst, Lst]
+  ): ValidChunk[SecLst :: Lst :: HNil] = _validChunk[SecLst :: Lst :: HNil]
+
+  implicit def validLastT2[SecLst, Lst, LitSecLst, LitLstA, LitLstB](
+    implicit
+    ev1: SecLst <:!< HList,
+    ev2: Lst <:!< HList,
+    ev3: SecLst <~< Refined[String, Equal[LitSecLst]],
+    ev4: Lst <~< (
+      Refined[String, Equal[LitLstA]],
+      Refined[String, Equal[LitLstB]]
+    ),
+    ev5: Witness.Aux[LitSecLst],
+    ev6: Witness.Aux[LitLstA],
+    ev7: Witness.Aux[LitLstB],
+    ev9: IsFinal[SecLst, Lst]
+  ): ValidChunk[SecLst :: Lst :: HNil] = _validChunk[SecLst :: Lst :: HNil]
+
+  implicit def validLastT3[SecLst, Lst, LitSecLst, LitLstA, LitLstB, LitLstC](
+    implicit
+    ev1: SecLst <:!< HList,
+    ev2: Lst <:!< HList,
+    ev3: SecLst <~< Refined[String, Equal[LitSecLst]],
+    ev4: Lst <~< (
+      Refined[String, Equal[LitLstA]],
+      Refined[String, Equal[LitLstB]],
+      Refined[String, Equal[LitLstC]]
+    ),
+    ev5: Witness.Aux[LitSecLst],
+    ev6: Witness.Aux[LitLstA],
+    ev7: Witness.Aux[LitLstB],
+    ev8: Witness.Aux[LitLstC],
+    ev9: IsFinal[SecLst, Lst]
+  ): ValidChunk[SecLst :: Lst :: HNil] = _validChunk[SecLst :: Lst :: HNil]
+
+  final private[algebra] def _validChunk[A <: HList]: ValidChunk[A] = new ValidChunk[A] {}
 }

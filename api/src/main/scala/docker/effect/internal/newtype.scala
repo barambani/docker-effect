@@ -19,6 +19,8 @@ trait newtype[A] {
 
   @inline final def unMkF[F[_]](ft: F[opaque]): F[A] =
     mkF[λ[α => F[α] => F[A]]](identity)(ft)
+
+  @inline final def unapply(t: opaque): Option[A] = Some(unMk(t))
 }
 
 object newtype {
