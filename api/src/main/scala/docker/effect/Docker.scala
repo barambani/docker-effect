@@ -3,7 +3,7 @@ package docker.effect
 import _root_.docker.effect.Docker.runPartialTypeApplicationTuple
 import _root_.docker.effect.algebra._
 import _root_.docker.effect.interop.RioMonadError.absolve
-import _root_.docker.effect.interop.{ Accessor, Command, Provider, RioMonadError }
+import _root_.docker.effect.interop.{ Accessor, Command, RioApplication, RioMonadError }
 import _root_.docker.effect.syntax.provider._
 import _root_.docker.effect.syntax.rio._
 import _root_.docker.effect.syntax.successMessage._
@@ -16,7 +16,7 @@ sealed abstract class Docker[F[-_, _], G[_]](
   implicit
   ev0: RioMonadError[F],
   ev1: Accessor[G, F],
-  ev2: Provider[F, G],
+  ev2: RioApplication[F, G],
   command: Command[F]
 ) {
   val runContainer: F[Name, Id] =
@@ -135,7 +135,7 @@ sealed abstract class Docker[F[-_, _], G[_]](
     }
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: G[SuccessMessage] =
-    command.executed provided printed0[Cmd]
+    command.executed appliedTo printed0[Cmd]
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplicationTuple[Cmd, F, G] =
     new runPartialTypeApplicationTuple[Cmd, F, G]
@@ -149,7 +149,7 @@ object Docker {
   @inline final def apply[F[-_, _], G[_]](
     implicit
     ev0: RioMonadError[F],
-    ev2: Provider[F, G],
+    ev2: RioApplication[F, G],
     ev3: Accessor[G, F],
     ev4: Command[F]
   ): Docker[F, G] = new Docker[F, G] {}
@@ -163,11 +163,11 @@ object Docker {
       ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Tgt],
       ev3: Tgt =:= (ExpA, ExpB),
-      ev4: Provider[F, G],
+      ev4: RioApplication[F, G],
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed provided printed1[Cmd](t)
+      command.executed appliedTo printed1[Cmd](t)
   }
 
   sealed private[Docker] trait runPartialTypeApplication[Cmd <: HList, F[-_, _], G[_]] extends Any {
@@ -176,10 +176,10 @@ object Docker {
       ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
-      ev4: Provider[F, G],
+      ev4: RioApplication[F, G],
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed provided printed1[Cmd](t)
+      command.executed appliedTo printed1[Cmd](t)
   }
 }

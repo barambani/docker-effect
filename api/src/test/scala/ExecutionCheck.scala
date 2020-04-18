@@ -1,9 +1,8 @@
 import _root_.docker.effect.Container
 import _root_.docker.effect.algebra.{ Name, _ }
-import _root_.docker.effect.interop.Provider
+import _root_.docker.effect.interop.RioApplication
 import _root_.docker.effect.syntax.provider._
 import cats.effect.Sync
-import cats.syntax.flatMap._
 import cats.syntax.functor._
 import cats.syntax.show._
 import instances.TestRun
@@ -14,7 +13,7 @@ import zio.interop.catz._
 
 sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G], name: String)(
   implicit
-  ev2: Provider[F, G],
+  ev2: RioApplication[F, G],
   ev4: TestRun[G],
   syn: Sync[G]
 ) extends AnyWordSpecLike
@@ -25,7 +24,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
 
   s"a $name docker effect" should {
     "get the list of images" in {
-      listAllImages.providedUnit satisfies { res =>
+      listAllImages.appliedToUnit satisfies { res =>
         val resText = res.show
         resText should startWith("REPOSITORY")
         resText should include("TAG")
@@ -38,9 +37,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
     "start a redis instance" in {
       TestRun.unsafe(
         container.detached(Name("redis"), latest).use { id =>
-          listAllContainerIds.providedUnit.map { sm =>
-            sm.unMk should include(id.value)
-          } >> syn.unit
+          listAllContainerIds.appliedToUnit map (_.show should include(id.value))
         }
       )
     }
@@ -48,9 +45,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
     "start a redis instance mapping the port" in {
       TestRun.unsafe(
         container.detached(Name("redis")).use { id =>
-          listAllContainerIds.providedUnit.map { sm =>
-            sm.unMk should include(id.value)
-          } >> syn.unit
+          listAllContainerIds.appliedToUnit map (_.show should include(id.value))
         }
       )
     }
