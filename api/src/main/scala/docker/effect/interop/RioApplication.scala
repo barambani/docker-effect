@@ -16,6 +16,6 @@ object RioApplication {
 
   implicit val catsRioProvider: RioApplication[CatsRIO, IO] =
     new RioApplication[CatsRIO, IO] {
-      def applied[R, A](fa: CatsRIO[R, A])(r: =>R): IO[A] = fa run r
+      def applied[R, A](fa: CatsRIO[R, A])(r: =>R): IO[A] = fa.rio(r)
     }
 }

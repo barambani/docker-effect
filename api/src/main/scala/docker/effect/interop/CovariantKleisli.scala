@@ -3,9 +3,7 @@ package interop
 
 import cats.{ ApplicativeError, Monad, MonadError }
 
-import scala.language.implicitConversions
-
-sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](private[interop] val rio: R => F[A]) {
+sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](val rio: R => F[A]) {
 
   @inline final def <&>[B](f: A => B): CovariantKleisli[F, R, B] =
     CovariantKleisli(r => Monad[F].map(rio(r))(f))
@@ -30,15 +28,9 @@ sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](private[interop] va
     implicit F: MonadError[F, E]
   ): CovariantKleisli[F, RR, B] =
     CovariantKleisli(r => F.redeemWith(rio(r))(err, succ))
-
-  @inline final def given[RR <: R](r: =>RR): F[A] = rio(r)
 }
 
-object CovariantKleisli
-    extends CovariantKleisliConstruction
-    with CovariantKleisliApplication
-    with CovariantKleisliInstances
-    with CovariantKleisliSyntax
+object CovariantKleisli extends CovariantKleisliConstruction with CovariantKleisliInstances
 
 sealed private[interop] trait CovariantKleisliConstruction {
   @inline final def apply[F[+_]: Monad, R, A](rio: R => F[A]): CovariantKleisli[F, R, A] =
@@ -54,10 +46,6 @@ sealed private[interop] trait CovariantKleisliConstruction {
     read: R => CovariantKleisli[F, R, A]
   ): CovariantKleisli[F, R, A] =
     CovariantKleisli(r => read(r).rio(r))
-}
-
-sealed private[interop] trait CovariantKleisliApplication {
-  @inline final def run[F[+_], R, A](ck: CovariantKleisli[F, R, A])(r: R): F[A] = ck.rio(r)
 }
 
 sealed private[interop] trait CovariantKleisliInstances {
@@ -84,16 +72,4 @@ sealed private[interop] trait CovariantKleisliInstances {
       def tailRecM[A, B](a: A)(f: A => CovariantKleisli[F, R, Either[A, B]]): CovariantKleisli[F, R, B] =
         CovariantKleisli(r => F.tailRecM(a)(f(_).rio(r)))
     }
-}
-
-sealed private[interop] trait CovariantKleisliSyntax {
-  implicit def covariantKleisliApplication[F[+_], R, A](
-    cr: CovariantKleisli[F, R, A]
-  ): CovariantKleisliSyntaxOps[F, R, A] =
-    new CovariantKleisliSyntaxOps(cr)
-}
-
-final private[interop] class CovariantKleisliSyntaxOps[F[+_], R, A](private val cr: CovariantKleisli[F, R, A])
-    extends AnyVal {
-  def run(r: R): F[A] = CovariantKleisli.run(cr)(r)
 }
