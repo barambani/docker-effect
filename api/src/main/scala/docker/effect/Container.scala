@@ -11,9 +11,9 @@ import zio.interop.catz._
 
 sealed abstract class Container[F[-_, +_], G[_]](
   implicit
-  ev0: RioMonadError[F],
-  ev1: RioApplication[F, G],
-  ev3: Functor[G]
+  ev0: RioApplication[F, G],
+  ev1: Functor[G],
+  rm: RioMonadError[F]
 ) {
   val docker: Docker[F, G]
   import docker._
@@ -25,7 +25,7 @@ sealed abstract class Container[F[-_, +_], G[_]](
     */
   def detached(n: Name): Resource[G, Id] =
     Resource.make(runDetachedContainer appliedAt n)(id =>
-      (stopContainerId >>> removeContainerId <&> (_ => ())) appliedAt id
+      (stopContainerId >>> removeContainerId *> rm.unit) appliedAt id
     )
 
   /***
@@ -35,7 +35,7 @@ sealed abstract class Container[F[-_, +_], G[_]](
     */
   def detached(n: Name, t: Tag): Resource[G, Id] =
     Resource.make(runTaggedDetachedContainer appliedAt (n -> t))(id =>
-      (stopContainerId >>> removeContainerId <&> (_ => ())) appliedAt id
+      (stopContainerId >>> removeContainerId *> rm.unit) appliedAt id
     )
 }
 

@@ -21,6 +21,8 @@ private[syntax] object RioSyntax {
 
     @inline def <&>[B](f: A => B)(implicit ev: RioFunctor[F]): F[R, B] = ev.<&>(fa)(f)
 
+    @inline def *>[B](fb: F[R, B])(implicit ev: RioMonad[F]): F[R, B] = ev.>>=(fa)(_ => fb)
+
     @inline def flatTap[G[_]](f: A => G[Unit])(implicit m: RioMonad[F], acc: Accessor[G, F]): F[R, A] =
       m.>>=(fa)(a => m.<&>(accessM[R](_ => f(a)))(_ => a))
 
