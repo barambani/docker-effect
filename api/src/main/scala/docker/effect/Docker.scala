@@ -135,7 +135,7 @@ sealed abstract class Docker[F[-_, _], G[_]](
     }
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: G[SuccessMessage] =
-    command.executed appliedTo printed0[Cmd]
+    command.executed given printed0[Cmd]
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplicationTuple[Cmd, F, G] =
     new runPartialTypeApplicationTuple[Cmd, F, G]
@@ -167,7 +167,7 @@ object Docker {
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed appliedTo printed1[Cmd](t)
+      command.executed given printed1[Cmd](t)
   }
 
   sealed private[Docker] trait runPartialTypeApplication[Cmd <: HList, F[-_, _], G[_]] extends Any {
@@ -180,6 +180,6 @@ object Docker {
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed appliedTo printed1[Cmd](t)
+      command.executed given printed1[Cmd](t)
   }
 }

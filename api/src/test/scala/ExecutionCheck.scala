@@ -24,7 +24,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
 
   s"a $name docker effect" should {
     "get the list of images" in {
-      listAllImages.appliedToUnit satisfies { res =>
+      listAllImages.applied satisfies { res =>
         val resText = res.show
         resText should startWith("REPOSITORY")
         resText should include("TAG")
@@ -37,7 +37,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
     "start a redis instance" in {
       TestRun.unsafe(
         container.detached(Name("redis"), latest).use { id =>
-          listAllContainerIds.appliedToUnit map (_.show should include(id.value))
+          listAllContainerIds.applied map (_.show should include(id.value))
         }
       )
     }
@@ -45,7 +45,7 @@ sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G],
     "start a redis instance mapping the port" in {
       TestRun.unsafe(
         container.detached(Name("redis")).use { id =>
-          listAllContainerIds.appliedToUnit map (_.show should include(id.value))
+          listAllContainerIds.applied map (_.show should include(id.value))
         }
       )
     }
