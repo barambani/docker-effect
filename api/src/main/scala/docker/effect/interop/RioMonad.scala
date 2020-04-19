@@ -8,5 +8,5 @@ trait RioMonad[F[-_, +_]] extends RioFunctor[F] {
 }
 
 object RioMonad {
-  @inline final def apply[F[-_, +_]](implicit ef: RioMonad[F]): RioMonad[F] = implicitly
+  @inline final def apply[F[-_, +_]](implicit ev: RioMonad[F]): RioMonad[F] = ev
 }

@@ -24,8 +24,8 @@ sealed abstract class Container[F[-_, +_], G[_]](
     * by the finalizer.
     */
   def detached(n: Name): Resource[G, Id] =
-    Resource.make(runDetachedContainer given n)(id =>
-      (stopContainerId >>> removeContainerId <&> (_ => ())) given id
+    Resource.make(runDetachedContainer appliedAt n)(id =>
+      (stopContainerId >>> removeContainerId <&> (_ => ())) appliedAt id
     )
 
   /***
@@ -34,8 +34,8 @@ sealed abstract class Container[F[-_, +_], G[_]](
     * and deleted by the finalizer.
     */
   def detached(n: Name, t: Tag): Resource[G, Id] =
-    Resource.make(runTaggedDetachedContainer given (n -> t))(id =>
-      (stopContainerId >>> removeContainerId <&> (_ => ())) given id
+    Resource.make(runTaggedDetachedContainer appliedAt (n -> t))(id =>
+      (stopContainerId >>> removeContainerId <&> (_ => ())) appliedAt id
     )
 }
 

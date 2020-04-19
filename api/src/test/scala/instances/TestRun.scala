@@ -12,7 +12,8 @@ sealed trait TestRun[F[_]] extends Matchers {
 }
 
 object TestRun {
-  @inline final def apply[F[_]](implicit ev: TestRun[F]): TestRun[F]     = implicitly
+  @inline final def apply[F[_]](implicit ev: TestRun[F]): TestRun[F] = ev
+
   @inline final def unsafe[F[_], A](fa: F[A])(implicit F: TestRun[F]): A = F.run(fa)
 
   implicit def zioTestRun: TestRun[Task] =

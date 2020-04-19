@@ -5,7 +5,7 @@ import cats.{ ApplicativeError, Monad, MonadError }
 
 import scala.language.implicitConversions
 
-sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](private[interop] val rio: (=>R) => F[A]) {
+sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](private[interop] val rio: R => F[A]) {
 
   @inline final def <&>[B](f: A => B): CovariantKleisli[F, R, B] =
     CovariantKleisli(r => Monad[F].map(rio(r))(f))
@@ -41,7 +41,7 @@ object CovariantKleisli
     with CovariantKleisliSyntax
 
 sealed private[interop] trait CovariantKleisliConstruction {
-  @inline final def apply[F[+_]: Monad, R, A](rio: (=>R) => F[A]): CovariantKleisli[F, R, A] =
+  @inline final def apply[F[+_]: Monad, R, A](rio: R => F[A]): CovariantKleisli[F, R, A] =
     new CovariantKleisli[F, R, A](rio) {}
 
   @inline final def pure[F[+_]: Monad, R, A](a: A): CovariantKleisli[F, R, A] =

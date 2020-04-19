@@ -7,7 +7,7 @@ trait RioMonadError[F[-_, +_]] extends RioMonad[F] {
 }
 
 object RioMonadError {
-  @inline final def apply[F[-_, +_]](implicit ev: RioMonadError[F]): RioMonadError[F] = implicitly
+  @inline final def apply[F[-_, +_]](implicit ev: RioMonadError[F]): RioMonadError[F] = ev
 
   @inline def absolve[F[-_, +_], R, A](fa: F[R, Either[String, A]])(
     implicit me: RioMonadError[F]

@@ -9,7 +9,7 @@ trait RioFunctor[F[-_, +_]] {
 }
 
 object RioFunctor {
-  @inline final def apply[F[-_, +_]](implicit ef: RioFunctor[F]): RioFunctor[F] = implicitly
+  @inline final def apply[F[-_, +_]](implicit ev: RioFunctor[F]): RioFunctor[F] = ev
 
   implicit val zioRioMonadError: RioMonadError[RIO] =
     new RioMonadError[RIO] {
