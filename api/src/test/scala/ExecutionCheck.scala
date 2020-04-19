@@ -11,7 +11,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import syntax.TestSyntax
 import zio.interop.catz._
 
-sealed abstract class ExecutionCheck[F[-_, _], G[_]](container: Container[F, G], name: String)(
+sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G], name: String)(
   implicit
   ev2: RioApplication[F, G],
   ev4: TestRun[G],

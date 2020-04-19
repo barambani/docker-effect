@@ -9,7 +9,7 @@ import docker.effect.interop.{ RioApplication, RioMonadError }
 import zio.{ RIO, Task }
 import zio.interop.catz._
 
-sealed abstract class Container[F[-_, _], G[_]](
+sealed abstract class Container[F[-_, +_], G[_]](
   implicit
   ev0: RioMonadError[F],
   ev1: RioApplication[F, G],

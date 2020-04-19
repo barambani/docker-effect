@@ -8,12 +8,12 @@ import docker.effect.syntax.RioSyntax.RioOps
 import scala.language.implicitConversions
 
 private[syntax] trait RioSyntax {
-  implicit def rioSyntax[F[-_, _], R, A](fa: F[R, A]): RioOps[F, R, A] =
+  implicit def rioSyntax[F[-_, +_], R, A](fa: F[R, A]): RioOps[F, R, A] =
     new RioOps(fa)
 }
 
 private[syntax] object RioSyntax {
-  final class RioOps[F[-_, _], R, A](private val fa: F[R, A]) extends AnyVal {
+  final class RioOps[F[-_, +_], R, A](private val fa: F[R, A]) extends AnyVal {
 
     @inline def >>=[B](f: A => F[R, B])(implicit ev: RioMonad[F]): F[R, B] = ev.>>=(fa)(f)
 

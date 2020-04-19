@@ -4,12 +4,12 @@ package interop
 import cats.MonadError
 import zio.RIO
 
-trait RioFunctor[F[-_, _]] {
+trait RioFunctor[F[-_, +_]] {
   def <&>[R, A, B](fa: F[R, A])(f: A => B): F[R, B]
 }
 
 object RioFunctor {
-  @inline final def apply[F[-_, _]](implicit ef: RioFunctor[F]): RioFunctor[F] = implicitly
+  @inline final def apply[F[-_, +_]](implicit ef: RioFunctor[F]): RioFunctor[F] = implicitly
 
   implicit val zioRioMonadError: RioMonadError[RIO] =
     new RioMonadError[RIO] {
@@ -36,7 +36,7 @@ object RioFunctor {
       def >>=[R, A, B](fa: CatsRIO[R, A])(f: A => CatsRIO[R, B]): CatsRIO[R, B] = fa flatMap f
 
       def >>>[RA, A, RB >: A, B](fa: CatsRIO[RA, A])(next: CatsRIO[RB, B]): CatsRIO[RA, B] =
-        fa andThen next
+        fa >>> next
 
       def <&>[R, A, B](fa: CatsRIO[R, A])(f: A => B): CatsRIO[R, B] = fa map f
 
@@ -46,7 +46,7 @@ object RioFunctor {
       ): CatsRIO[R, B] =
         MonadError[CatsRIO[R, *], Throwable].redeemWith(fa)(failure, success)
 
-      def failed[R, A](e: Throwable): CatsRIO[R, A] =
+      def failed[R, A](e: Throwable): CatsRIO[R, Nothing] =
         MonadError[CatsRIO[R, *], Throwable].raiseError(e)
     }
 }
