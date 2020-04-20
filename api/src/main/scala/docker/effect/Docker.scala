@@ -12,7 +12,7 @@ import shapeless.ops.hlist.Last
 import shapeless.{ ::, HList }
 import zio.{ RIO, Task }
 
-sealed abstract class Docker[F[-_, _], G[_]](
+sealed abstract class Docker[F[-_, +_], G[_]](
   implicit
   ev0: RioMonadError[F],
   ev1: Accessor[G, F],
@@ -135,7 +135,7 @@ sealed abstract class Docker[F[-_, _], G[_]](
     }
 
   private[effect] def run0[Cmd <: HList: Valid: Printed]: G[SuccessMessage] =
-    command.executed appliedTo printed0[Cmd]
+    command.executed appliedAt printed0[Cmd]
 
   private[effect] def run1[Cmd <: HList]: runPartialTypeApplicationTuple[Cmd, F, G] =
     new runPartialTypeApplicationTuple[Cmd, F, G]
@@ -146,7 +146,7 @@ object Docker {
   @inline final val zio: Docker[RIO, Task]      = Docker[RIO, Task]
   @inline final val catsIo: Docker[CatsRIO, IO] = Docker[CatsRIO, IO]
 
-  @inline final def apply[F[-_, _], G[_]](
+  @inline final def apply[F[-_, +_], G[_]](
     implicit
     ev0: RioMonadError[F],
     ev2: RioApplication[F, G],
@@ -154,7 +154,7 @@ object Docker {
     ev4: Command[F]
   ): Docker[F, G] = new Docker[F, G] {}
 
-  final private[Docker] class runPartialTypeApplicationTuple[Cmd <: HList, F[-_, _], G[_]](
+  final private[Docker] class runPartialTypeApplicationTuple[Cmd <: HList, F[-_, +_], G[_]](
     private val `_`: Boolean = true
   ) extends AnyVal
       with runPartialTypeApplication[Cmd, F, G] {
@@ -167,10 +167,10 @@ object Docker {
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed appliedTo printed1[Cmd](t)
+      command.executed appliedAt printed1[Cmd](t)
   }
 
-  sealed private[Docker] trait runPartialTypeApplication[Cmd <: HList, F[-_, _], G[_]] extends Any {
+  sealed private[Docker] trait runPartialTypeApplication[Cmd <: HList, F[-_, +_], G[_]] extends Any {
     def apply[Tgt, Exp](t: Tgt)(
       implicit
       ev1: Valid[Cmd],
@@ -180,6 +180,6 @@ object Docker {
       ev5: Printed[Cmd],
       command: Command[F]
     ): G[SuccessMessage] =
-      command.executed appliedTo printed1[Cmd](t)
+      command.executed appliedAt printed1[Cmd](t)
   }
 }
