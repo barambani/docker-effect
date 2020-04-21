@@ -2,10 +2,10 @@ package docker.effect
 
 import cats.Functor
 import cats.effect.{ IO, Resource }
-import docker.effect.syntax.rio._
-import docker.effect.syntax.provider._
-import docker.effect.algebra.{ Id, Name, Tag }
+import docker.effect.algebra.{ Id, Image, Tag }
 import docker.effect.interop.{ RioApplication, RioMonadError }
+import docker.effect.syntax.provider._
+import docker.effect.syntax.rio._
 import zio.{ RIO, Task }
 import zio.interop.catz._
 
@@ -23,8 +23,8 @@ sealed abstract class Container[F[-_, +_], G[_]](
     * by name. The container will be stopped and deleted
     * by the finalizer.
     */
-  def detached(n: Name): Resource[G, Id] =
-    Resource.make(runDetachedContainer appliedAt n)(id =>
+  def detached(i: Image): Resource[G, Id] =
+    Resource.make(runDetachedContainer appliedAt i)(id =>
       (stopContainerId >>> removeContainerId *> rm.unit) appliedAt id
     )
 
@@ -33,8 +33,8 @@ sealed abstract class Container[F[-_, +_], G[_]](
     * by name and tag. The container will be stopped
     * and deleted by the finalizer.
     */
-  def detached(n: Name, t: Tag): Resource[G, Id] =
-    Resource.make(runTaggedDetachedContainer appliedAt (n -> t))(id =>
+  def detached(i: Image, t: Tag): Resource[G, Id] =
+    Resource.make(runTaggedDetachedContainer appliedAt (i -> t))(id =>
       (stopContainerId >>> removeContainerId *> rm.unit) appliedAt id
     )
 }

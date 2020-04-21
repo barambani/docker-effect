@@ -1,10 +1,11 @@
 import _root_.docker.effect.Container
-import _root_.docker.effect.algebra.{ Name, _ }
+import _root_.docker.effect.algebra._
 import _root_.docker.effect.interop.RioApplication
 import _root_.docker.effect.syntax.provider._
 import cats.effect.Sync
 import cats.syntax.functor._
 import cats.syntax.show._
+import eu.timepit.refined.auto._
 import instances.TestRun
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -36,7 +37,7 @@ sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G]
 
     "start a redis instance" in {
       TestRun.unsafe(
-        container.detached(Name("redis"), latest).use { id =>
+        container.detached(Image("redis"), latest).use { id =>
           listAllContainerIds.applied map (_.show should include(id.value))
         }
       )
@@ -44,7 +45,7 @@ sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G]
 
     "start a redis instance mapping the port" in {
       TestRun.unsafe(
-        container.detached(Name("redis")).use { id =>
+        container.detached(Image("redis")).use { id =>
           listAllContainerIds.applied map (_.show should include(id.value))
         }
       )

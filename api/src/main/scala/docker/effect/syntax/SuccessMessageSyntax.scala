@@ -2,7 +2,7 @@ package docker.effect
 package syntax
 
 import cats.syntax.show._
-import docker.effect.algebra.{ Id, SuccessMessage }
+import docker.effect.algebra.{ Id, Name, SuccessMessage, TextString }
 import docker.effect.syntax.SuccessMessageSyntax.SuccessMessageOps
 
 import scala.language.implicitConversions
@@ -16,5 +16,7 @@ private[syntax] object SuccessMessageSyntax {
   final class SuccessMessageOps(private val sm: SuccessMessage) extends AnyVal {
     def unsafeId: Id               = Id.unsafeFrom(sm.show)
     def safeId: Either[String, Id] = Id.from(sm.show)
+
+    def name: Name = Name(TextString.unsafeFrom(sm.show))
   }
 }

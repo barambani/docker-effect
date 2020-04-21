@@ -69,16 +69,21 @@ package object algebra {
   final type IdRef   = NonEmpty And MatchesRegex[W.`"[0-9a-fA-F]+"`.T]
   final type TextRef = NonEmpty And MatchesRegex[W.`"[-0-9a-zA-Z]+"`.T]
 
-  final type Id   = String Refined IdRef
-  final type Name = String Refined TextRef
-  final type Repo = String Refined TextRef
-  final type Tag  = Tag.opaque
+  final type TextString = String Refined TextRef
+  final object TextString extends RefinedTypeOps[TextString, String]
 
-  final object Id   extends RefinedTypeOps[Id, String]
-  final object Name extends RefinedTypeOps[Name, String]
-  final object Repo extends RefinedTypeOps[Repo, String]
-  final val Tag    = newtype[NonEmptyString]
+  final object Id    extends RefinedTypeOps[Id, String]
+  final object Image extends newtype[TextString]
+  final object Name  extends newtype[TextString]
+  final object Repo  extends newtype[TextString]
+  final object Tag   extends newtype[NonEmptyString]
   final val latest = Tag("latest")
+
+  final type Id    = String Refined IdRef
+  final type Image = Image.opaque
+  final type Name  = Name.opaque
+  final type Repo  = Repo.opaque
+  final type Tag   = Tag.opaque
 
   // relationships
   final type CmdCanFollow[Cmd, In]       = CommandAllowed[In, Cmd]

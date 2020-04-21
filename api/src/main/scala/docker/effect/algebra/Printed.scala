@@ -110,20 +110,4 @@ object Printed {
     new Printed[Lit] {
       val text: NonEmptyString = NonEmptyString.unsafeFrom(wit.value.toString)
     }
-
-//  implicit def printedLiteralT3[Lit, RefLitA, RefLitB, RefLitC](
-//    implicit
-//    ev1: Lit <:!< HList,
-//    ev2: Lit <~< (
-//      Refined[String, Equal[RefLitA]],
-//      Refined[String, Equal[RefLitB]],
-//      Refined[String, Equal[RefLitC]]
-//    ),
-//    witA: Witness.Aux[RefLitA],
-//    witB: Witness.Aux[RefLitB],
-//    witC: Witness.Aux[RefLitC]
-//  ): Printed[Lit] =
-//    new Printed[Lit] {
-//      val text: NonEmptyString = NonEmptyString.unsafeFrom(s"${witA.value}, ${witA.value}, ${witA.value}")
-//    }
 }

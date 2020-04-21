@@ -19,31 +19,17 @@ sealed abstract class Docker[F[-_, +_], G[_]](
   ev2: RioApplication[F, G],
   command: Command[F]
 ) {
-  val runContainer: F[Name, Id] =
+  val runDetachedContainer: F[Image, Id] =
     absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: run :: Name :: `.`](_)
+      Accessor.accessM[Image] {
+        run1[docker :: run :: detach :: Image :: `.`](_)
       } <&> (_.safeId)
     )
 
-  val runContainerId: F[Id, Id] =
+  val runTaggedDetachedContainer: F[(Image, Tag), Id] =
     absolve(
-      Accessor.accessM[Id] {
-        run1[docker :: run :: Id :: `.`](_)
-      } <&> (_.safeId)
-    )
-
-  val runDetachedContainer: F[Name, Id] =
-    absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: run :: detach :: Name :: `.`](_)
-      } <&> (_.safeId)
-    )
-
-  val runTaggedDetachedContainer: F[(Name, Tag), Id] =
-    absolve(
-      Accessor.accessM[(Name, Tag)] {
-        run1[docker :: run :: detach :: (Name, Tag) :: `.`](_)
+      Accessor.accessM[(Image, Tag)] {
+        run1[docker :: run :: detach :: (Image, Tag) :: `.`](_)
       } <&> (_.safeId)
     )
 
@@ -54,12 +40,10 @@ sealed abstract class Docker[F[-_, +_], G[_]](
       } <&> (_.safeId)
     )
 
-  val stopContainer: F[Name, Id] =
-    absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: stop :: Name :: `.`](_)
-      } <&> (_.safeId)
-    )
+  val stopContainer: F[Name, Name] =
+    Accessor.accessM[Name] {
+      run1[docker :: stop :: Name :: `.`](_)
+    } <&> (_.name)
 
   val stopContainerId: F[Id, Id] =
     absolve(
@@ -68,12 +52,10 @@ sealed abstract class Docker[F[-_, +_], G[_]](
       } <&> (_.safeId)
     )
 
-  val killContainer: F[Name, Id] =
-    absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: kill :: Name :: `.`](_)
-      } <&> (_.safeId)
-    )
+  val killContainer: F[Name, Name] =
+    Accessor.accessM[Name] {
+      run1[docker :: kill :: Name :: `.`](_)
+    } <&> (_.name)
 
   val killContainerId: F[Id, Id] =
     absolve(
@@ -82,12 +64,10 @@ sealed abstract class Docker[F[-_, +_], G[_]](
       } <&> (_.safeId)
     )
 
-  val removeContainer: F[Name, Id] =
-    absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: rm :: Name :: `.`](_)
-      } <&> (_.safeId)
-    )
+  val removeContainer: F[Name, Name] =
+    Accessor.accessM[Name] {
+      run1[docker :: rm :: Name :: `.`](_)
+    } <&> (_.name)
 
   val removeContainerId: F[Id, Id] =
     absolve(
@@ -96,12 +76,10 @@ sealed abstract class Docker[F[-_, +_], G[_]](
       } <&> (_.safeId)
     )
 
-  val forceRemoveContainer: F[Name, Id] =
-    absolve(
-      Accessor.accessM[Name] {
-        run1[docker :: rm :: force :: Name :: `.`](_)
-      } <&> (_.safeId)
-    )
+  val forceRemoveContainer: F[Name, Name] =
+    Accessor.accessM[Name] {
+      run1[docker :: rm :: force :: Name :: `.`](_)
+    } <&> (_.name)
 
   val forceRemoveContainerId: F[Id, Id] =
     absolve(
@@ -110,9 +88,9 @@ sealed abstract class Docker[F[-_, +_], G[_]](
       } <&> (_.safeId)
     )
 
-  val pullImage: F[(Name, Tag), SuccessMessage] =
+  val pullImage: F[(Image, Tag), SuccessMessage] =
     Accessor.accessM {
-      run1[docker :: pull :: (Name, Tag) :: `.`](_)
+      run1[docker :: pull :: (Image, Tag) :: `.`](_)
     }
 
   val listAllImages: F[Unit, SuccessMessage] =
@@ -124,9 +102,14 @@ sealed abstract class Docker[F[-_, +_], G[_]](
   val listAllContainerIds: F[Unit, SuccessMessage] =
     Accessor.liftM(run0[docker :: ps :: (all, quiet, `no-trunc`) :: `.`])
 
-  val removeImage: F[Name, SuccessMessage] =
+  val removeImage: F[Repo, SuccessMessage] =
     Accessor.accessM {
-      run1[docker :: rmi :: Name :: `.`](_)
+      run1[docker :: rmi :: Repo :: `.`](_)
+    }
+
+  val removeTaggedImage: F[(Repo, Tag), SuccessMessage] =
+    Accessor.accessM {
+      run1[docker :: rmi :: (Repo, Tag) :: `.`](_)
     }
 
   val removeImageId: F[Id, SuccessMessage] =

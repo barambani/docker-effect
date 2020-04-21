@@ -68,10 +68,8 @@ object ValidChunk extends ValidFinalChunk {
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
     ev3: Prev <~< Refined[String, Equal[LitP]],
-    ev4: Tgt <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
-    ev5: Witness.Aux[LitP],
-    ev6: Witness.Aux[LitTgt],
-    ev7: Prev AcceptsCmdTarget Tgt
+    ev4: Witness.Aux[LitP],
+    ev5: Prev AcceptsCmdTarget Tgt
   ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
   implicit def validLastCommandTargetPair[Prev, TgtA, TgtB, LitP, LitTgt](
@@ -81,21 +79,18 @@ object ValidChunk extends ValidFinalChunk {
     ev3: TgtB <:!< HList,
     ev4: Prev <~< Refined[String, Equal[LitP]],
     ev5: TgtA <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
-    ev6: TgtB <~< Tag.opaque,
     ev7: Witness.Aux[LitP],
     ev8: Witness.Aux[LitTgt],
     ev9: Prev AcceptsCmdTarget (TgtA, TgtB)
   ): ValidChunk[Prev :: (TgtA, TgtB) :: HNil] = _validChunk[Prev :: (TgtA, TgtB) :: HNil]
 
-  implicit def validLastOptionTarget[Prev, Tgt, LitP, LitTgt](
+  implicit def validLastOptionTarget[Prev, Tgt, LitP](
     implicit
     ev1: Prev <:!< HList,
     ev2: Tgt <:!< HList,
     ev3: Prev <~< Refined[String, Equal[LitP]],
-    ev4: Tgt <~< Refined[String, NonEmpty And MatchesRegex[LitTgt]],
-    ev5: Witness.Aux[LitP],
-    ev6: Witness.Aux[LitTgt],
-    ev7: Prev AcceptsOptTarget Tgt
+    ev4: Witness.Aux[LitP],
+    ev5: Prev AcceptsOptTarget Tgt
   ): ValidChunk[Prev :: Tgt :: HNil] = _validChunk[Prev :: Tgt :: HNil]
 
   implicit def validLastOptionTargetPair[Prev, TgtA, TgtB, LitP, LitTgt](
