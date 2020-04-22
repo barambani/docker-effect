@@ -1,14 +1,13 @@
 package instances
 
 import cats.effect.IO
-import org.scalatest.Assertion
-import org.scalatest.matchers.should.Matchers
+import munit.Assertions
 import zio.Task
 
-sealed trait TestRun[F[_]] extends Matchers {
+sealed trait TestRun[F[_]] extends Assertions {
   def unsafe[A](fa: F[A]): A
-  def successAssert[A](fa: F[A])(assert: A => Assertion): Assertion
-  def failureAssert[A](fa: F[A])(assert: Throwable => Assertion): Assertion
+  def successAssert[A](fa: F[A])(assert: A => Unit): Unit
+  def failureAssert[A](fa: F[A])(assert: Throwable => Unit): Unit
 }
 
 object TestRun {
@@ -18,12 +17,12 @@ object TestRun {
 
   implicit def zioTestRun: TestRun[Task] =
     new TestRun[Task] {
-      def successAssert[A](fa: Task[A])(assert: A => Assertion): Assertion =
+      def successAssert[A](fa: Task[A])(assert: A => Unit): Unit =
         zio.Runtime.default
           .unsafeRun(fa.either)
           .fold(err => fail(s"Expected success but got $err"), assert)
 
-      def failureAssert[A](fa: Task[A])(assert: Throwable => Assertion): Assertion =
+      def failureAssert[A](fa: Task[A])(assert: Throwable => Unit): Unit =
         zio.Runtime.default
           .unsafeRun(fa.either)
           .fold(assert, res => fail(s"Expected failure but got $res"))
@@ -34,10 +33,10 @@ object TestRun {
 
   implicit def catsTestRun: TestRun[IO] =
     new TestRun[IO] {
-      def successAssert[A](fa: IO[A])(assert: A => Assertion): Assertion =
+      def successAssert[A](fa: IO[A])(assert: A => Unit): Unit =
         fa.redeem(err => fail(s"Expected success but got $err"), assert).unsafeRunSync
 
-      def failureAssert[A](fa: IO[A])(assert: Throwable => Assertion): Assertion =
+      def failureAssert[A](fa: IO[A])(assert: Throwable => Unit): Unit =
         fa.redeem(assert, res => fail(s"Expected failure but got $res")).unsafeRunSync
 
       def unsafe[A](fa: IO[A]): A = fa.unsafeRunSync()

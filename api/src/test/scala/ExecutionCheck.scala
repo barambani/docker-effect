@@ -7,51 +7,46 @@ import cats.syntax.functor._
 import cats.syntax.show._
 import eu.timepit.refined.auto._
 import instances.TestRun
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 import syntax.TestSyntax
 import zio.interop.catz._
 
-sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G], name: String)(
+sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G])(
   implicit
   ev2: RioApplication[F, G],
   ev4: TestRun[G],
   syn: Sync[G]
-) extends AnyWordSpecLike
-    with Matchers
+) extends munit.FunSuite
     with TestSyntax {
 
   import container.docker._
 
-  s"a $name docker effect" should {
-    "get the list of images" in {
-      listAllImages.applied satisfies { res =>
-        val resText = res.show
-        resText should startWith("REPOSITORY")
-        resText should include("TAG")
-        resText should include("IMAGE ID")
-        resText should include("CREATED")
-        resText should include("SIZE")
+  test("docker list images") {
+    listAllImages.applied satisfies { res =>
+      val resText = res.show
+      assert(resText contains "REPOSITORY")
+      assert(resText contains "TAG")
+      assert(resText contains "IMAGE ID")
+      assert(resText contains "CREATED")
+      assert(resText contains "SIZE")
+    }
+  }
+
+  test("docker start redis instance") {
+    TestRun.unsafe(
+      container.detached(Image("redis"), latest).use { id =>
+        listAllContainerIds.applied map (sm => assert(sm.show contains id.value))
       }
-    }
+    )
+  }
 
-    "start a redis instance" in {
-      TestRun.unsafe(
-        container.detached(Image("redis"), latest).use { id =>
-          listAllContainerIds.applied map (_.show should include(id.value))
-        }
-      )
-    }
-
-    "start a redis instance mapping the port" in {
-      TestRun.unsafe(
-        container.detached(Image("redis")).use { id =>
-          listAllContainerIds.applied map (_.show should include(id.value))
-        }
-      )
-    }
+  test("docker start redis instance mapping the port") {
+    TestRun.unsafe(
+      container.detached(Image("redis")).use { id =>
+        listAllContainerIds.applied map (sm => assert(sm.show contains id.value))
+      }
+    )
   }
 }
 
-final class ZioExecutionCheck  extends ExecutionCheck(Container.zio, "Zio")
-final class CatsExecutionCheck extends ExecutionCheck(Container.catsIo, "Cats IO")
+final class ZioExecutionCheck  extends ExecutionCheck(Container.zio)
+final class CatsExecutionCheck extends ExecutionCheck(Container.catsIo)

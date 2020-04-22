@@ -1,33 +1,71 @@
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
+final class IncorrectCommandsCheck extends munit.FunSuite {
+  test("docker kill not compiling") {
+    assertNoDiff(
+      compileErrors("""
+        import docker.effect._
+        import docker.effect.algebra._
+        import shapeless.{::, HNil}
+        print0[docker :: kill :: `.`]"""),
+      """|error: not found: value print0
+         |        print0[docker :: kill :: `.`]
+         |        ^
+         |""".stripMargin
+    )
+  }
 
-final class IncorrectCommandsCheck extends AnyWordSpecLike with Matchers {
-  "printing incorrect commands command" should {
-    "not compile" in {
-      """
-        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
-        |print0[docker :: kill :: HNil]
-      """.stripMargin shouldNot compile
+  test("docker rmi not compiling") {
+    assertNoDiff(
+      compileErrors("""
+        import docker.effect._
+        import docker.effect.algebra._
+        import shapeless.{::, HNil}
+        print0[docker :: rmi :: `.`]"""),
+      """|error: not found: value print0
+         |        print0[docker :: rmi :: `.`]
+         |        ^
+         |""".stripMargin
+    )
+  }
 
-      """
-        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
-        |print0[docker :: rmi :: HNil]
-      """.stripMargin shouldNot compile
+  test("docker rmi by id not compiling") {
+    assertNoDiff(
+      compileErrors("""
+        import docker.effect._
+        import docker.effect.algebra._
+        import shapeless.{::, HNil}
+        print1[docker :: rmi :: Id :: `.`](fd484f19954f)"""),
+      """|error: not found: value print1
+         |        print1[docker :: rmi :: Id :: `.`](fd484f19954f)
+         |        ^
+         |""".stripMargin
+    )
+  }
 
-      """
-        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
-        |print1[docker :: rmi :: Id :: HNil](fd484f19954f)
-      """.stripMargin shouldNot compile
+  test("docker rmi by repo not compiling") {
+    assertNoDiff(
+      compileErrors("""
+        import docker.effect._
+        import docker.effect.algebra._
+        import shapeless.{::, HNil}
+        print1[docker :: rmi :: Repo :: `.`]("test-repo")"""),
+      """|error: not found: value print1
+         |        print1[docker :: rmi :: Repo :: `.`]("test-repo")
+         |        ^
+         |""".stripMargin
+    )
+  }
 
-      """
-        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
-        |print1[docker :: rmi :: Repo :: HNil]("test-repo")
-      """.stripMargin shouldNot compile
-
-      """
-        |import docker.effect.algebra.algebra._, shapeless.{::, HNil}
-        |print0[kill :: signal :: KILL :: HNil]
-      """.stripMargin shouldNot compile
-    }
+  test("kill signal KILL compiling") {
+    assertNoDiff(
+      compileErrors("""
+        import docker.effect._
+        import docker.effect.algebra._
+        import shapeless.{::, HNil}
+        print1[kill :: signal :: KILL :: `.`]("test-repo")"""),
+      """|error: not found: value print1
+         |        print1[kill :: signal :: KILL :: `.`]("test-repo")
+         |        ^
+         |""".stripMargin
+    )
   }
 }

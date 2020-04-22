@@ -1,3 +1,4 @@
+import sbt.Keys.testFrameworks
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 lazy val scala212Options = Seq(
@@ -46,10 +47,10 @@ lazy val versionOf = new {
   val cats           = "2.1.1"
   val catsEffect     = "2.1.3"
   val kindProjector  = "0.11.0"
+  val munit          = "0.7.3"
   val osLib          = "0.7.0"
   val refined        = "0.9.14"
   val scalaCheck     = "1.14.3"
-  val scalaTest      = "3.1.1"
   val zio            = "1.0.0-RC18-2"
   val zioInteropCats = "2.0.0.0-RC12"
   val shapeless      = "2.3.3"
@@ -70,8 +71,9 @@ lazy val compilerPluginsDependencies = Seq(
 )
 
 lazy val testDependencies = Seq(
-  "org.scalacheck" %% "scalacheck" % versionOf.scalaCheck % Test,
-  "org.scalatest"  %% "scalatest"  % versionOf.scalaTest  % Test
+  "org.scalameta"  %% "munit"            % versionOf.munit      % Test,
+  "org.scalameta"  %% "munit-scalacheck" % versionOf.munit      % Test,
+  "org.scalacheck" %% "scalacheck"       % versionOf.scalaCheck % Test
 )
 
 lazy val apiDependencies = Seq(
@@ -159,5 +161,6 @@ lazy val api = project
   .settings(
     name                := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
-    publishArtifact     := false
+    publishArtifact     := false,
+    testFrameworks      += new TestFramework("munit.Framework")
   )
