@@ -1,7 +1,6 @@
 package syntax
 
 import instances.TestRun
-import org.scalatest.Assertion
 
 import scala.language.implicitConversions
 
@@ -10,9 +9,9 @@ trait TestSyntax {
 }
 
 final private[syntax] class TestOps[F[_], A](private val fa: F[A]) extends AnyVal {
-  def satisfies(assert: A => Assertion)(implicit F: TestRun[F]): Assertion =
+  def satisfies(assert: A => Unit)(implicit F: TestRun[F]): Unit =
     F.successAssert(fa)(assert)
 
-  def failsWith(assert: Throwable => Assertion)(implicit F: TestRun[F]): Assertion =
+  def failsWith(assert: Throwable => Unit)(implicit F: TestRun[F]): Unit =
     F.failureAssert(fa)(assert)
 }
