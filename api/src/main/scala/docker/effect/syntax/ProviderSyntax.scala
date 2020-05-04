@@ -16,7 +16,7 @@ private[syntax] trait ProviderSyntax {
 
 private[syntax] object ProviderSyntax {
   final class ProviderOps[R, A, F[-_, +_], G[_]](private val fa: F[R, A]) extends AnyVal {
-    def appliedAt(r: => R)(implicit ev: RioApplication[F, G]): G[A] = ev.applied(fa)(r)
+    def appliedAt(r: =>R)(implicit ev: RioApplication[F, G]): G[A] = ev.applied(fa)(r)
   }
 
   final class UnitProviderOps[A, F[-_, +_], G[_]](private val fa: F[Unit, A]) extends AnyVal {
