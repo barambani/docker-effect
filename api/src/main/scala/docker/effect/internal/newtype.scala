@@ -6,7 +6,7 @@ trait newtype[A] {
   private[newtype] trait Tag extends Any
   type opaque <: Base with Tag
 
-  final private[this] type Id[AA] = AA
+  private[this] final type Id[AA] = AA
 
   @inline final def apply(a: A): opaque =
     a.asInstanceOf[opaque]

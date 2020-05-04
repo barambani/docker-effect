@@ -35,7 +35,11 @@ object VerboseOptionAllowed {
 
   implicit def evVoT2_1[A: VerboseOption, B: VerboseOption]: images AcceptsVerboseOpt (A, B) =
     _isAllowed[images, (A, B)]
-  implicit def evVoT3_1[A: VerboseOption, B: VerboseOption, C: VerboseOption]: images AcceptsVerboseOpt (A, B, C) =
+  implicit def evVoT3_1[
+    A: VerboseOption,
+    B: VerboseOption,
+    C: VerboseOption
+  ]: images AcceptsVerboseOpt (A, B, C) =
     _isAllowed[images, (A, B, C)]
 
   implicit val evLo7: ps AcceptsVerboseOpt all         = _isAllowed[ps, all]
@@ -49,7 +53,11 @@ object VerboseOptionAllowed {
 
   implicit def evVoT2_2[A: VerboseOption, B: VerboseOption]: ps AcceptsVerboseOpt (A, B) =
     _isAllowed[ps, (A, B)]
-  implicit def evVoT3_2[A: VerboseOption, B: VerboseOption, C: VerboseOption]: ps AcceptsVerboseOpt (A, B, C) =
+  implicit def evVoT3_2[
+    A: VerboseOption,
+    B: VerboseOption,
+    C: VerboseOption
+  ]: ps AcceptsVerboseOpt (A, B, C) =
     _isAllowed[ps, (A, B, C)]
 
   implicit val evLo15: kill AcceptsVerboseOpt signal = _isAllowed[kill, signal]

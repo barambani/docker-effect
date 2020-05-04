@@ -2,7 +2,7 @@ package docker.effect
 package syntax
 
 import docker.effect.interop.Accessor.accessM
-import docker.effect.interop.{ Accessor, RioFunctor, RioMonad, RioMonadError }
+import docker.effect.interop.{Accessor, RioFunctor, RioMonad, RioMonadError}
 import docker.effect.syntax.RioSyntax.RioOps
 
 import scala.language.implicitConversions

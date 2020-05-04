@@ -1,7 +1,7 @@
 package docker.effect
 package interop
 
-import cats.{ ApplicativeError, Monad, MonadError }
+import cats.{ApplicativeError, Monad, MonadError}
 
 sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](val rio: R => F[A]) {
 
@@ -32,7 +32,7 @@ sealed abstract class CovariantKleisli[F[+_]: Monad, -R, +A](val rio: R => F[A])
 
 object CovariantKleisli extends CovariantKleisliConstruction with CovariantKleisliInstances
 
-sealed private[interop] trait CovariantKleisliConstruction {
+private[interop] sealed trait CovariantKleisliConstruction {
   @inline final def apply[F[+_]: Monad, R, A](rio: R => F[A]): CovariantKleisli[F, R, A] =
     new CovariantKleisli[F, R, A](rio) {}
 
@@ -48,8 +48,12 @@ sealed private[interop] trait CovariantKleisliConstruction {
     CovariantKleisli(r => read(r).rio(r))
 }
 
-sealed private[interop] trait CovariantKleisliInstances {
-  implicit def covariantKleisliMonadError[F[+_]: MonadError[*[_], E], R, E]: MonadError[CovariantKleisli[F, R, *], E] =
+private[interop] sealed trait CovariantKleisliInstances {
+  implicit def covariantKleisliMonadError[
+    F[+_]: MonadError[*[_], E],
+    R,
+    E
+  ]: MonadError[CovariantKleisli[F, R, *], E] =
     new MonadError[CovariantKleisli[F, R, *], E] {
       private[this] val F: MonadError[F, E] = implicitly
 

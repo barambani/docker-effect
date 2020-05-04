@@ -8,7 +8,7 @@ trait TestSyntax {
   implicit def testSyntax[F[_], A](fa: F[A]): TestOps[F, A] = new TestOps(fa)
 }
 
-final private[syntax] class TestOps[F[_], A](private val fa: F[A]) extends AnyVal {
+private[syntax] final class TestOps[F[_], A](private val fa: F[A]) extends AnyVal {
   def satisfies(assert: A => Unit)(implicit F: TestRun[F]): Unit =
     F.successAssert(fa)(assert)
 

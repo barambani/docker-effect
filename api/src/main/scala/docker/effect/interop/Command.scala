@@ -1,8 +1,8 @@
 package docker.effect
 package interop
 
-import cats.effect.{ IO => CatsIO }
-import docker.effect.algebra.{ DockerCommand, SuccessMessage }
+import cats.effect.{IO => CatsIO}
+import docker.effect.algebra.{DockerCommand, SuccessMessage}
 import docker.effect.syntax.commands._
 import zio.RIO
 

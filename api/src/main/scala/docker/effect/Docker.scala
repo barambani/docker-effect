@@ -3,18 +3,17 @@ package docker.effect
 import _root_.docker.effect.Docker.runPartialTypeApplicationTuple
 import _root_.docker.effect.algebra._
 import _root_.docker.effect.interop.RioMonadError.absolve
-import _root_.docker.effect.interop.{ Accessor, Command, RioApplication, RioMonadError }
+import _root_.docker.effect.interop.{Accessor, Command, RioApplication, RioMonadError}
 import _root_.docker.effect.syntax.provider._
 import _root_.docker.effect.syntax.rio._
 import _root_.docker.effect.syntax.successMessage._
 import cats.effect.IO
 import shapeless.ops.hlist.Last
-import shapeless.{ ::, HList }
-import zio.{ RIO, Task }
+import shapeless.{::, HList}
+import zio.{RIO, Task}
 
 sealed abstract class Docker[F[-_, +_], G[_]](
-  implicit
-  ev0: RioMonadError[F],
+  implicit ev0: RioMonadError[F],
   ev1: Accessor[G, F],
   ev2: RioApplication[F, G],
   command: Command[F]
@@ -130,20 +129,18 @@ object Docker {
   @inline final val catsIo: Docker[CatsRIO, IO] = Docker[CatsRIO, IO]
 
   @inline final def apply[F[-_, +_], G[_]](
-    implicit
-    ev0: RioMonadError[F],
+    implicit ev0: RioMonadError[F],
     ev2: RioApplication[F, G],
     ev3: Accessor[G, F],
     ev4: Command[F]
   ): Docker[F, G] = new Docker[F, G] {}
 
-  final private[Docker] class runPartialTypeApplicationTuple[Cmd <: HList, F[-_, +_], G[_]](
+  private[Docker] final class runPartialTypeApplicationTuple[Cmd <: HList, F[-_, +_], G[_]](
     private val `_`: Boolean = true
   ) extends AnyVal
       with runPartialTypeApplication[Cmd, F, G] {
     def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
-      implicit
-      ev1: Valid[Cmd],
+      implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Tgt],
       ev3: Tgt =:= (ExpA, ExpB),
       ev4: RioApplication[F, G],
@@ -153,10 +150,9 @@ object Docker {
       command.executed appliedAt printed1[Cmd](t)
   }
 
-  sealed private[Docker] trait runPartialTypeApplication[Cmd <: HList, F[-_, +_], G[_]] extends Any {
+  private[Docker] sealed trait runPartialTypeApplication[Cmd <: HList, F[-_, +_], G[_]] extends Any {
     def apply[Tgt, Exp](t: Tgt)(
-      implicit
-      ev1: Valid[Cmd],
+      implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
       ev4: RioApplication[F, G],

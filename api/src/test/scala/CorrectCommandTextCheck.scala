@@ -21,7 +21,9 @@ final class CorrectCommandTextCheck extends munit.FunSuite {
     assert(printed0[docker :: images :: q :: `.`].show === "docker images -q")
     assert(printed0[docker :: images :: aq :: `.`].show === "docker images -aq")
     assert(
-      printed0[docker :: images :: (all, quiet, `no-trunc`) :: `.`].show === "docker images --all --quiet --no-trunc"
+      printed0[
+        docker :: images :: (all, quiet, `no-trunc`) :: `.`
+      ].show === "docker images --all --quiet --no-trunc"
     )
   }
 
@@ -38,7 +40,9 @@ final class CorrectCommandTextCheck extends munit.FunSuite {
     assert(printed0[docker :: kill :: s :: HUP :: `.`].show === "docker kill -s=HUP")
     assert(printed0[docker :: kill :: signal :: KILL :: `.`].show === "docker kill --signal=KILL")
     assert(
-      printed1[docker :: kill :: signal :: KILL :: Id :: `.`](anId).show === "docker kill --signal=KILL fd484f19954f"
+      printed1[docker :: kill :: signal :: KILL :: Id :: `.`](
+        anId
+      ).show === "docker kill --signal=KILL fd484f19954f"
     )
     assert(printed1[docker :: kill :: s :: HUP :: Id :: `.`](anId).show === "docker kill -s=HUP fd484f19954f")
     assert(printed1[docker :: kill :: Name :: `.`](aContainer).show === "docker kill test-container")
@@ -73,11 +77,15 @@ final class CorrectCommandTextCheck extends munit.FunSuite {
     printed1[docker :: run :: Image :: `.`](anImage).show === "docker run test-image"
 
     printed1[docker :: run :: detach :: Image :: `.`](anImage).show === "docker run --detach test-image"
-    printed1[docker :: run :: detach :: (Image, Tag) :: `.`](anImage -> aTag).show === "docker run --detach test-image:a-tag"
+    printed1[docker :: run :: detach :: (Image, Tag) :: `.`](
+      anImage -> aTag
+    ).show === "docker run --detach test-image:a-tag"
     printed1[docker :: run :: detach :: Id :: `.`](anId).show === "docker run --detach fd484f19954f"
 
     printed1[docker :: run :: d :: Image :: `.`](anImage).show === "docker run -d test-image"
-    printed1[docker :: run :: d :: (Image, Tag) :: `.`](anImage -> aTag).show === "docker run -d test-image:a-tag"
+    printed1[docker :: run :: d :: (Image, Tag) :: `.`](
+      anImage -> aTag
+    ).show === "docker run -d test-image:a-tag"
     printed1[docker :: run :: d :: Id :: `.`](anId).show === "docker run -d fd484f19954f"
   }
 

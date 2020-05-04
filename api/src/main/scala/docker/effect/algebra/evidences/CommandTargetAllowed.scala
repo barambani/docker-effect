@@ -27,8 +27,8 @@ object CommandTargetAllowed extends Target2 {
   implicit def signalEvTg4[Sig: signal AcceptsArgument *]: Sig AcceptsCmdTarget Id = _allowed[Sig, Id]
 }
 
-sealed private[algebra] trait Target2 {
+private[algebra] sealed trait Target2 {
   implicit def signalEvTg5[Sig: s AcceptsArgument *]: Sig AcceptsCmdTarget Id = _allowed[Sig, Id]
 
-  final protected def _allowed[A, B]: A AcceptsCmdTarget B = new (A AcceptsCmdTarget B) {}
+  protected final def _allowed[A, B]: A AcceptsCmdTarget B = new (A AcceptsCmdTarget B) {}
 }

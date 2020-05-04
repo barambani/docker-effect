@@ -11,8 +11,7 @@ import syntax.TestSyntax
 import zio.interop.catz._
 
 sealed abstract class ExecutionCheck[F[-_, +_], G[_]](container: Container[F, G])(
-  implicit
-  ev2: RioApplication[F, G],
+  implicit ev2: RioApplication[F, G],
   ev4: TestRun[G],
   syn: Sync[G]
 ) extends munit.FunSuite

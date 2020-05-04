@@ -88,8 +88,8 @@ lazy val apiDependencies = Seq(
 
 lazy val crossBuildSettings = Seq(
   libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
-  organization        := "com.github.barambani",
-  parallelExecution   in Test := false,
+  organization := "com.github.barambani",
+  parallelExecution in Test := false,
   scalacOptions ++=
     (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, 12)) => scala212Options
@@ -112,16 +112,16 @@ lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
     releaseStepCommand("sonatypeRelease"),
     pushChanges
   ),
-  releaseCrossBuild             := true,
-  publishMavenStyle             := true,
+  releaseCrossBuild := true,
+  publishMavenStyle := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  publishArtifact               in Test := false,
-  pomIncludeRepository          := { _ => false },
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false },
   licenses := Seq(
     "MIT License" ->
       url("https://raw.githubusercontent.com/barambani/docker-effect/master/LICENSE")
   ),
-  homepage  := Some(url("https://github.com/barambani/http4s-extend")),
+  homepage := Some(url("https://github.com/barambani/http4s-extend")),
   publishTo := sonatypePublishTo.value,
   pomExtra :=
     <scm>
@@ -143,7 +143,7 @@ lazy val root = project
   .settings(crossBuildSettings)
   .settings(releaseSettings)
   .settings(
-    name            := "docker-effect",
+    name := "docker-effect",
     publishArtifact := false,
     addCommandAlias("format", ";scalafmt;test:scalafmt;scalafmtSbt"),
     addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
@@ -159,8 +159,8 @@ lazy val api = project
   .settings(crossBuildSettings)
   .settings(releaseSettings)
   .settings(
-    name                := "docker-effect-api",
+    name := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
-    publishArtifact     := false,
-    testFrameworks      += new TestFramework("munit.Framework")
+    publishArtifact := false,
+    testFrameworks += new TestFramework("munit.Framework")
   )

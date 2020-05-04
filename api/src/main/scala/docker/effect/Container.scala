@@ -1,17 +1,16 @@
 package docker.effect
 
 import cats.Functor
-import cats.effect.{ IO, Resource }
-import docker.effect.algebra.{ Id, Image, Tag }
-import docker.effect.interop.{ RioApplication, RioMonadError }
+import cats.effect.{IO, Resource}
+import docker.effect.algebra.{Id, Image, Tag}
+import docker.effect.interop.{RioApplication, RioMonadError}
 import docker.effect.syntax.provider._
 import docker.effect.syntax.rio._
-import zio.{ RIO, Task }
+import zio.{RIO, Task}
 import zio.interop.catz._
 
 sealed abstract class Container[F[-_, +_], G[_]](
-  implicit
-  ev0: RioApplication[F, G],
+  implicit ev0: RioApplication[F, G],
   ev1: Functor[G],
   rm: RioMonadError[F]
 ) {
@@ -40,6 +39,6 @@ sealed abstract class Container[F[-_, +_], G[_]](
 }
 
 object Container {
-  @inline final val zio: Container[RIO, Task]      = new Container[RIO, Task]   { val docker = Docker.zio    }
+  @inline final val zio: Container[RIO, Task]      = new Container[RIO, Task] { val docker = Docker.zio }
   @inline final val catsIo: Container[CatsRIO, IO] = new Container[CatsRIO, IO] { val docker = Docker.catsIo }
 }

@@ -17,7 +17,7 @@ object IsFinal extends CanEndWith2 {
     _isFinal[A, Tgt]
 }
 
-sealed private[algebra] trait CanEndWith2 {
+private[algebra] sealed trait CanEndWith2 {
   implicit def evCewIm2[CO: CompactOption: images AcceptsCompactOpt *]: IsFinal[images, CO] =
     _isFinal[images, CO]
   implicit def evCewPs2[CO: CompactOption: ps AcceptsCompactOpt *]: IsFinal[ps, CO] =
@@ -29,5 +29,5 @@ sealed private[algebra] trait CanEndWith2 {
   implicit def optionTargetEv[A, Tgt: A AcceptsOptTarget *]: IsFinal[A, Tgt] =
     _isFinal[A, Tgt]
 
-  final protected def _isFinal[A, B]: IsFinal[A, B] = new IsFinal[A, B] {}
+  protected final def _isFinal[A, B]: IsFinal[A, B] = new IsFinal[A, B] {}
 }

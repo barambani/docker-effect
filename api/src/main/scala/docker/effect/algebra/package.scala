@@ -2,11 +2,11 @@ package docker.effect
 
 import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences._
-import docker.effect.algebra.newtypes.{ MkDockerCommand, MkSuccessMessage }
+import docker.effect.algebra.newtypes.{MkDockerCommand, MkSuccessMessage}
 import docker.effect.internal.newtype
 import docker.effect.syntax.nes._
 import eu.timepit.refined.W
-import eu.timepit.refined.api.{ Refined, RefinedTypeOps }
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.collection.NonEmpty
@@ -102,13 +102,12 @@ package object algebra {
 
   @silent("parameter value ev. in method apply is never used")
   @silent("it is not recommended to define classes/objects inside of package objects")
-  final private[algebra] class printPartialTypeApplicationTuple[Cmd <: HList](
+  private[algebra] final class printPartialTypeApplicationTuple[Cmd <: HList](
     private val `_`: Boolean = true
   ) extends AnyVal
       with printPartialTypeApplication[Cmd] {
     def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
-      implicit
-      ev1: Valid[Cmd],
+      implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Tgt],
       ev3: Tgt =:= (ExpA, ExpB),
       p: Printed[Cmd]
@@ -118,10 +117,9 @@ package object algebra {
 
   @silent("parameter value ev. in method apply is never used")
   @silent("it is not recommended to define classes/objects inside of package objects")
-  sealed private[algebra] trait printPartialTypeApplication[Cmd <: HList] extends Any {
+  private[algebra] sealed trait printPartialTypeApplication[Cmd <: HList] extends Any {
     def apply[Tgt, Exp](t: Tgt)(
-      implicit
-      ev1: Valid[Cmd],
+      implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
       ev3: Tgt =:= Exp,
       p: Printed[Cmd]

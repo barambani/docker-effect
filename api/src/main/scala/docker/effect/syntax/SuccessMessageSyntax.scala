@@ -2,7 +2,7 @@ package docker.effect
 package syntax
 
 import cats.syntax.show._
-import docker.effect.algebra.{ Id, Name, SuccessMessage, TextString }
+import docker.effect.algebra.{Id, Name, SuccessMessage, TextString}
 import docker.effect.syntax.SuccessMessageSyntax.SuccessMessageOps
 
 import scala.language.implicitConversions
