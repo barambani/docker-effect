@@ -17,7 +17,7 @@ sealed abstract class Container[F[-_, +_], G[_]](
   val docker: Docker[F, G]
   import docker._
 
-  /***
+  /**
     * Creates a resource running a detached container
     * by name. The container will be stopped and deleted
     * by the finalizer.
@@ -27,7 +27,7 @@ sealed abstract class Container[F[-_, +_], G[_]](
       (stopContainerId >>> removeContainerId *> rm.unit) appliedAt id
     )
 
-  /***
+  /**
     * Creates a resource running a detached container
     * by name and tag. The container will be stopped
     * and deleted by the finalizer.
