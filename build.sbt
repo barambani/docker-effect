@@ -54,7 +54,7 @@ lazy val versionOf = new {
   val zio            = "1.0.0-RC21-2"
   val zioInteropCats = "2.0.0.0-RC14"
   val shapeless      = "2.3.3"
-  val silencer       = "1.7.0"
+  val silencer       = "1.7.1"
 }
 
 lazy val sharedDependencies = Seq(
