@@ -25,11 +25,11 @@ object Command {
               )
           ) >>= { res =>
             if (res.exitCode == 0) {
-              val successMessage = res.out.trim
+              val successMessage = res.out.trim()
               if (successMessage.isEmpty)
                 RIO.succeed(SuccessMessage(s"Command `${cmd.unMk.value}` execution complete"))
               else RIO.succeed(SuccessMessage(successMessage))
-            } else RIO.fail(new RuntimeException(res.err.trim))
+            } else RIO.fail(new RuntimeException(res.err.trim()))
           }
         }
     }
@@ -48,11 +48,11 @@ object Command {
               )
           ) >>= { res =>
             if (res.exitCode == 0) {
-              val successMessage = res.out.trim
+              val successMessage = res.out.trim()
               if (successMessage.isEmpty)
                 CatsIO.pure(SuccessMessage(s"Command `${cmd.unMk.value}` execution complete"))
               else CatsIO.pure(SuccessMessage(successMessage))
-            } else CatsIO.raiseError(new RuntimeException(res.err.trim))
+            } else CatsIO.raiseError(new RuntimeException(res.err.trim()))
           }
         }
     }

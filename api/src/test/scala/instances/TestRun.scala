@@ -34,10 +34,10 @@ object TestRun {
   implicit def catsTestRun: TestRun[IO] =
     new TestRun[IO] {
       def successAssert[A](fa: IO[A])(assert: A => Unit): Unit =
-        fa.redeem(err => fail(s"Expected success but got $err"), assert).unsafeRunSync
+        fa.redeem(err => fail(s"Expected success but got $err"), assert).unsafeRunSync()
 
       def failureAssert[A](fa: IO[A])(assert: Throwable => Unit): Unit =
-        fa.redeem(assert, res => fail(s"Expected failure but got $res")).unsafeRunSync
+        fa.redeem(assert, res => fail(s"Expected failure but got $res")).unsafeRunSync()
 
       def unsafe[A](fa: IO[A]): A = fa.unsafeRunSync()
     }
