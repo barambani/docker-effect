@@ -1,5 +1,8 @@
 import sbt.Keys.testFrameworks
-import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
+val scala_212       = "2.12.13"
+val scala_213       = "2.13.4"
+val current_version = scala_213
 
 lazy val scala212Options = Seq(
   "-deprecation",
@@ -87,6 +90,8 @@ lazy val apiDependencies = Seq(
 ) map (_.withSources)
 
 lazy val crossBuildSettings = Seq(
+  scalaVersion := current_version,
+  crossScalaVersions := Seq(scala_212, scala_213),
   libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
   organization := "com.github.barambani",
   parallelExecution in Test := false,
@@ -97,67 +102,25 @@ lazy val crossBuildSettings = Seq(
     })
 )
 
-lazy val releaseSettings: Seq[Def.Setting[_]] = Seq(
-  releaseProcess := Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    runClean,
-    runTest,
-    setReleaseVersion,
-    commitReleaseVersion,
-    tagRelease,
-    publishArtifacts,
-    setNextVersion,
-    commitNextVersion,
-    releaseStepCommand("sonatypeRelease"),
-    pushChanges
-  ),
-  releaseCrossBuild := true,
-  publishMavenStyle := true,
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  publishArtifact in Test := false,
-  pomIncludeRepository := { _ => false },
-  licenses := Seq(
-    "MIT License" ->
-      url("https://raw.githubusercontent.com/barambani/docker-effect/master/LICENSE")
-  ),
-  homepage := Some(url("https://github.com/barambani/http4s-extend")),
-  publishTo := sonatypePublishTo.value,
-  pomExtra :=
-    <scm>
-      <url>https://github.com/barambani/docker-effect</url>
-      <connection>scm:git:git@github.com:barambani/docker-effect.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>barambani</id>
-        <name>Filippo Mariotti</name>
-        <url>https://github.com/barambani</url>
-      </developer>
-    </developers>
-)
-
 lazy val root = project
   .in(file("."))
   .aggregate(api)
   .settings(crossBuildSettings)
-  .settings(releaseSettings)
   .settings(
     name := "docker-effect",
     publishArtifact := false,
-    addCommandAlias("format", ";scalafmt;test:scalafmt;scalafmtSbt"),
     addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
+    addCommandAlias("fmt", ";scalafmt;test:scalafmt"),
     addCommandAlias(
-      "checkFormat",
-      ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck"
+      "fmtCheck",
+      "all scalafmtCheck test:scalafmtCheck scalafmtSbtCheck"
     ),
-    addCommandAlias("fullCiBuild", ";checkFormat;clean;test")
+    addCommandAlias("fullTest", ";clean;test")
   )
 
 lazy val api = project
   .in(file("api"))
   .settings(crossBuildSettings)
-  .settings(releaseSettings)
   .settings(
     name := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
