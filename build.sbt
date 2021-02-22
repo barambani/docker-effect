@@ -110,7 +110,7 @@ lazy val root = project
     name := "docker-effect",
     publishArtifact := false,
     addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
-    addCommandAlias("fmt", ";scalafmt;test:scalafmt"),
+    addCommandAlias("fmt", "all scalafmt test:scalafmt scalafmtSbt"),
     addCommandAlias(
       "fmtCheck",
       "all scalafmtCheck test:scalafmtCheck scalafmtSbtCheck"
