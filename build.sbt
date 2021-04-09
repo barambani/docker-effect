@@ -56,7 +56,7 @@ lazy val versionOf = new {
   val scalaCheck     = "1.15.3"
   val zio            = "1.0.5"
   val zioInteropCats = "2.3.1.0"
-  val shapeless      = "2.3.3"
+  val shapeless      = "2.3.4"
   val silencer       = "1.7.3"
 }
 
