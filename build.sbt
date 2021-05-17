@@ -1,7 +1,7 @@
 import sbt.Keys.testFrameworks
 
 val scala_212       = "2.12.13"
-val scala_213       = "2.13.4"
+val scala_213       = "2.13.6"
 val current_version = scala_213
 
 lazy val scala212Options = Seq(
