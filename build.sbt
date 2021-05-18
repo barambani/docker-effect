@@ -1,7 +1,7 @@
 import sbt.Keys.testFrameworks
 
 val scala_212       = "2.12.13"
-val scala_213       = "2.13.4"
+val scala_213       = "2.13.6"
 val current_version = scala_213
 
 lazy val scala212Options = Seq(
@@ -54,8 +54,8 @@ lazy val versionOf = new {
   val osLib          = "0.7.7"
   val refined        = "0.9.25"
   val scalaCheck     = "1.15.4"
-  val zio            = "1.0.7"
-  val zioInteropCats = "3.0.2.0"
+  val zio            = "1.0.8"
+  val zioInteropCats = "2.4.1.0"
   val shapeless      = "2.3.7"
   val silencer       = "1.7.3"
 }
