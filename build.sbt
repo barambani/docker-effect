@@ -90,10 +90,10 @@ lazy val apiDependencies = Seq(
 ) map (_.withSources)
 
 lazy val crossBuildSettings = Seq(
-  scalaVersion := current_version,
+  scalaVersion       := current_version,
   crossScalaVersions := Seq(scala_212, scala_213),
   libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
-  organization := "com.github.barambani",
+  organization              := "com.github.barambani",
   parallelExecution in Test := false,
   scalacOptions ++=
     (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -107,7 +107,7 @@ lazy val root = project
   .aggregate(api)
   .settings(crossBuildSettings)
   .settings(
-    name := "docker-effect",
+    name            := "docker-effect",
     publishArtifact := false,
     addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
     addCommandAlias("fmt", "all scalafmt test:scalafmt scalafmtSbt"),
