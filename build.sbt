@@ -48,7 +48,7 @@ lazy val scala213Options = scala212Options diff Seq(
 
 lazy val versionOf = new {
   val cats           = "2.3.0"
-  val catsEffect     = "2.5.3"
+  val catsEffect     = "2.5.4"
   val kindProjector  = "0.13.2"
   val munit          = "0.7.29"
   val osLib          = "0.7.8"
@@ -57,7 +57,7 @@ lazy val versionOf = new {
   val zio            = "1.0.11"
   val zioInteropCats = "2.5.1.0"
   val shapeless      = "2.3.7"
-  val silencer       = "1.7.5"
+  val silencer       = "1.7.6"
 }
 
 lazy val sharedDependencies = Seq(
