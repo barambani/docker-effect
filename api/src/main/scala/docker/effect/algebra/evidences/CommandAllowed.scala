@@ -2,6 +2,8 @@ package docker.effect
 package algebra
 package evidences
 
+import scala.annotation.nowarn
+
 sealed trait Command[_]
 object Command {
   implicit val cmdEv0: Command[container] = _isCommand[container]
@@ -19,6 +21,7 @@ object Command {
 
 sealed trait CommandAllowed[In, Cmd]
 object CommandAllowed {
+  @nowarn("msg=parameter value evidence\\$\\d+ in method initialCommandEv is never used")
   implicit def initialCommandEv[A: IsInitial, B: Command]: B CmdCanFollow A =
     new (B CmdCanFollow A) {}
 }

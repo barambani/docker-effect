@@ -3,7 +3,6 @@ package algebra
 
 import _root_.docker.effect.algebra.evidences._
 import cats.evidence.<~<
-import com.github.ghik.silencer.silent
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.collection.NonEmpty
@@ -11,9 +10,11 @@ import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import shapeless.{::, <:!<, HList, HNil, Witness}
 
+import scala.annotation.nowarn
+
 sealed trait ValidChunk[Cmd <: HList]
 
-@silent("parameter value (ev.|rec) in method [a-zA-Z0-9]+ is never used")
+@nowarn("msg=parameter value (evidence\\$\\d+|ev\\d+|rec) in method \\w+ is never used")
 object ValidChunk extends ValidFinalChunk {
   implicit def validCommand[A, Cmd: Command, Rem <: HList, LitI, LitC](
     implicit ev1: A <:!< HList,
@@ -99,7 +100,7 @@ object ValidChunk extends ValidFinalChunk {
   ): ValidChunk[Prev :: (TgtA, TgtB) :: HNil] = _validChunk[Prev :: (TgtA, TgtB) :: HNil]
 }
 
-@silent("parameter value (ev.|rec) in method [a-zA-Z0-9]+ is never used")
+@nowarn("msg=parameter value (ev\\d+|rec) in method \\w+ is never used")
 private[algebra] sealed trait ValidFinalChunk {
   implicit def validLast[SecLst, Lst, LitSecLst, LitLst](
     implicit ev1: SecLst <:!< HList,

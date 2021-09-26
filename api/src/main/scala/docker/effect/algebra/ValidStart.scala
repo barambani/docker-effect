@@ -2,16 +2,17 @@ package docker.effect
 package algebra
 
 import cats.evidence.<~<
-import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences.{Command, IsInitial}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.generic.Equal
 import shapeless.{::, <:!<, HList, Witness}
 
+import scala.annotation.nowarn
+
 sealed trait ValidStart[Cmd <: HList]
 
-@silent("parameter value ev. in method validStart is never used")
 object ValidStart {
+  @nowarn("msg=parameter value (evidence\\$\\d+|ev\\d+) in method validStart is never used")
   implicit def validStart[I: IsInitial, C: Command, Rem <: HList, LitC, LitS](
     implicit ev1: I <:!< HList,
     ev2: C <:!< HList,
