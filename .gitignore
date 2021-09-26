@@ -30,4 +30,7 @@ project/project/*
 
 # Metals + Bloop
 .metals/
+metals.sbt
 .bloop/
+.bsp/
+.vscode/

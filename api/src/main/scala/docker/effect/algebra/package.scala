@@ -1,6 +1,5 @@
 package docker.effect
 
-import com.github.ghik.silencer.silent
 import docker.effect.algebra.evidences._
 import docker.effect.algebra.newtypes.{MkDockerCommand, MkSuccessMessage}
 import docker.effect.internal.newtype
@@ -15,6 +14,8 @@ import eu.timepit.refined.string.MatchesRegex
 import eu.timepit.refined.types.string.NonEmptyString
 import shapeless.HList
 import shapeless.ops.hlist.Last
+
+import scala.annotation.nowarn
 
 package object algebra {
 
@@ -93,19 +94,20 @@ package object algebra {
   final type AcceptsCmdTarget[Cmd, Tgt]  = CommandTargetAllowed[Cmd, Tgt]
   final type AcceptsOptTarget[Opt, Tgt]  = OptionTargetAllowed[Opt, Tgt]
 
-  //  printer
+  // printer
+  @nowarn("msg=parameter value evidence\\$\\d+ in method printed0 is never used")
   final def printed0[Cmd <: HList: Valid](implicit p: Printed[Cmd]): DockerCommand =
     DockerCommand(p.text)
 
   final def printed1[Cmd <: HList]: printPartialTypeApplicationTuple[Cmd] =
     new printPartialTypeApplicationTuple[Cmd]
 
-  @silent("parameter value ev. in method apply is never used")
-  @silent("it is not recommended to define classes/objects inside of package objects")
+  @nowarn("msg=it is not recommended to define classes/objects inside of package objects.")
   private[algebra] final class printPartialTypeApplicationTuple[Cmd <: HList](
     private val `_`: Boolean = true
   ) extends AnyVal
       with printPartialTypeApplication[Cmd] {
+    @nowarn("msg=parameter value ev\\d+ in method apply is never used")
     def apply[Tgt, ExpA, ExpB](t: (ExpA, ExpB))(
       implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Tgt],
@@ -115,9 +117,9 @@ package object algebra {
       DockerCommand(p.text + s" ${t._1.toString}:${t._2.toString}")
   }
 
-  @silent("parameter value ev. in method apply is never used")
-  @silent("it is not recommended to define classes/objects inside of package objects")
+  @nowarn("msg=it is not recommended to define classes/objects inside of package objects.")
   private[algebra] sealed trait printPartialTypeApplication[Cmd <: HList] extends Any {
+    @nowarn("msg=parameter value ev\\d+ in method apply is never used")
     def apply[Tgt, Exp](t: Tgt)(
       implicit ev1: Valid[Cmd],
       ev2: Last.Aux[Cmd, Exp],
