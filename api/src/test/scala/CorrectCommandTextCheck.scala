@@ -72,7 +72,7 @@ final class CorrectCommandTextCheck extends munit.FunSuite {
   }
 
   test("printed docker run") {
-    //printed1[docker :: run :: Name :: Image :: `.`](Name("a-name"), anImage).show === "docker run test-image"
+    // printed1[docker :: run :: Name :: Image :: `.`](Name("a-name"), anImage).show === "docker run test-image"
     printed1[docker :: run :: Id :: `.`](anId).show === "docker run fd484f19954f"
     printed1[docker :: run :: Image :: `.`](anImage).show === "docker run test-image"
 
