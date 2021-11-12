@@ -2,7 +2,11 @@ package docker.effect
 package algebra
 package evidences
 
+import scala.annotation.nowarn
+
 sealed trait VerboseOption[_]
+
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 object VerboseOption {
   implicit val voEv0: VerboseOption[all]        = _isVerboseOption[all]
   implicit val voEv1: VerboseOption[digest]     = _isVerboseOption[digest]
@@ -25,6 +29,8 @@ object VerboseOption {
 }
 
 sealed trait VerboseOptionAllowed[Cmd, Opt]
+
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 object VerboseOptionAllowed {
   implicit val evLo1: images AcceptsVerboseOpt all        = _isAllowed[images, all]
   implicit val evLo2: images AcceptsVerboseOpt digest     = _isAllowed[images, digest]

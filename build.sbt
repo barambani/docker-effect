@@ -1,6 +1,4 @@
-import sbt.Keys.testFrameworks
-
-val scala_212       = "2.12.14"
+val scala_212       = "2.12.15"
 val scala_213       = "2.13.6"
 val current_version = scala_213
 
@@ -30,6 +28,7 @@ lazy val scala212Options = Seq(
   "-opt:l:inline",
   "-Ywarn-unused:imports",
   "-Ywarn-unused:_,imports",
+  "-Ywarn-unused:-nowarn",
   "-opt-warnings",
   "-Xlint:constant",
   "-Ywarn-extra-implicit",
@@ -54,22 +53,14 @@ lazy val versionOf = new {
   val osLib          = "0.7.8"
   val refined        = "0.9.27"
   val scalaCheck     = "1.15.4"
-  val zio            = "1.0.11"
+  val zio            = "1.0.12"
   val zioInteropCats = "2.5.1.0"
   val shapeless      = "2.3.7"
-  val silencer       = "1.7.6"
 }
-
-lazy val sharedDependencies = Seq(
-  "com.github.ghik" %% "silencer-lib" % versionOf.silencer % Provided cross CrossVersion.full
-)
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
     "org.typelevel" %% "kind-projector" % versionOf.kindProjector cross CrossVersion.full
-  ),
-  compilerPlugin(
-    "com.github.ghik" %% "silencer-plugin" % versionOf.silencer cross CrossVersion.full
   )
 )
 
@@ -92,9 +83,9 @@ lazy val apiDependencies = Seq(
 lazy val crossBuildSettings = Seq(
   scalaVersion       := current_version,
   crossScalaVersions := Seq(scala_212, scala_213),
-  libraryDependencies ++= sharedDependencies ++ testDependencies ++ compilerPluginsDependencies,
-  organization              := "com.github.barambani",
-  parallelExecution in Test := false,
+  libraryDependencies ++= testDependencies ++ compilerPluginsDependencies,
+  organization             := "com.github.barambani",
+  Test / parallelExecution := false,
   scalacOptions ++=
     (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, 12)) => scala212Options
@@ -109,13 +100,10 @@ lazy val root = project
   .settings(
     name            := "docker-effect",
     publishArtifact := false,
-    addCommandAlias("updates", ";dependencyUpdates; reload plugins; dependencyUpdates;reload return"),
-    addCommandAlias("fmt", "all scalafmt test:scalafmt scalafmtSbt"),
-    addCommandAlias(
-      "fmtCheck",
-      "all scalafmtCheck test:scalafmtCheck scalafmtSbtCheck"
-    ),
-    addCommandAlias("fullTest", ";clean;test")
+    addCommandAlias("updates", "dependencyUpdates; reload plugins; dependencyUpdates; reload return"),
+    addCommandAlias("fmt", "all scalafmtAll scalafmtSbt"),
+    addCommandAlias("fmtCheck", "all scalafmtCheckAll scalafmtSbtCheck"),
+    addCommandAlias("fullTest", "clean; test")
   )
 
 lazy val api = project
@@ -124,6 +112,5 @@ lazy val api = project
   .settings(
     name := "docker-effect-api",
     libraryDependencies ++= apiDependencies,
-    publishArtifact := false,
-    testFrameworks += new TestFramework("munit.Framework")
+    publishArtifact := false
   )
