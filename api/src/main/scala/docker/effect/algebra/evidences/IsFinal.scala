@@ -2,8 +2,11 @@ package docker.effect
 package algebra
 package evidences
 
+import scala.annotation.nowarn
+
 sealed trait IsFinal[A, B]
 
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 object IsFinal extends CanEndWith2 {
   implicit val evCew1: IsFinal[docker, images] = _isFinal[docker, images]
   implicit val evCew2: IsFinal[docker, ps]     = _isFinal[docker, ps]
@@ -17,6 +20,7 @@ object IsFinal extends CanEndWith2 {
     _isFinal[A, Tgt]
 }
 
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 private[algebra] sealed trait CanEndWith2 {
   implicit def evCewIm2[CO: CompactOption: images AcceptsCompactOpt *]: IsFinal[images, CO] =
     _isFinal[images, CO]

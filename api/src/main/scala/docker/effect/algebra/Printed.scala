@@ -2,18 +2,19 @@ package docker.effect
 package algebra
 
 import cats.evidence.<~<
-import com.github.ghik.silencer.silent
 import docker.effect.syntax.nes._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.types.string.NonEmptyString
 import shapeless.{::, <:!<, HList, HNil, Witness}
 
+import scala.annotation.nowarn
+
 sealed trait Printed[A] {
   def text: NonEmptyString
 }
 
-@silent("parameter value ev. in method [a-zA-Z0-9]+ is never used")
+@nowarn("msg=parameter value ev\\d+ in method \\w+ is never used")
 object Printed {
   implicit def printedCommand[Par, Chi, Rem <: HList](
     implicit ev1: ValidChunk[Par :: Chi :: Rem],

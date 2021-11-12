@@ -2,7 +2,11 @@ package docker.effect
 package algebra
 package evidences
 
+import scala.annotation.nowarn
+
 sealed trait CompactOption[_]
+
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 object CompactOption {
   implicit val coEv0: CompactOption[a]  = _isCompactOption[a]
   implicit val coEv1: CompactOption[d]  = _isCompactOption[d]
@@ -21,6 +25,8 @@ object CompactOption {
 }
 
 sealed trait CompactOptionAllowed[C, O]
+
+@nowarn("msg=parameter value evidence\\$\\d+ in method \\w+ is never used")
 object CompactOptionAllowed {
   implicit val evCo1: images AcceptsCompactOpt a  = _isAllowed[images, a]
   implicit val evCo2: images AcceptsCompactOpt f  = _isAllowed[images, f]
