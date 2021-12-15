@@ -50,11 +50,11 @@ lazy val versionOf = new {
   val catsEffect     = "2.5.4"
   val kindProjector  = "0.13.2"
   val munit          = "0.7.29"
-  val osLib          = "0.7.8"
-  val refined        = "0.9.27"
+  val osLib          = "0.8.0"
+  val refined        = "0.9.28"
   val scalaCheck     = "1.15.4"
-  val zio            = "1.0.12"
-  val zioInteropCats = "3.2.9.0"
+  val zio            = "1.0.13"
+  val zioInteropCats = "2.5.1.0"
   val shapeless      = "2.3.7"
 }
 
