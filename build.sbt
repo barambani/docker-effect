@@ -52,8 +52,8 @@ lazy val versionOf = new {
   val munit          = "0.7.29"
   val osLib          = "0.8.1"
   val refined        = "0.9.28"
-  val scalaCheck     = "1.15.4"
-  val zio            = "1.0.13"
+  val scalaCheck     = "1.16.0"
+  val zio            = "1.0.14"
   val zioInteropCats = "2.5.1.0"
   val shapeless      = "2.3.9"
 }
