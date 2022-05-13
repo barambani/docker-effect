@@ -72,5 +72,5 @@ object VerboseOptionAllowed {
 
   implicit val evLo17: rm AcceptsVerboseOpt force = _isAllowed[rm, force]
 
-  private[this] def _isAllowed[A, B]: A AcceptsVerboseOpt B = new (A AcceptsVerboseOpt B) {}
+  private[this] def _isAllowed[A, B]: A AcceptsVerboseOpt B = new A AcceptsVerboseOpt B {}
 }

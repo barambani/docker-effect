@@ -23,5 +23,5 @@ sealed trait CommandAllowed[In, Cmd]
 object CommandAllowed {
   @nowarn("msg=parameter value evidence\\$\\d+ in method initialCommandEv is never used")
   implicit def initialCommandEv[A: IsInitial, B: Command]: B CmdCanFollow A =
-    new (B CmdCanFollow A) {}
+    new B CmdCanFollow A {}
 }

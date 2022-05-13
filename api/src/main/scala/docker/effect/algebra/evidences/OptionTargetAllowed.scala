@@ -19,5 +19,5 @@ object OptionTargetAllowed {
   implicit val opTgtEv9: f AcceptsOptTarget Id    = _isAllowed[f, Id]
   implicit val opTgtEv10: f AcceptsOptTarget Name = _isAllowed[f, Name]
 
-  private[this] def _isAllowed[A, B]: A AcceptsOptTarget B = new (A AcceptsOptTarget B) {}
+  private[this] def _isAllowed[A, B]: A AcceptsOptTarget B = new A AcceptsOptTarget B {}
 }

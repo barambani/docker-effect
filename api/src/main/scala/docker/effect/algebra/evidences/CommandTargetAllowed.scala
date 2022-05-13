@@ -34,5 +34,5 @@ private[algebra] sealed trait Target2 {
   @nowarn("msg=parameter value evidence\\$\\d+ in method signalEvTg5 is never used")
   implicit def signalEvTg5[Sig: s AcceptsArgument *]: Sig AcceptsCmdTarget Id = _allowed[Sig, Id]
 
-  protected final def _allowed[A, B]: A AcceptsCmdTarget B = new (A AcceptsCmdTarget B) {}
+  protected final def _allowed[A, B]: A AcceptsCmdTarget B = new A AcceptsCmdTarget B {}
 }

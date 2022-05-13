@@ -64,5 +64,5 @@ object CompactOptionAllowed {
 
   implicit val evLo13: rm AcceptsCompactOpt f = _isAllowed[rm, f]
 
-  private[this] def _isAllowed[A, B]: A AcceptsCompactOpt B = new (A AcceptsCompactOpt B) {}
+  private[this] def _isAllowed[A, B]: A AcceptsCompactOpt B = new A AcceptsCompactOpt B {}
 }

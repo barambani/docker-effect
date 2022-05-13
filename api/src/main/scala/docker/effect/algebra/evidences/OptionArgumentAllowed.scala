@@ -11,5 +11,5 @@ object OptionArgumentAllowed {
   implicit val ev1a1: s AcceptsArgument KILL = _isAllowed[s, KILL]
   implicit val ev1a2: s AcceptsArgument HUP  = _isAllowed[s, HUP]
 
-  private[this] def _isAllowed[A, B]: A AcceptsArgument B = new (A AcceptsArgument B) {}
+  private[this] def _isAllowed[A, B]: A AcceptsArgument B = new A AcceptsArgument B {}
 }
