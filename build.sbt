@@ -55,7 +55,7 @@ lazy val versionOf = new {
   val scalaCheck     = "1.17.0"
   val zio            = "1.0.17"
   val zioInteropCats = "2.5.1.0"
-  val shapeless      = "2.3.9"
+  val shapeless      = "2.3.10"
 }
 
 lazy val compilerPluginsDependencies = Seq(
